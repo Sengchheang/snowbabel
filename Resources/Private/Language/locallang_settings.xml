@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for module &quot;txsnowbabelM21&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+
+			<label index="settings_formtab_Pathes">Pathes</label>
+			<label index="settings_formtab_Blacklists">Blacklists</label>
+			<label index="settings_formtab_DisplayOptions">Display Options</label>
+			<label index="settings_formtab_Editing">Editing</label>
+			<label index="settings_formtab_Languages">Languages</label>
+
+			<label index="settings_formlabel_LocalExtensionPath">Local Extensions</label>
+			<label index="settings_formlabel_SystemExtensionPath">System Extensions</label>
+			<label index="settings_formlabel_GlobalExtensionPath">Global Extensions</label>
+			<label index="settings_formlabel_BlacklistedExtensions">Extensions</label>
+			<label index="settings_formlabel_BlacklistedCategories">Categories</label>
+			<label index="settings_formlabel_ShowOnlyLoadedExtensions">Show Only Loaded Extensions</label>
+			<label index="settings_formlabel_CopyDefaultLanguage">Copy Default Language To English</label>
+			<label index="settings_formlabel_ShowTranslatedLanguages">Language Names In Local Language</label>
+			<label index="settings_formlabel_ShowLocalExtensions">Show Local Extensions</label>
+			<label index="settings_formlabel_ShowSystemExtensions">Show System Extensions</label>
+			<label index="settings_formlabel_ShowGlobalExtensions">Show Global Extensions</label>
+			<label index="settings_formlabel_AutoBackupCronjob">Autobackup (Cronjob)</label>
+			<label index="settings_formlabel_AutoBackupEditing">Autobackup while Editing</label>
+			<label index="settings_formlabel_AddedLanguages">Application Languages</label>
+			<label index="settings_formlabel_AddedLanguages_Available">Available</label>
+			<label index="settings_formlabel_AddedLanguages_Added">Added</label>
+
+			<label index="settings_formbutton_Save">Save</label>
+
+			<label index="settings_formtooltip_Save">Save Settings Below</label>
+
+		</languageKey>
+
+	</data>
+</T3locallang>

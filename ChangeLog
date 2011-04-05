@@ -1,0 +1,233 @@
+2010-10-12 Daniel Alder <dalder@snowflake.ch>
+
+	* Updated: Updated to new extjs version 3.3.0
+
+2010-09-08 Daniel Alder <dalder@snowflake.ch>
+
+	* Added: 'Save to Original'-Mode
+
+2010-08-26 Daniel Alder <dalder@snowflake.ch>
+
+	* Added: Sync modus
+	* Removed: unused actionMenu
+	* Added: Backup modus for Extension (single lables not yet activated)
+	* Added: Recover modus for Extension (single lables not yet activated)
+
+2010-08-26 Daniel Alder <dalder@snowflake.ch>
+
+	* Fixed: check if languages are available (is_array)
+
+2010-08-25 Daniel Alder <dalder@snowflake.ch>
+
+	* Changed: added main dir 'incudo' sys path - task 1443.53
+	* Fixed: reset paging after switching extension - task 1443.52
+	* Fixed: Pagebrowser - afterPageText still pending! - task 1443.52
+
+2010-07-23 Daniel Alder <dalder@snowflake.ch>
+
+	* Removed: module 'reports'
+	* Added: new column 'path' - task 1443.48
+
+2010-07-08 Daniel Alder <dalder@snowflake.ch>
+
+	* Changed: write api cache to typo3temp dir
+
+2010-07-06 Daniel Alder <dalder@snowflake.ch>
+
+	* Added: new module 'reports'
+
+2010-07-05 Daniel Alder <dalder@snowflake.ch>
+
+	* Added: possibility to install as global/system extensions
+	* Fixed: syntax error
+
+2010-07-04 Daniel Alder <dalder@snowflake.ch>
+
+	* Fixed: tca improvement - task 1443.10
+
+2010-07-03 Daniel Alder <dalder@snowflake.ch>
+
+	* Added: possibility to show only loaded extensions instead installed extensions - task 1443.43
+	* Fixed: reloading data while searching or paging - task 1443.8
+	* Changed: beta status to stable
+	* Fixed: tca improvement - task 1443.10
+	
+
+2010-06-25 Daniel Alder <dalder@snowflake.ch>
+
+	* Changed: Deleted needless stuff in settings
+	* Changed: Added autosave (still "bug" left => save during form load)
+	* Added: switch extjs css sources for different typo3 versions
+	* Deleted: unused silk icons / developer files
+	* Fixed: css font bug for listing (cell)
+	* Updated: ext emconf
+
+2010-06-24 Daniel Alder <dalder@snowflake.ch>
+
+	* Changed: loading function for listview
+	* Added: doc file and directory (no infos yet)
+	* Changed: renamed extension to snowbabel
+	* Added: new icon
+	* Fixed: icon pathes for sys and global extensions
+	* Changed: category blacklist
+
+2010-06-22 Daniel Alder <dalder@snowflake.ch>
+
+	* Changed: defaultLanguage to copyDefaultLanguageToEn; added checkbox
+	* Added: globalSearch
+	* Changed: single blacklist for all extensions
+
+2010-06-11 Daniel Alder <dalder@snowflake.ch>
+
+	* Added: Translation status agains original label
+	* Fixed: language output
+	* Removed some debug outputs
+	* Added: extjs debug with comments
+
+2010-06-10 Daniel Alder <dalder@snowflake.ch>
+
+  * Changed: listview -> removed groupview -> added sources of buffering (still problems with row height)
+
+2010-06-09 Daniel Alder <dalder@snowflake.ch>
+
+	* Added: extended be_user rights - part II - added extension-selection
+	* Added: extended be_user rights - part III - added language-selection for cm users
+	* Updated: correct dependencies
+	* Updated: em_conf
+
+2010-06-08 Daniel Alder <dalder@snowflake.ch>
+	
+	* Added: sources of global and system extensions now available
+	* Added: blacklisting now active
+	* Removed: usersettings
+	* Added: extended be_user rights - part I
+
+2010-06-07 Daniel Alder <dalder@snowflake.ch>
+
+	* Changed: from static to OO - part V
+	* Added: extjs source added to extension - no sfpjs needed anymore
+
+
+2010-06-06 Daniel Alder <dalder@snowflake.ch>
+
+	* Changed: from static to OO - part IV
+
+2010-06-05 Daniel Alder <dalder@snowflake.ch>
+
+	* Changed: from static to OO - part III
+
+2010-06-04 Daniel Alder <dalder@snowflake.ch>
+
+	* Added: firebug
+	* Changed: from static to OO - part I
+	* Changed: from static to OO - part II (searchext)
+
+2010-04-23 Daniel Alder <dalder@snowflake.ch>
+
+	* Fixed: Fieldstatus after search
+	* Removed: hometab in admin section
+	* Changed: loading behaviour form tabs in admin section
+	* Added: auto backup while editing
+	* Added: xml filter for contentmanager -> not yet activated
+	* Fixed: no label for add languages in admin section, users
+	* Fixed: no paging reset after editing or changing selection
+	* Fixed: several issues
+	* Changed: grid editor field to textarea
+	* Fixed: do not save empty values to xml
+
+2010-04-22 Daniel Alder <dalder@snowflake.ch>
+
+	* Fixed: Improved ext and global search
+
+2010-04-14 Daniel Alder <dalder@snowflake.ch>
+
+	* Fixed: Several improvements & bugfixes
+	* Changed: language handling for better compatibility
+	* Changed: disabled extjsdebug and added 'extjsDebug'
+	* Fixed: wrong extjs path for ext-all.js
+	* Fixed: check default lang over conf while store data to l10n
+	* Fixed: do userconf check while init app
+	* Fixed: just recover if data availabel
+	* Changed: deleted ch (swiss flag) added chinese (simplified)
+	* Added: show languagenames in english or local language
+	* Added: unknown flag
+
+2010-04-09 Daniel Alder <dalder@snowflake.ch>
+
+	* Changed: to reach better overview, tried to rename classes useful
+	* Changed: versioning to 0.2.0
+
+
+2010-04-01 Daniel Alder <dalder@snowflake.ch>
+
+	* Changed: merged some code in one view class
+
+2010-03-31 Daniel Alder <dalder@snowflake.ch>
+
+	* Fixed: icon pathes, from absolute to relative
+	* Fixed: language selection icon pathes
+	* Added: DefaultLabel to columnSelection
+	* Changed: column header naming
+	* Fixed: Wrong array in metadata
+	* Added: css class in ext list for removed exts
+	* Fixed: different fixes
+	* Changed: field type to text in tx_snowbabel_translation_data 
+
+2010-03-30 Daniel Alder <dalder@snowflake.ch>
+
+	* Fixed: recover all labels -> l10n
+	* Fixed: backup all labels -> l10n
+	* Fixed: getLable / get Labels / updateLabel -> l10n
+	* Fixed: Cronjob -> checkAllTranslations
+	* Added: Status -> Unlike -> original Value
+	* Fixed: Search -> now same view and data as listing
+	* Fixed: Some little things
+	* Changed: versioning for branch
+
+2010-03-24 Daniel Alder <dalder@snowflake.ch>
+
+	* Added: possibility to recover all labels over action menu
+	* Added: possibility to show/hide id and label
+
+2010-03-23 Daniel Alder <dalder@snowflake.ch>
+	
+	* Added: possibility to backup all labels over action menu
+	* Added: backup selected label
+	* Fixed: check status while backup single label
+	* Changed: function checkStatus from private to public
+	* Added: recover selected label
+
+2010-03-22 Daniel Alder <dalder@snowflake.ch>
+
+	* Changed: language handling from static_langs to sys_langs
+
+2010-03-12 Daniel Alder <dalder@snowflake.ch>
+
+	* Added: possibility to search in global or selected extension
+	* Bug fix: color while focusing cell / sorting id
+
+2010-03-10 Daniel Alder <dalder@snowflake.ch>
+	
+	* Added different quicktips in cell and extmenu
+	* Some small bug fixes
+	* Added full localization for mod2
+	* Some renaming for better overview
+	* Bug fix: settings -> language/extension/beuser sort
+	* Bug fix: changed label singular/plural
+	* Bug fix: removed "group by"
+	* Bug fix: cell quicktips -> same varname as localization
+
+2010-03-09 Daniel Alder <dalder@snowflake.ch>
+
+	* added status check for cells in extjs grid
+	* changed version
+
+2010-03-05 Daniel Alder <dalder@snowflake.ch>
+	
+	* added cli -> check translation, status etc
+	* fixed interface
+	* some bug fixes
+
+2010-02-25 Daniel Alder <dalder@snowflake.ch>
+
+	* initial release (basic features)

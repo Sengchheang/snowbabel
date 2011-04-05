@@ -1,0 +1,64 @@
+#snowbabel-extension-menu,
+#snowbabel-language-menu,
+#snowbabel-column-menu {
+	border: 1px solid #A2AAB8;
+	background-color: #FFF;
+	background-image: url("../Images/Miscellaneous/menu.gif");
+}
+
+.snowbabel-menu {
+	background-color: transparent;
+	border: 0 none;
+	overflow: hidden;
+	padding: 2px;
+}
+
+.snowbabel-menu-item {
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	color: #222222;
+	line-height: 16px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+	border: 1px dotted #FFFFFF;
+	display:block;
+	padding: 1px 1px 1px 27px;
+
+}
+
+	.snowbabel-menu-item-over,
+	.snowbabel-menu-item-selected {
+		background-color: #E7E7E7;
+		border-color: #B9B9B9;
+	}
+
+/**
+* this css is for the free "silk" icon library
+* http://www.fanfanfan.com
+*
+*/
+
+
+.silk-disk {
+	background-image: url(../Images/Silk/disk.png) !important;
+	background-repeat: no-repeat;
+}
+
+.backup-icon {
+    background-image: url(../Images/Silk/drive_disk.png);
+    background-repeat: no-repeat;
+}
+
+.recover-icon {
+    background-image: url(../Images/Silk/arrow_undo.png);
+    background-repeat: no-repeat;
+}
+
+.sync-icon {
+    background-image: url(../Images/Silk/arrow_refresh.png);
+    background-repeat: no-repeat;
+}
+
+.saveToOriginal-icon {
+    background-image: url(../Images/Silk/page_save.png);
+    background-repeat: no-repeat;
+}
