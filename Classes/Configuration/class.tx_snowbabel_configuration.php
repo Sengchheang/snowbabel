@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2011 Daniel Alder <dalder@snowflake.ch>
+*  (c) 2011 Daniel Alder <info@snowflake.ch>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,7 +25,7 @@
 /**
  * Plugin 'Snowbabel' for the 'Snowbabel' extension.
  *
- * @author	Daniel Alder <dalder@snowflake.ch>
+ * @author	Daniel Alder <info@snowflake.ch>
  * @package	TYPO3
  * @subpackage	tx_snowbabel
  */
@@ -451,18 +451,36 @@ class tx_snowbabel_Configuration {
 	/**
 	 *
 	 */
-	public function getStaticLanguages($AvailableLanguagesDiff = false) {
+	public function getLanguages($AvailableLanguagesDiff = false) {
+
+		//TODO: Get System Languages And Merge With Static
+		// $this->db->getSystemLanguages();
 
 		$Languages = $this->db->getStaticLanguages();
 
 		if($AvailableLanguagesDiff) {
 
-				// TODO: diff
-			$this->getApplicationConfiguration('AvailableLanguages');
+			$AvailableLanguages = $this->getApplicationConfiguration('AvailableLanguages');
 
+			if(is_array($Languages)) {
+
+				$LanguagesDiff = array();
+
+				foreach($Languages as $Language) {
+
+					if(!in_array($Language, $AvailableLanguages)) {
+						array_push($LanguagesDiff, $Language);
+					}
+
+				}
+
+				$Languages = $LanguagesDiff;
+
+			}
 		}
 
 		return $Languages;
+
 
 	}
 
