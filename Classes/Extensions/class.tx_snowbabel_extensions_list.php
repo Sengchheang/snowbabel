@@ -134,7 +134,6 @@ class tx_snowbabel_Extensions {
 		$this->SystemExtensionPath = $this->confObj->getApplicationConfiguration('SystemExtensionPath');
 		$this->GlobalExtensionPath = $this->confObj->getApplicationConfiguration('GlobalExtensionPath');
 
-
 			// get Extension params
 		$this->SitePath = $this->confObj->getExtensionConfiguration('SitePath');
 		$this->LoadedExtensions = $this->confObj->getExtensionConfigurationLoadedExtensions();
@@ -143,7 +142,6 @@ class tx_snowbabel_Extensions {
 		$this->IsAdmin = $this->confObj->getUserConfigurationIsAdmin();
 		$this->PermittedExtensions = $this->confObj->getUserConfiguration('PermittedExtensions');
 		$this->AllocatedGroups = $this->confObj->getUserConfiguration('AllocatedGroups');
-
 	}
 
 	/**
@@ -446,17 +444,10 @@ class tx_snowbabel_Extensions {
 	 */
 	private function isCategoryBlacklisted($ExtensionCategory) {
 
-		$BlacklistedCategories = array();
-
-			// Get Blacklisted Categories
-		if ($this->BlacklistedCategory) {
-			 $BlacklistedCategories = explode(',',$this->BlacklistedCategory);
-		}
-
 			// Just Use Allowed Categories
-		if($ExtensionCategory && is_array($BlacklistedCategories)) {
+		if($ExtensionCategory && is_array($this->BlacklistedCategories)) {
 
-			if(in_array($ExtensionCategory, $BlacklistedCategories)) {
+			if(in_array($ExtensionCategory, $this->BlacklistedCategories)) {
 				return true;
 			}
 

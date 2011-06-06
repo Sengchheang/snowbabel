@@ -183,9 +183,17 @@ class tx_snowbabel_Db {
 		$name = 'BlacklistedCategories';
 		$standardValue = 'module,services,misc,be';
 
-			// get value
-		return $this->getAppConf($name, $standardValue);
+		$Result = $this->getAppConf($name, $standardValue);
 
+		if ($Result) {
+
+			 $BlacklistedCategories = explode(',', $Result);
+
+				// get value
+			return $BlacklistedCategories;
+		}
+
+		return false;
 	}
 
 	/**

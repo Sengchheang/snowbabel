@@ -204,7 +204,7 @@ class tx_snowbabel_ExtDirectServer {
 		$FormData['data']['ShowTranslatedLanguages']	= $this->confObj->getApplicationConfiguration('ShowTranslatedLanguages') ? 1 : 0;
 
 		$FormData['data']['BlacklistedExtensions']		= $this->confObj->getApplicationConfiguration('BlacklistedExtensions');
-		$FormData['data']['BlacklistedCategories']		= $this->confObj->getApplicationConfiguration('BlacklistedCategories');
+		$FormData['data']['BlacklistedCategories']		= implode(',', $this->confObj->getApplicationConfiguration('BlacklistedCategories'));
 
 		$FormData['data']['XmlFilter']					= $this->confObj->getApplicationConfiguration('XmlFilter') ? 1 : 0;
 
