@@ -45,10 +45,7 @@ TYPO3.Snowbabel.ExtensionMenu = Ext.extend(Ext.Panel , {
 			directFn: TYPO3.Snowbabel.ExtDirect.getExtensionMenu,
 			paramsAsHash: true,
 			root: '',
-			sortInfo: {
-				field: 'ExtensionTitle',
-				direction: 'ASC'
-			},
+			remoteSort: true,
 			fields: [
 				'ExtensionKey',
 				'ExtensionTitle',

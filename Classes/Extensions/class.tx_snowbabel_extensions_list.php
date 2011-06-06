@@ -624,15 +624,15 @@ class tx_snowbabel_Extensions {
 	 */
 	private function sortExtensions($Extensions) {
 
-		$TempExtensions		= $Extensions;
-		$TempExtensionList	= array();
 
-		if(count($TempExtensions) > 0) {
+		if(count($Extensions) > 0) {
+
+			$TempExtensionList	= array();
 
 				// Create Extension List
-			foreach($TempExtensions as $Key => $Extension) {
+			foreach($Extensions as $Key => $Extension) {
 
-				$TempExtensionList[$Key] = $Extension['ExtensionTitle'];
+				$TempExtensionList[$Key] = strtolower($Extension['ExtensionTitle']);
 
 			}
 
@@ -640,7 +640,8 @@ class tx_snowbabel_Extensions {
 			asort($TempExtensionList);
 
 				// Reset Original Array
-			$Extensions	= array();
+			$TempExtensions		= $Extensions;
+			$Extensions			= array();
 
 				// Add Data
 			foreach($TempExtensionList as $Key => $Extension) {
@@ -648,6 +649,8 @@ class tx_snowbabel_Extensions {
 			}
 
 		}
+
+		$this->debug->log($Extensions, 'exts');
 
 		return $Extensions;
 	}
