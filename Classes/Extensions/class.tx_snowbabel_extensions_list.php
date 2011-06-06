@@ -112,9 +112,9 @@ class tx_snowbabel_Extensions {
 	private $AllocatedGroups;
 
 	/**
-	 *
+	 * @param  $confObj
 	 */
-  public function __construct($confObj) {
+	public function __construct($confObj) {
 
 		$this->confObj = $confObj;
 
@@ -180,6 +180,8 @@ class tx_snowbabel_Extensions {
 
 			}
 		}
+
+		$Extensions = $this->sortExtensions($Extensions);
 
 		return $Extensions;
 
@@ -359,9 +361,6 @@ class tx_snowbabel_Extensions {
 
 			// Removes Double Entries
 		$ExtensionList = array_unique($ExtensionList);
-
-			// Sort Whole List
-		sort($ExtensionList);
 
 		return $ExtensionList;
 	}
@@ -603,6 +602,10 @@ class tx_snowbabel_Extensions {
 
 	}
 
+	/**
+	 * @param  $String
+	 * @return string
+	 */
     private function getCleanedString($String) {
 
         if($String) {
@@ -614,6 +617,40 @@ class tx_snowbabel_Extensions {
         return $String;
 
     }
+
+	/**
+	 * @param  $Extensions
+	 * @return array
+	 */
+	private function sortExtensions($Extensions) {
+
+		$TempExtensions		= $Extensions;
+		$TempExtensionList	= array();
+
+		if(count($TempExtensions) > 0) {
+
+				// Create Extension List
+			foreach($TempExtensions as $Key => $Extension) {
+
+				$TempExtensionList[$Key] = $Extension['ExtensionTitle'];
+
+			}
+
+				// Sort Extension List
+			asort($TempExtensionList);
+
+				// Reset Original Array
+			$Extensions	= array();
+
+				// Add Data
+			foreach($TempExtensionList as $Key => $Extension) {
+				array_push($Extensions, $TempExtensions[$Key]);
+			}
+
+		}
+
+		return $Extensions;
+	}
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/snowbabel/Classes/Extensions/class.tx_snowbabel_extensions_list.php'])	{
