@@ -34,12 +34,27 @@ class tx_snowbabel_Languages {
 	/**
 	 *
 	 */
+	private $AbsoluteFlagPath;
+
+	/*
+	 *
+	 */
+	private $RelativeFlagPath;
+
+	/**
+	 *
+	 */
 	private $confObj;
 
 	/**
 	 *
 	 */
 	private $debug;
+
+	/**
+	 *
+	 */
+	private $UserLanguages = array();
 
 	/**
 	 *
@@ -71,6 +86,13 @@ class tx_snowbabel_Languages {
 	 */
   public function __construct($confObj) {
 
+	  	// TODO: Pathes Should Be Editable
+
+			// set flag path
+	  	$FlagPath = 'Resources/Public/Images/Flags/';
+		$this->AbsoluteFlagPath = t3lib_extMgm::extPath('snowbabel') . $FlagPath;
+		$this->RelativeFlagPath = '../' . $FlagPath;
+
 		$this->confObj = $confObj;
 
 		$this->debug = $confObj->debug;
@@ -92,13 +114,16 @@ class tx_snowbabel_Languages {
 	 */
 	public function getLanguages() {
 
-			// get user languages
-		$UserLanguages = $this->getLanguagesUser();
+			// Get User Languages
+		 $this->getLanguagesUser();
 
-			// set selected languages
-		$UserLanguages = $this->getLanguagesSelected($UserLanguages);
+			// Set Selected Languages
+		$this->getLanguagesSelected();
 
-		return $UserLanguages;
+			// Set Language Flags
+		$this->getLanguagesFlag();
+
+		return $this->UserLanguages;
 	}
 
 	/**
@@ -106,11 +131,9 @@ class tx_snowbabel_Languages {
 	 */
 	private function getLanguagesUser() {
 
-		$Languages = array();
-
 			// Admin - application languages
 		if($this->IsAdmin) {
-			$Languages = $this->AvailableLanguages;
+			$this->UserLanguages = $this->AvailableLanguages;
 		}
 			// Cm - permitted languages
 		else {
@@ -126,7 +149,7 @@ class tx_snowbabel_Languages {
 					if(array_search($AvailableLanguage['LanguageId'], $PermittedLanguages) !== false) {
 
 								// add permitted language to language array
-							array_push($Languages, $AvailableLanguage);
+							array_push($this->UserLanguages, $AvailableLanguage);
 
 					}
 
@@ -136,22 +159,19 @@ class tx_snowbabel_Languages {
 
 		}
 
-		return $Languages;
 	}
 
 	/**
 	 *
 	 */
-	private function getLanguagesSelected($UserLanguages) {
-
-		$Languages = array();
+	private function getLanguagesSelected() {
 
 			// selected languages
 		$SelectedLanguages = explode(',', $this->SelectedLanguages);
 
-		if(count($UserLanguages) > 0) {
+		if(count($this->UserLanguages) > 0) {
 
-			foreach($UserLanguages as $key => $UserLanguage) {
+			foreach($this->UserLanguages as $key => $UserLanguage) {
 
 				if(array_search($UserLanguage['LanguageId'], $SelectedLanguages) !== false) {
 					$selected = true;
@@ -161,14 +181,44 @@ class tx_snowbabel_Languages {
 				}
 
 					// add marker to array
-				$UserLanguages[$key]['LanguageSelected'] = $selected;
+				$this->UserLanguages[$key]['LanguageSelected'] = $selected;
 			}
 
-
-			$Languages = $UserLanguages;
 		}
 
-		return $Languages;
+	}
+
+	private function getLanguagesFlag() {
+
+		if(count($this->UserLanguages) > 0) {
+
+			foreach($this->UserLanguages as $key => $UserLanguage) {
+
+					// add marker to array
+				$this->UserLanguages[$key]['LanguageFlag'] = $this->getLanguageFlag($UserLanguage['LanguageKey']);
+
+			}
+
+		}
+
+	}
+
+	/**
+	 *
+	 */
+	private function getLanguageFlag($LanguageId) {
+
+		$LanguageIcon = $LanguageId.'.gif';
+
+		if(file_exists($this->AbsoluteFlagPath.$LanguageIcon)) {
+			$icon = $this->RelativeFlagPath.$LanguageIcon;
+		}
+		else {
+			$icon = $this->RelativeFlagPath.'unknown.gif';
+		}
+
+		return $icon;
+
 	}
 
 }

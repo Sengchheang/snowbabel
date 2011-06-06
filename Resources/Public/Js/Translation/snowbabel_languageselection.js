@@ -49,6 +49,8 @@ TYPO3.Snowbabel.LanguageSelection = Ext.extend(Ext.Panel , {
 			fields: [
 				'LanguageId',
 				'LanguageName',
+				'LanguageNameEn',
+				'LanguageNameLocal',
 				'LanguageKey',
 				'LanguageFlag',
 				'LanguageSelected'

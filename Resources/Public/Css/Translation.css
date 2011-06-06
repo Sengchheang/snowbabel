@@ -17,7 +17,7 @@
 	font-family: Verdana,Arial,Helvetica,sans-serif;
 	color: #222222;
 	line-height: 16px;
-	background-repeat: no-repeat;
+	background: url(../Images/Silk/delete.png) no-repeat;
 	cursor: pointer;
 	border: 1px dotted #FFFFFF;
 	display:block;
@@ -29,6 +29,15 @@
 	.snowbabel-menu-item-selected {
 		background-color: #E7E7E7;
 		border-color: #B9B9B9;
+	}
+
+	.snowbabel-menu-item-selected {
+		background-image: url(../Images/Silk/accept.png);
+	}
+
+	#snowbabel-language-menu .snowbabel-menu-item,
+	#snowbabel-column-menu .snowbabel-menu-item {
+		background-position: 3px center;
 	}
 
 /**

@@ -519,7 +519,7 @@ class tx_snowbabel_Db {
 
 				return $Languages;
 			}
-			
+
 			else {
 				return NULL;
 			}
