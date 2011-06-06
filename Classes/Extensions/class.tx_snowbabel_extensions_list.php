@@ -650,8 +650,6 @@ class tx_snowbabel_Extensions {
 
 		}
 
-		$this->debug->log($Extensions, 'exts');
-
 		return $Extensions;
 	}
 }
