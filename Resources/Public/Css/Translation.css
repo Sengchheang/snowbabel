@@ -13,6 +13,10 @@
 	padding: 2px;
 }
 
+	.snowbabel-menu .extension-installed {
+		color: #A0A0A0;
+	}
+
 .snowbabel-menu-item {
 	font-family: Verdana,Arial,Helvetica,sans-serif;
 	color: #222222;
@@ -45,7 +49,6 @@
 * http://www.fanfanfan.com
 *
 */
-
 
 .silk-disk {
 	background-image: url(../Images/Silk/disk.png) !important;

@@ -220,10 +220,10 @@ class tx_snowbabel_Extensions {
 			$ExtensionCssClass = '';
 
 			if($ExtensionLoaded) {
-				$ExtensionCssClass .= 'ExtensionLoaded';
+				$ExtensionCssClass .= 'extension-loaded';
 			}
 			else {
-				$ExtensionCssClass .= 'ExtensionInstalled';
+				$ExtensionCssClass .= 'extension-installed';
 			}
 
 				// Add Extension Data
