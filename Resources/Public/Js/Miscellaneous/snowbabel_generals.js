@@ -202,113 +202,21 @@ TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit = function() {
 };
 
 /**
- * function is defined in metadata -> JSON -> string
+ * function is defined in metadata -> see listview
  * Ext will automatically look in the Ext.util.Format namespace
  * when specifying a string for a renderer
- *
- * @param value
- * @param p
- * @param records
- * @param rowIndex
- * @param colIndex
  */
-/*
-Ext.util.Format.CellStatusDefault = function (value, p, records, rowIndex, colIndex) {
+Ext.util.Format.CellPreRenderer = function (value, p, records, rowIndex, colIndex, store) {
 
 		// Define Configuration
-	var Configuration = new Array();
-	Configuration['Css'] =		'';
-	Configuration['Qtip'] =		'';
-	Configuration['Qtitle'] =	'';
-
-		// Get Language Key
-	var ListView    = Ext.getCmp('ListViewGrid');
-	var ColumnModel = ListView.getColumnModel();
-	var ColumnDataIndex = ColumnModel.getDataIndex(colIndex);
-	var LanguageKey = ColumnDataIndex.replace(/labelText/, "");
-
-		// Set Backup Status
-	Configuration = TYPO3.Snowbabel.Generals.SetStatusBackup(Configuration, LanguageKey, records);
-
-		// Set Original Status
-	Configuration = TYPO3.Snowbabel.Generals.SetStatusOriginal(Configuration, LanguageKey, records);
+	var Css		= '';
+	var qTitle	= records.data.LabelName;
+	var qTip	= value;
 
 		// Set Stati From Above To Css & Quicktip
-	p.css = Configuration['Css'];
-	p.attr = 'ext:qtip="' + Configuration['Qtip'] + '" ext:qtitle="' + Configuration['Qtitle'] + '"';
+	p.css = Css;
+	p.attr = 'ext:qtip="' + qTip + '" ext:qtitle="' + qTitle + '"';
 
 	return value;
+
 };
-*/
-
-/**
- *
- * @param Configuration
- * @param LanguageKey
- * @param Records
- */
-/*
-TYPO3.Snowbabel.Generals.SetStatusBackup = function(Configuration, LanguageKey, Records) {
-
-		// Changes Css To Show BACKUP Status
-	switch (Records.data['LabelStatusTranslation' + LanguageKey]) {
-		case 0:
-			Configuration['Css'] = Configuration['Css'] + 			'statOk';
-			Configuration['Qtip'] = Configuration['Qtip'] + 		TYPO3.lang.translation_listview_StatusOkQtip;
-			Configuration['Qtitle'] = Configuration['Qtitle'] +		TYPO3.lang.translation_listview_StatusQtitle;
-
-			break;
-		case 1:
-			Configuration['Css'] = Configuration['Css'] +			'statBlank';
-			Configuration['Qtip'] = Configuration['Qtip'] +			TYPO3.lang.translation_listview_StatusBlankQtip;
-			Configuration['Qtitle'] = Configuration['Qtitle'] +		TYPO3.lang.translation_listview_StatusQtitle;
-			break;
-		case 2:
-			Configuration['Css'] = Configuration['Css'] +			'statUnlike';
-			Configuration['Qtip'] = Configuration['Qtip'] +			TYPO3.lang.translation_listview_StatusUnlikeQtip + '<br><b>Backup:</b><br> ' + Records.data['LabelStatusDb' + LanguageKey];
-			Configuration['Qtitle'] = Configuration['Qtitle'] +		TYPO3.lang.translation_listview_StatusQtitle;
-			break;
-		case 3:
-			Configuration['Css'] = Configuration['Css'] +			'statUndefined';
-			Configuration['Qtip'] = Configuration['Qtip'] +			TYPO3.lang.translation_listview_StatusUndefinedQtip;
-			Configuration['Qtitle'] = Configuration['Qtitle'] +		TYPO3.lang.translation_listview_StatusQtitle;
-			break;
-		case 4:
-			Configuration['Css'] = Configuration['Css'] +			'statNoBackup';
-			Configuration['Qtip'] = Configuration['Qtip'] +			TYPO3.lang.translation_listview_StatusNoBackupQtip;
-			Configuration['Qtitle'] = Configuration['Qtitle'] +		TYPO3.lang.translation_listview_StatusQtitle;
-			break;
-	}
-
-	return Configuration;
-};
-*/
-
-/**
- *
- * @param Configuration
- * @param LanguageKey
- * @param Records
- */
-/*
-TYPO3.Snowbabel.Generals.SetStatusOriginal = function(Configuration, LanguageKey, Records) {
-
-		// Changes Css To Show ORIGINAL Status
-	switch (Records.data['LabelStatusOriginal' + LanguageKey]) {
-		case 0:
-			Configuration['Css'] = Configuration['Css'] +			' origOk';
-			Configuration['Qtip'] = Configuration['Qtip'] +			'<br><b>' + TYPO3.lang.translation_listview_StatusOriginal + '</b><br> ' + TYPO3.lang.translation_listview_StatusOriginalQtipOk;
-			break;
-		case 1:
-			Configuration['Css'] = Configuration['Css'] +			' origChanged';
-			Configuration['Qtip'] = Configuration['Qtip'] +			'<br><b>' + TYPO3.lang.translation_listview_StatusOriginal + '</b><br> ' + TYPO3.lang.translation_listview_StatusOriginalQtipChanged;
-			break;
-		case 2:
-			Configuration['Css'] = Configuration['Css'] +			' origUnknown';
-			Configuration['Qtip'] = Configuration['Qtip'] +			'<br><b>' + TYPO3.lang.translation_listview_StatusOriginal + '</b><br> ' + TYPO3.lang.translation_listview_StatusOriginalQtipUnknown;
-			break;
-	}
-
-	return Configuration;
-};
-*/

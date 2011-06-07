@@ -334,7 +334,8 @@ class tx_snowbabel_Labels {
 								'grow' => true,
 								'growMin' => 30,
 								'growMax' => 200
-							)
+							),
+							'renderer' => 'CellPreRenderer'
 					);
 
 					array_push($MetaData['columns'], $addColumn);
