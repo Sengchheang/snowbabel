@@ -415,7 +415,7 @@ class tx_snowbabel_Configuration {
 		$ExtjsParams['SystemExtensionPath']			= $this->configuration['Extjs']['SystemExtensionPath'];
 
 		$ExtjsParams['ShowLocalExtensions']			= $this->configuration['Extjs']['ShowLocalExtensions'];
-		$ExtjsParams['ShowSystemExtension']			= $this->configuration['Extjs']['ShowSystemExtension'];
+		$ExtjsParams['ShowSystemExtensions']			= $this->configuration['Extjs']['ShowSystemExtensions'];
 		$ExtjsParams['ShowGlobalExtensions']		= $this->configuration['Extjs']['ShowGlobalExtensions'];
 
 		$ExtjsParams['ShowOnlyLoadedExtensions']	= $this->configuration['Extjs']['ShowOnlyLoadedExtensions'];

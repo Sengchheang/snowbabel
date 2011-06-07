@@ -197,7 +197,7 @@ class tx_snowbabel_ExtDirectServer {
 		$FormData['data']['GlobalExtensionPath']		= $this->confObj->getApplicationConfiguration('GlobalExtensionPath');
 
 		$FormData['data']['ShowLocalExtensions']		= $this->confObj->getApplicationConfiguration('ShowLocalExtensions') ? 1 : 0;
-		$FormData['data']['ShowSystemExtension']		= $this->confObj->getApplicationConfiguration('ShowSystemExtension') ? 1 : 0;
+		$FormData['data']['ShowSystemExtensions']		= $this->confObj->getApplicationConfiguration('ShowSystemExtensions') ? 1 : 0;
 		$FormData['data']['ShowGlobalExtensions']		= $this->confObj->getApplicationConfiguration('ShowGlobalExtensions') ? 1 : 0;
 
 		$FormData['data']['ShowOnlyLoadedExtensions']	= $this->confObj->getApplicationConfiguration('ShowOnlyLoadedExtensions') ? 1 : 0;

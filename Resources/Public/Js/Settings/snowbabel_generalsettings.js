@@ -163,7 +163,7 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 					},{
 						xtype: 'checkbox',
 						fieldLabel: TYPO3.lang.settings_formlabel_ShowSystemExtensions,
-						name: 'ShowSystemExtension',
+						name: 'ShowSystemExtensions',
 						listeners: ({
 							'check': function() {
 		//						TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
