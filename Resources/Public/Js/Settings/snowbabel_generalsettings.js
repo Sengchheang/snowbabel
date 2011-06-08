@@ -67,6 +67,7 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 			items: {
 				xtype: 'tabpanel',
 				activeTab: 0,
+				deferredRender: false,
 				defaults:{autoHeight:true, bodyStyle:'padding:10px'},
 				items: [{
 					title: TYPO3.lang.settings_formtab_Pathes,
@@ -232,6 +233,7 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 						iconTop: 'arrow_up.png',
 						iconBottom: 'arrow_down.png',
 						ddReorder: true,
+						width: 550,
 						multiselects: [{
 							legend: TYPO3.lang.settings_formlabel_AddedLanguages_Available,
 							style: 'background-color:white',
