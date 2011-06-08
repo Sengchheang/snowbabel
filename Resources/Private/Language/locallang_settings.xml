@@ -34,6 +34,11 @@
 
 			<label index="settings_formtooltip_Save">Save Settings Below</label>
 
+			<label index="settings_msg_SubmitOkTitle">Saved</label>
+			<label index="settings_msg_SubmitOkMessage">Configuration correctly saved</label>
+			<label index="settings_msg_SubmitErrorTitle">Not Saved</label>
+			<label index="settings_msg_SubmitErrorMessage">Please try to save configuration again</label>
+
 		</languageKey>
 
 	</data>

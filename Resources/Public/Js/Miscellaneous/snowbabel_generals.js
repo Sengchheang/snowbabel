@@ -116,7 +116,7 @@ TYPO3.Snowbabel.Generals.ActionController = function(ActionParams) {
 	}
 
 	Store.load({
-		callback: function() {
+		callback: function(r, options, success) {
 
 			if(ActionParams['ActionKey'] == 'LanguageSelection') {
 				var LoadParams = new Array();
@@ -127,7 +127,14 @@ TYPO3.Snowbabel.Generals.ActionController = function(ActionParams) {
 				TYPO3.Snowbabel.Generals.LoadListView(LoadParams);
 			}
 			else if(ActionParams['ActionKey'] == 'ListView') {
-				ActionParams['Record'].commit();
+
+				if(success) {
+					ActionParams['Record'].commit();
+					TYPO3.Snowbabel.Generals.ShowMessage(2, TYPO3.lang.translation_msg_SaveOkTitle, TYPO3.lang.translation_msg_SaveOkMessage + ' ' + ActionParams['LabelValue'], 1);
+				}
+				else {
+					TYPO3.Snowbabel.Generals.ShowMessage(4, TYPO3.lang.translation_msg_SaveErrorTitle, TYPO3.lang.translation_msg_SaveErrorMessage + ' ' + ActionParams['LabelValue'], 3);
+				}
 			}
 		}
 	});
@@ -195,9 +202,32 @@ TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit = function() {
 	var Form = Ext.getCmp('GeneralSettingsForm').getForm();
 
 	Form.submit({
-			// TODO: translation
-		//waitMsg: 'Save settings...'
+
+		success: function(form, action) {
+			TYPO3.Snowbabel.Generals.ShowMessage(2, TYPO3.lang.settings_msg_SubmitOkTitle, TYPO3.lang.settings_msg_SubmitOkMessage, 1)
+		},
+
+		failure: function(form,action) {
+			TYPO3.Snowbabel.Generals.ShowMessage(4, TYPO3.lang.settings_msg_SubmitErrorTitle, TYPO3.lang.settings_msg_SubmitErrorMessage, 3)
+		}
+
 	});
+
+};
+
+/**
+ * Shows popup
+ * @param int severity (0=notice, 1=information, 2=ok, 3=warning, 4=error)
+ * @param string title
+ * @param string message
+ * @param float duration in sec (default 5)
+ */
+TYPO3.Snowbabel.Generals.ShowMessage = function(severity, title, message, duration) {
+
+		// Check If Flashmessages Are Available
+	if (typeof TYPO3.Flashmessage === "object") {
+		TYPO3.Flashmessage.display(severity, title, message, duration);
+	}
 
 };
 

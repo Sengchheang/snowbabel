@@ -52,6 +52,11 @@
 			<label index="translation_listview_StatusOriginalQtipChanged">StatusOriginalQtipChanged</label>
 			<label index="translation_listview_StatusOriginalQtipUnknown">StatusOriginalQtipUnknown</label>
 
+			<label index="translation_msg_SaveOkTitle">Saved</label>
+			<label index="translation_msg_SaveOkMessage">Following value correctly saved:</label>
+			<label index="translation_msg_SaveErrorTitle">Not Saved</label>
+			<label index="translation_msg_SaveErrorMessage">Please try to save following label again:</label>
+
 		</languageKey>
 
 		<languageKey index="de" type="array">
