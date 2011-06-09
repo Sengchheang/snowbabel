@@ -227,6 +227,8 @@ class tx_snowbabel_Configuration {
 	 */
 	public function saveFormSettings() {
 
+		$LocalconfValues = array();
+
 			// Get Defined Extjs Values
 		$ExtjsParams = $this->getExtjsConfigurationFormSettings();
 
@@ -238,7 +240,7 @@ class tx_snowbabel_Configuration {
 				if($Value == 'on') $Value = 1;
 				if($Value == NULL) $Value = 0;
 
-				$this->db->setAppConf($Name, $Value);
+				$LocalconfValues[$Name] = $Value;
 
 			}
 		}
@@ -247,9 +249,10 @@ class tx_snowbabel_Configuration {
 		$Languages = $this->getExtjsConfiguration('AddedLanguages');
 
 		if($Languages) {
-			$this->db->setAppConf('AvailableLanguages', $Languages);
+			$LocalconfValues['AvailableLanguages'] = $Languages;
 		}
 
+		$this->writeLocalconfArray($LocalconfValues);
 	}
 
 
@@ -413,6 +416,7 @@ class tx_snowbabel_Configuration {
 
 		$ExtjsParams['LocalExtensionPath']			= $this->configuration['Extjs']['LocalExtensionPath'];
 		$ExtjsParams['SystemExtensionPath']			= $this->configuration['Extjs']['SystemExtensionPath'];
+		$ExtjsParams['GlobalExtensionPath']			= $this->configuration['Extjs']['GlobalExtensionPath'];
 
 		$ExtjsParams['ShowLocalExtensions']			= $this->configuration['Extjs']['ShowLocalExtensions'];
 		$ExtjsParams['ShowSystemExtensions']			= $this->configuration['Extjs']['ShowSystemExtensions'];
@@ -495,6 +499,24 @@ class tx_snowbabel_Configuration {
 	/**
 	 *
 	 */
+	private function writeLocalconfArray(array $LocalconfValues) {
+
+		// Instance of install tool
+		$instObj = new t3lib_install;
+		$instObj->allowUpdateLocalConf = 1;
+		$instObj->updateIdentity = 'Snowbabel';
+
+		// Get lines from localconf file
+		$lines = $instObj->writeToLocalconf_control();
+		$instObj->setValueInLocalconfFile($lines, '$TYPO3_CONF_VARS[\'EXT\'][\'extConf\'][\'snowbabel\']', serialize($LocalconfValues));
+		$instObj->writeToLocalconf_control($lines);
+
+		t3lib_extMgm::removeCacheFiles();
+	}
+
+	/**
+	 *
+	 */
 	private function loadConfiguration() {
 
 			// load db object
@@ -554,51 +576,88 @@ class tx_snowbabel_Configuration {
 	 */
 	private function loadApplicationConfiguration() {
 
+		$LocalconfValues = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['snowbabel']);
+
+		if(!is_array($LocalconfValues)) {
+
+			// Create Standardvalues
+			$LocalconfValues = array(
+
+				'LocalExtensionPath'		=> 'typo3conf/ext/',
+				'SystemExtensionPath'		=> 'typo3/sysext/',
+				'GlobalExtensionPath'		=> 'typo3/ext/',
+
+				'ShowLocalExtensions'		=> 1,
+				'ShowSystemExtensions'		=> 1,
+				'ShowGlobalExtensions'		=> 1,
+
+				'ShowOnlyLoadedExtensions'	=> 1,
+				'ShowTranslatedLanguages'	=> 0,
+
+				'BlacklistedExtensions'		=> 't3quixplorer,indexed_search,rtehtmlarea,t3editor,sv,sys_action,t3skin,belog,ics_awstats,ics_web_awstats,phpmyadmin,terminal,api_macmade,css_styled_content',
+				'BlacklistedCategories'		=> 'module,services,misc,be',
+
+				'XmlFilter'					=> 1,
+
+				'AutoBackupEditing'			=> 1,
+				'AutoBackupCronjob'			=> 0,
+
+				'CopyDefaultLanguage'		=> 1,
+
+				'AvailableLanguages'		=> '30'
+
+			);
+
+			$this->writeLocalconfArray($LocalconfValues);
+
+		}
+
 			// local extension path
-		$this->setApplicationConfiguration($this->db->getAppConfLocalExtensionPath(), 'LocalExtensionPath');
+		$this->setApplicationConfiguration($LocalconfValues['LocalExtensionPath'], 'LocalExtensionPath');
 			// system extension path
-		$this->setApplicationConfiguration($this->db->getAppConfSystemExtensionPath(), 'SystemExtensionPath');
+		$this->setApplicationConfiguration($LocalconfValues['SystemExtensionPath'], 'SystemExtensionPath');
 			// global extension path
-		$this->setApplicationConfiguration($this->db->getAppConfGlobalExtensionPath(), 'GlobalExtensionPath');
+		$this->setApplicationConfiguration($LocalconfValues['GlobalExtensionPath'], 'GlobalExtensionPath');
 
 
 			// show local extension
-		$this->setApplicationConfiguration($this->db->getAppConfShowLocalExtensions(), 'ShowLocalExtensions');
+		$this->setApplicationConfiguration($LocalconfValues['ShowLocalExtensions'], 'ShowLocalExtensions');
 			// show system extension
-		$this->setApplicationConfiguration($this->db->getAppConfShowSystemExtensions(), 'ShowSystemExtensions');
+		$this->setApplicationConfiguration($LocalconfValues['ShowSystemExtensions'], 'ShowSystemExtensions');
 			// show global extension
-		$this->setApplicationConfiguration($this->db->getAppConfShowGlobalExtensions(), 'ShowGlobalExtensions');
+		$this->setApplicationConfiguration($LocalconfValues['ShowGlobalExtensions'], 'ShowGlobalExtensions');
 
 
 			// show only loaded extension
-		$this->setApplicationConfiguration($this->db->getAppConfShowOnlyLoadedExtensions(), 'ShowOnlyLoadedExtensions');
+		$this->setApplicationConfiguration($LocalconfValues['ShowOnlyLoadedExtensions'], 'ShowOnlyLoadedExtensions');
 			// show translated languages
-		$this->setApplicationConfiguration($this->db->getAppConfShowTranslatedLanguages(), 'ShowTranslatedLanguages');
+		$this->setApplicationConfiguration($LocalconfValues['ShowTranslatedLanguages'], 'ShowTranslatedLanguages');
 
 
 			// blacklist extensions
-		$this->setApplicationConfiguration($this->db->getAppConfBlacklistedExtensions(), 'BlacklistedExtensions');
+		$this->setApplicationConfiguration($LocalconfValues['BlacklistedExtensions'], 'BlacklistedExtensions');
 			// blacklist categories
-		$this->setApplicationConfiguration($this->db->getAppConfBlacklistedCategories(), 'BlacklistedCategories');
+		$this->setApplicationConfiguration(explode(',',$LocalconfValues['BlacklistedCategories']), 'BlacklistedCategories');
 
 
 			// xml filter
-		$this->setApplicationConfiguration($this->db->getAppConfXmlFilter(), 'XmlFilter');
+		$this->setApplicationConfiguration($LocalconfValues['XmlFilter'], 'XmlFilter');
 
 
 			// auto backup during editing
-		$this->setApplicationConfiguration($this->db->getAppConfAutoBackupEditing(), 'AutoBackupEditing');
+		$this->setApplicationConfiguration($LocalconfValues['AutoBackupEditing'], 'AutoBackupEditing');
 			// auto backup during cronjob
-		$this->setApplicationConfiguration($this->db->getAppConfAutoBackupCronjob(), 'AutoBackupCronjob');
+		$this->setApplicationConfiguration($LocalconfValues['AutoBackupCronjob'], 'AutoBackupCronjob');
 
 
 			// copy default language to english (en)
-		$this->setApplicationConfiguration($this->db->getAppConfCopyDefaultLanguage(), 'CopyDefaultLanguage');
+		$this->setApplicationConfiguration($LocalconfValues['CopyDefaultLanguage'], 'CopyDefaultLanguage');
 
 
 			// load available languages
 		$this->setApplicationConfiguration(
 			$this->db->getAppConfAvailableLanguages(
+				$LocalconfValues['AvailableLanguages'],
 				$this->getApplicationConfiguration('ShowTranslatedLanguages')
 			),
 			'AvailableLanguages'
