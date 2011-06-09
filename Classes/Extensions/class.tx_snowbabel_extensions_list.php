@@ -301,11 +301,14 @@ class tx_snowbabel_Extensions {
         if(is_array($TempFiles2)) {
             foreach($TempFiles2 as $Key => $File) {
 
-                array_push($Files, array(
-                    'FilePath'  	=> $TempFiles1[$Key],
-                    'FileKey'   	=> $TempFiles2[$Key],
-					'FileLocation'	=> $Extension['ExtensionLocation']
-                ));
+					// Check Name Convention 'locallang'
+				if(strstr($TempFiles2[$Key], 'locallang') !== false) {
+					array_push($Files, array(
+						'FilePath'  	=> $TempFiles1[$Key],
+						'FileKey'   	=> $TempFiles2[$Key],
+						'FileLocation'	=> $Extension['ExtensionLocation']
+					));
+				}
 
             }
         }
