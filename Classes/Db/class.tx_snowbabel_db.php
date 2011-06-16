@@ -314,23 +314,6 @@ class tx_snowbabel_Db {
 	/**
 	 *
 	 */
-	public function insertAppConf($Name, $StandardValue) {
-
-		$this->db->exec_INSERTquery(
-			$table = 'tx_snowbabel_conf',
-			$fields_values = array(
-				'tstamp' => time(),
-				'crdate' => time(),
-				'confname' => $Name,
-				'confvalue' => $StandardValue
-			)
-		);
-
-	}
-
-	/**
-	 *
-	 */
 	public function insertUserConfCheck($BeUserId) {
 
 		$insert = $this->db->exec_INSERTquery(
