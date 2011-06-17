@@ -73,6 +73,7 @@ TYPO3.Snowbabel.ListView = Ext.extend(Ext.Panel , {
 			enableHdMenu: false,
 			loadMask: true,
 			border: false,
+			stripeRows: true,
 			columns:[],
 			listeners: ({
 
