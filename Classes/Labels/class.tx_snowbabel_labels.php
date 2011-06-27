@@ -328,6 +328,7 @@ class tx_snowbabel_Labels {
 							'header' => $Language['LanguageName'],
 							'dataIndex' => 'Label' . strtoupper($Language['LanguageKey']),
 							'sortable' => true,
+							'id' => 'editable',
 							'editor' => array (
 								'xtype' => 'textarea',
 								'multiline' => true,
