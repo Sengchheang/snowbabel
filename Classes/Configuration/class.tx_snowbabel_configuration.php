@@ -43,16 +43,6 @@ class tx_snowbabel_Configuration {
 	/**
 	 *
 	 */
-	private $lang;
-
-	/**
-	 *
-	 */
-	private $extensions;
-
-	/**
-	 *
-	 */
 	private $xmlPath = 'snowbabel/Resources/Private/Language/locallang_translation.xml';
 
 	/**
@@ -263,6 +253,13 @@ class tx_snowbabel_Configuration {
 	/**
 	 *
 	 */
+	public function getDb() {
+		return $this->db;
+	}
+
+	/**
+	 *
+	 */
 	public function getLL($LabelName) {
 
 			// use typo3 system function
@@ -419,7 +416,7 @@ class tx_snowbabel_Configuration {
 		$ExtjsParams['GlobalExtensionPath']			= $this->configuration['Extjs']['GlobalExtensionPath'];
 
 		$ExtjsParams['ShowLocalExtensions']			= $this->configuration['Extjs']['ShowLocalExtensions'];
-		$ExtjsParams['ShowSystemExtensions']			= $this->configuration['Extjs']['ShowSystemExtensions'];
+		$ExtjsParams['ShowSystemExtensions']		= $this->configuration['Extjs']['ShowSystemExtensions'];
 		$ExtjsParams['ShowGlobalExtensions']		= $this->configuration['Extjs']['ShowGlobalExtensions'];
 
 		$ExtjsParams['ShowOnlyLoadedExtensions']	= $this->configuration['Extjs']['ShowOnlyLoadedExtensions'];
@@ -434,6 +431,8 @@ class tx_snowbabel_Configuration {
 		$ExtjsParams['AutoBackupCronjob']			= $this->configuration['Extjs']['AutoBackupCronjob'];
 
 		$ExtjsParams['CopyDefaultLanguage']			= $this->configuration['Extjs']['CopyDefaultLanguage'];
+
+		$ExtjsParams['CacheActivated']				= $this->configuration['Extjs']['CacheActivated'];
 
 		return $ExtjsParams;
 	}
@@ -604,7 +603,9 @@ class tx_snowbabel_Configuration {
 
 				'CopyDefaultLanguage'		=> 1,
 
-				'AvailableLanguages'		=> '30'
+				'AvailableLanguages'		=> '30',
+
+				'CacheActivated'			=> 0
 
 			);
 
@@ -663,6 +664,8 @@ class tx_snowbabel_Configuration {
 			'AvailableLanguages'
 		);
 
+			// activated cache
+		$this->setApplicationConfiguration($LocalconfValues['CacheActivated'], 'CacheActivated');
 	}
 
 	/**

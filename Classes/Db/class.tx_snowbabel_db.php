@@ -39,7 +39,7 @@ class tx_snowbabel_Db {
 	/**
 	 *
 	 */
-  public function __construct() {
+	public function __construct() {
 			// set typo3 db
 		$this->db =& $GLOBALS['TYPO3_DB'];
 	}
@@ -289,6 +289,39 @@ class tx_snowbabel_Db {
 
 	}
 
+	/**
+	 *
+	 */
+	public function getCachedExtensions() {
+
+		$Select = $this->db->exec_SELECTgetRows(
+			'*',
+			'tx_snowbabel_cache_extensions',
+			'',
+			'',
+			'ExtensionKey',
+			''
+		);
+
+		if(!count($Select)) {
+
+			return NULL;
+
+		}
+		else {
+
+			if(is_array($Select)) {
+
+				return $Select;
+
+			}
+			else {
+				return NULL;
+			}
+		}
+
+	}
+
 ///////////////////////////////////////////////////////
 // update db - set
 ///////////////////////////////////////////////////////
@@ -324,6 +357,46 @@ class tx_snowbabel_Db {
 					'be_users_uid' => $BeUserId
 			)
 		);
+
+	}
+
+	/**
+	 *
+	 */
+	public function insertCachedExtensions($Extensions) {
+
+		if(is_array($Extensions) && count($Extensions) > 0) {
+
+			foreach($Extensions as $Extension) {
+
+				$insert = $this->db->exec_INSERTquery(
+					$table = 'tx_snowbabel_cache_extensions',
+					$fields_values = array(
+							'tstamp' => time(),
+							'crdate' => time(),
+							'ExtensionKey' => $Extension
+					)
+				);
+
+			}
+
+		}
+
+	}
+
+///////////////////////////////////////////////////////
+// delete db - delete
+///////////////////////////////////////////////////////
+
+	/**
+	 *
+	 */
+	public function deleteCachedExtensions() {
+
+				$delete = $this->db->exec_DELETEquery(
+					$table = 'tx_snowbabel_cache_extensions',
+					$where = ''
+				);
 
 	}
 }

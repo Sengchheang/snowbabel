@@ -39,6 +39,11 @@ class tx_snowbabel_Extensions {
 	/**
 	 *
 	 */
+	private $cacheObj;
+
+	/**
+	 *
+	 */
 	private $debug;
 
 	/**
@@ -89,6 +94,11 @@ class tx_snowbabel_Extensions {
 	/**
 	 *
 	 */
+	private $CacheActivated;
+
+	/**
+	 *
+	 */
 	private $SitePath;
 
 	/**
@@ -134,6 +144,8 @@ class tx_snowbabel_Extensions {
 		$this->SystemExtensionPath = $this->confObj->getApplicationConfiguration('SystemExtensionPath');
 		$this->GlobalExtensionPath = $this->confObj->getApplicationConfiguration('GlobalExtensionPath');
 
+		$this->CacheActivated = $this->confObj->getApplicationConfiguration('CacheActivated');
+
 			// get Extension params
 		$this->SitePath = $this->confObj->getExtensionConfiguration('SitePath');
 		$this->LoadedExtensions = $this->confObj->getExtensionConfigurationLoadedExtensions();
@@ -142,6 +154,9 @@ class tx_snowbabel_Extensions {
 		$this->IsAdmin = $this->confObj->getUserConfigurationIsAdmin();
 		$this->PermittedExtensions = $this->confObj->getUserConfiguration('PermittedExtensions');
 		$this->AllocatedGroups = $this->confObj->getUserConfiguration('AllocatedGroups');
+
+			// Cache
+		$this->getCacheObject();
 	}
 
 	/**
@@ -149,13 +164,26 @@ class tx_snowbabel_Extensions {
 	 */
 	public function getExtensions($OutputData = false) {
 
-		$Extensions = array();
+		$Extensions		= array();
+		$ExtensionList	= false;
 
-			// Get All Extensions From local/global/system Directory
-		$ExtensionList = $this->getExtensionList();
+			// Init Cache
+		if($this->CacheActivated) {
+			$ExtensionList = $this->cacheObj->readCache('Extensions');
+		}
 
-			// Merge Data To One Array
-		$ExtensionList = $this->mergeExtensionList($ExtensionList);
+			// Cache Not Available
+		if(!$ExtensionList) {
+				// Get All Extensions From local/global/system Directory
+			$ExtensionList = $this->getExtensionList();
+
+				// Merge Data To One Array
+			$ExtensionList = $this->mergeExtensionList($ExtensionList);
+
+			if($this->CacheActivated) {
+				$this->cacheObj->writeCache('Extensions', $ExtensionList);
+			}
+		}
 
 			// Remove Not Allowed Extensions If User Is No Admin
 		if(!$this->IsAdmin) {
@@ -646,6 +674,18 @@ class tx_snowbabel_Extensions {
 
 		return $Extensions;
 	}
+
+	/**
+	 *
+	 */
+	private function getCacheObject() {
+		if($this->CacheActivated) {
+			if (!is_object($this->cacheObj) && !($this->cacheObj instanceof tx_snowbabel_cache)) {
+				$this->cacheObj = t3lib_div::makeInstance('tx_snowbabel_cache', $this->confObj);
+			}
+		}
+	}
+
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/snowbabel/Classes/Extensions/class.tx_snowbabel_extensions_list.php'])	{

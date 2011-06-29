@@ -213,6 +213,8 @@ class tx_snowbabel_ExtDirectServer {
 
 		$FormData['data']['CopyDefaultLanguage']		= $this->confObj->getApplicationConfiguration('CopyDefaultLanguage') ? 1 : 0;
 
+		$FormData['data']['CacheActivated']				= $this->confObj->getApplicationConfiguration('CacheActivated') ? 1 : 0;
+
 		return $FormData;
 
 	}

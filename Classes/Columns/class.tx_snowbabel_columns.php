@@ -54,7 +54,7 @@ class tx_snowbabel_Columns {
 	/**
 	 *
 	 */
-  public function __construct($confObj) {
+  	public function __construct($confObj) {
 
 		$this->confObj = $confObj;
 

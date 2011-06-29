@@ -12,6 +12,7 @@
 			<label index="settings_formtab_DisplayOptions">Display Options</label>
 			<label index="settings_formtab_Editing">Editing</label>
 			<label index="settings_formtab_Languages">Languages</label>
+			<label index="settings_formtab_Experimental">Experimental</label>
 
 			<label index="settings_formlabel_LocalExtensionPath">Local Extensions</label>
 			<label index="settings_formlabel_SystemExtensionPath">System Extensions</label>
@@ -29,6 +30,7 @@
 			<label index="settings_formlabel_AddedLanguages">Application Languages</label>
 			<label index="settings_formlabel_AddedLanguages_Available">Available</label>
 			<label index="settings_formlabel_AddedLanguages_Added">Added</label>
+			<label index="settings_formlabel_CacheActivated">Cache</label>
 
 			<label index="settings_formbutton_Save">Save</label>
 
