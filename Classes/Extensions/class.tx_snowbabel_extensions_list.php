@@ -172,7 +172,7 @@ class tx_snowbabel_Extensions {
 			$ExtensionList = $this->cacheObj->readCache('Extensions');
 		}
 
-			// Cache Not Available
+			// No Cache Available
 		if(!$ExtensionList) {
 				// Get All Extensions From local/global/system Directory
 			$ExtensionList = $this->getExtensionList();
@@ -220,55 +220,71 @@ class tx_snowbabel_Extensions {
 
 		if(is_string($ExtensionKey)) {
 
-				// Is Extension Loaded
-			$ExtensionLoaded = $this->isExtensionLoaded($ExtensionKey);
+			$ExtensionData = false;
 
-				// Show Only Loaded Extensions If Activated
-			if($this->ShowOnlyLoadedExtensions) {
-					// If Not Loaded Return
-				if(!$ExtensionLoaded) return false;
+				// Init Cache
+			if($this->CacheActivated) {
+				$ExtensionData = $this->cacheObj->readCache('ExtensionData', $ExtensionKey);
 			}
 
-				// Locate Where Extension Is Installed
-			$ExtensionPath = $this->getExtensionLocation($ExtensionKey);
+				// No Cache Available
+			if(!$ExtensionData) {
 
-				// Get Extension Data From EmConf
-			$EMConf = $this->getEMConf($ExtensionPath['Path']);
+					// Is Extension Loaded
+				$ExtensionLoaded = $this->isExtensionLoaded($ExtensionKey);
 
-				// Is Extension In Blacklisted Category
-			$ExtensionIsBlacklisted = $this->isCategoryBlacklisted($EMConf['ExtensionCategory']);
+					// Show Only Loaded Extensions If Activated
+				if($this->ShowOnlyLoadedExtensions) {
+						// If Not Loaded Return
+					if(!$ExtensionLoaded) return false;
+				}
 
-				// If Blacklisted Category Return
-			if($ExtensionIsBlacklisted) return false;
+					// Locate Where Extension Is Installed
+				$ExtensionPath = $this->getExtensionLocation($ExtensionKey);
 
-				// Get Extension Icon
-			$ExtensionIcon = $this->getExtensionIcon($ExtensionPath, $ExtensionKey);
+					// Get Extension Data From EmConf
+				$EMConf = $this->getEMConf($ExtensionPath['Path']);
 
-				// Add CSS Class
-			$ExtensionCssClass = '';
+					// Is Extension In Blacklisted Category
+				$ExtensionIsBlacklisted = $this->isCategoryBlacklisted($EMConf['ExtensionCategory']);
 
-			if($ExtensionLoaded) {
-				$ExtensionCssClass .= 'extension-loaded';
+					// If Blacklisted Category Return
+				if($ExtensionIsBlacklisted) return false;
+
+					// Get Extension Icon
+				$ExtensionIcon = $this->getExtensionIcon($ExtensionPath, $ExtensionKey);
+
+					// Add CSS Class
+				$ExtensionCssClass = '';
+
+				if($ExtensionLoaded) {
+					$ExtensionCssClass .= 'extension-loaded';
+				}
+				else {
+					$ExtensionCssClass .= 'extension-installed';
+				}
+
+					// Add Extension Data
+				$ExtensionData = array();
+				$ExtensionData['ExtensionKey']              = $ExtensionKey;
+				$ExtensionData['ExtensionTitle']            = $EMConf['ExtensionTitle'] ? $this->getCleanedString($EMConf['ExtensionTitle']) : $ExtensionKey;
+				$ExtensionData['ExtensionDescription']      = $this->getCleanedString($EMConf['ExtensionDescription']);
+				$ExtensionData['ExtensionCategory']         = $this->getCleanedString($EMConf['ExtensionCategory']);
+				$ExtensionData['ExtensionIcon']             = $ExtensionIcon;
+				$ExtensionData['ExtensionCss']              = $ExtensionCssClass;
+				$ExtensionData['ExtensionLocation']			= $ExtensionPath['Location'];
+				$ExtensionData['ExtensionPath']        		= $ExtensionPath['Path'];
+
+				if($this->CacheActivated) {
+					$this->cacheObj->writeCache('ExtensionData', $ExtensionData);
+				}
 			}
-			else {
-				$ExtensionCssClass .= 'extension-installed';
+
+				// Do Not Get Back Following Data Because It Will Be Displayed
+			if($OutputData) {
+				unset($ExtensionData['ExtensionLocation']);
+				unset($ExtensionData['ExtensionPath']);
 			}
-
-				// Add Extension Data
-			$ExtensionData = array();
-			$ExtensionData['ExtensionKey']              = $ExtensionKey;
-			$ExtensionData['ExtensionTitle']            = $EMConf['ExtensionTitle'] ? $this->getCleanedString($EMConf['ExtensionTitle']) : $ExtensionKey;
-			$ExtensionData['ExtensionDescription']      = $this->getCleanedString($EMConf['ExtensionDescription']);
-			$ExtensionData['ExtensionCategory']         = $this->getCleanedString($EMConf['ExtensionCategory']);
-			$ExtensionData['ExtensionIcon']             = $ExtensionIcon;
-			$ExtensionData['ExtensionCss']              = $ExtensionCssClass;
-
-                // Do Not Get Back Following Data Because It Will Be Displayed
-            if(!$OutputData) {
-				$ExtensionData['ExtensionLocation']		= $ExtensionPath['Location'];
-                $ExtensionData['ExtensionPath']         = $ExtensionPath['Path'];
-            }
-
 
 			return $ExtensionData;
 

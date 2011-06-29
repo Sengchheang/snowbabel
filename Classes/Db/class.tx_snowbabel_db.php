@@ -295,12 +295,45 @@ class tx_snowbabel_Db {
 	public function getCachedExtensions() {
 
 		$Select = $this->db->exec_SELECTgetRows(
-			'*',
+			'crdate,ExtensionKey',
 			'tx_snowbabel_cache_extensions',
 			'',
 			'',
 			'ExtensionKey',
 			''
+		);
+
+		if(!count($Select)) {
+
+			return NULL;
+
+		}
+		else {
+
+			if(is_array($Select)) {
+
+				return $Select;
+
+			}
+			else {
+				return NULL;
+			}
+		}
+
+	}
+
+	/**
+	 *
+	 */
+	public function getCachedExtensionData($ExtensionKey) {
+
+		$Select = $this->db->exec_SELECTgetRows(
+			'*',
+			'tx_snowbabel_cache_extensions',
+			'ExtensionKey=\'' . $ExtensionKey . '\' AND ExtensionLocation != \'\'',
+			'',
+			'',
+			'1'
 		);
 
 		if(!count($Select)) {
@@ -336,6 +369,23 @@ class tx_snowbabel_Db {
 			$fields_values = array(
 				'tstamp'=>time(),
 				$Name => $Value
+			)
+		);
+	}
+
+	public function updateCachedExtensionData($ExtensionData) {
+		$this->db->exec_UPDATEquery(
+			$table = 'tx_snowbabel_cache_extensions',
+			$where_clause = 'ExtensionKey=\'' . $ExtensionData['ExtensionKey'] . '\'',
+			$fields_values = array(
+				'tstamp'=>time(),
+				'ExtensionCategory'		=> $ExtensionData['ExtensionCategory'],
+				'ExtensionTitle'		=> $ExtensionData['ExtensionTitle'],
+				'ExtensionDescription'	=> $ExtensionData['ExtensionDescription'],
+				'ExtensionIcon'			=> $ExtensionData['ExtensionIcon'],
+				'ExtensionCss'			=> $ExtensionData['ExtensionCss'],
+				'ExtensionLocation'		=> $ExtensionData['ExtensionLocation'],
+				'ExtensionPath'			=> $ExtensionData['ExtensionPath'],
 			)
 		);
 	}
@@ -391,7 +441,7 @@ class tx_snowbabel_Db {
 	/**
 	 *
 	 */
-	public function deleteCachedExtensions() {
+	public function deleteCachedExtensions($ExtensionKey) {
 
 				$delete = $this->db->exec_DELETEquery(
 					$table = 'tx_snowbabel_cache_extensions',

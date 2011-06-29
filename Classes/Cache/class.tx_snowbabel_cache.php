@@ -32,22 +32,22 @@
 class tx_snowbabel_Cache {
 
 	/**
-	 *
+	 * @var
 	 */
 	private $confObj;
 
 	/**
-	 *
+	 * @var
 	 */
 	private $db;
 
 	/**
-	 *
+	 * @var
 	 */
 	private $debug;
 
 	/**
-	 *
+	 * @param  $confObj
 	 */
 	public function __construct($confObj) {
 
@@ -59,14 +59,23 @@ class tx_snowbabel_Cache {
 	}
 
 	/**
-	 *
+	 * @param  $Type
+	 * @param bool $Optional
+	 * @return bool
 	 */
-	public function readCache($Type) {
+	public function readCache($Type, $Optional=false) {
 
 		switch($Type) {
+
 			case 'Extensions':
 
-				$this->getCachedExtensions();
+				return $this->getCachedExtensions();
+
+				break;
+
+			case 'ExtensionData':
+
+				return $this->getCachedExtensionData($Optional);
 
 				break;
 
@@ -77,68 +86,199 @@ class tx_snowbabel_Cache {
 	}
 
 	/**
-	 *
+	 * @param  $Type
+	 * @param  $Data
+	 * @return void
 	 */
 	public function writeCache($Type, $Data) {
 
 		switch($Type) {
+
 			case 'Extensions':
 
-					// Delete Cache
-				$this->deleteCache($Type);
+				$this->writeCachedExtensions($Type, $Data);
 
-					// Write Cache
-				$this->db->insertCachedExtensions($Data);
+				break;
+
+			case 'ExtensionData':
+
+				$this->writeCachedExtensionData($Data);
+
 				break;
 		}
 
 	}
 
-	public function deleteCache($Type) {
+	/**
+	 * @param  $Type
+	 * @return void
+	 */
+	public function deleteCache($Type, $Optional=false) {
 
 		switch($Type) {
 			case 'Extensions':
 
-				$this->db->deleteCachedExtensions();
+				$this->deleteCachedExtensions();
+
 				break;
+
 		}
 
 	}
 
+	/**
+	 * @return array|bool
+	 */
 	private function getCachedExtensions() {
 
 			// Get Cached Data From Database
 		$tempExtensions = $this->db->getCachedExtensions();
 
-			// Check If Records Available
-		if(is_array($tempExtensions) && count($tempExtensions) > 0) {
+			// Check Records If Cache Is Ok
+		$CacheCheck = $this->checkCache($tempExtensions, true);
 
-				// TODO: CacheLivetime should be editable
-				// Set Cache Values
-			$CacheTime		= $tempExtensions[0]['tstamp'];
-			$CacheLifetime	= time() - (60 * 60);
-			$CurrentTime	= time();
+		if($CacheCheck) {
 
-				// Check First Record If Cache Is Ok
-			if($CacheTime <= $CurrentTime && $CacheTime >= $CacheLifetime) {
+				// Prepare Extension-Array For Return
+			$Extensions = array();
 
-					// Prepare Extension-Array For Return
-				$Extensions = array();
+			foreach($tempExtensions as $Extension) {
 
-				foreach($tempExtensions as $Extension) {
-
-					array_push($Extensions, $Extension['ExtensionKey']);
-
-				}
-
-				return $Extensions;
+				array_push($Extensions, $Extension['ExtensionKey']);
 
 			}
+
+			return $Extensions;
+
 		}
 
 		return false;
+
 	}
 
+	/**
+	 * @param  $Type
+	 * @param  $Data
+	 * @return void
+	 */
+	private function writeCachedExtensions($Type, $Data) {
+			// Delete Cache
+		$this->deleteCache($Type);
+
+			// Write Cache
+		$this->db->insertCachedExtensions($Data);
+
+	}
+
+	/**
+	 * @return void
+	 */
+	private function deleteCachedExtensions() {
+
+			// Delete Cache
+		$this->db->deleteCachedExtensions();
+
+	}
+
+	/**
+	 * @param  $ExtensionKey
+	 * @return array|bool
+	 */
+	private function getCachedExtensionData($ExtensionKey) {
+
+			// Get Cached Data From Database
+		$tempExtensionData = $this->db->getCachedExtensionData($ExtensionKey);
+
+			// Check Records If Cache Is Ok
+		$CacheCheck = $this->checkCache($tempExtensionData);
+
+		if($CacheCheck) {
+
+				// Prepare ExtensionData-Array For Return
+			$ExtensionData = array();
+
+			foreach($tempExtensionData as $Extension) {
+
+				$ExtensionData = array(
+					'ExtensionKey'			=> $Extension['ExtensionKey'],
+					'ExtensionCategory'		=> $Extension['ExtensionCategory'],
+					'ExtensionTitle'		=> $Extension['ExtensionTitle'],
+					'ExtensionDescription'	=> $Extension['ExtensionDescription'],
+					'ExtensionIcon'			=> $Extension['ExtensionIcon'],
+					'ExtensionCss'			=> $Extension['ExtensionCss'],
+					'ExtensionLocation'		=> $Extension['ExtensionLocation'],
+					'ExtensionPath' 		=> $Extension['ExtensionPath']
+				);
+
+			}
+
+			return $ExtensionData;
+
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * @param  $Type
+	 * @param  $Data
+	 * @return void
+	 */
+	private function writeCachedExtensionData($Data) {
+
+			// Update Cache
+		$this->db->updateCachedExtensionData($Data);
+
+	}
+
+	/**
+	 * @param  $CacheArray
+	 * @param bool $CheckCrdata
+	 * @return bool
+	 */
+	private function checkCache($CacheArray, $CheckCrdata=false) {
+
+			// Check If Records Available
+		if(is_array($CacheArray) && count($CacheArray) > 0) {
+
+			if($CheckCrdata) {
+				$CacheTime = $CacheArray[0]['crdate'];
+			}
+			else {
+				$CacheTime = $CacheArray[0]['tstamp'];
+			}
+
+				// Check First Record If Cache Is Ok
+			$CacheCheck = $this->checkCacheLifetime($CacheTime);
+			if($CacheCheck) return true;
+
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * @param  $CacheTime
+	 * @return bool
+	 */
+	private function checkCacheLifetime($CacheTime) {
+
+			// TODO: CacheLifetime should be editable
+			// Set Cache Values
+		$CacheLifetime	= time() - (60 * 60);
+		$CurrentTime	= time();
+
+			// Check First Record If Cache Is Ok
+		if($CacheTime <= $CurrentTime && $CacheTime >= $CacheLifetime) {
+			return true;
+		}
+		else {
+			return false;
+		}
+
+	}
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/snowbabel/Classes/Cache/class.tx_snowbabel_cache.php'])	{

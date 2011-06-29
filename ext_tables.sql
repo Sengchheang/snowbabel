@@ -39,7 +39,13 @@ CREATE TABLE tx_snowbabel_cache_extensions (
 	crdate int(11) DEFAULT '0' NOT NULL,
 
 	ExtensionKey tinytext NOT NULL,
+	ExtensionTitle tinytext NOT NULL,
+	ExtensionDescription text,
 	ExtensionCategory tinytext NOT NULL,
+	ExtensionIcon tinytext NOT NULL,
+	ExtensionCss tinytext NOT NULL,
+	ExtensionLocation tinytext NOT NULL,
+	ExtensionPath text,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)
