@@ -51,13 +51,17 @@ CREATE TABLE tx_snowbabel_cache_extensions (
 	KEY parent (pid)
 );
 
-CREATE TABLE tx_snowbabel_cache_extensionfiles (
+CREATE TABLE tx_snowbabel_cache_files (
 	uid int(11) NOT NULL auto_increment,
 	pid int(11) DEFAULT '0' NOT NULL,
 	tstamp int(11) DEFAULT '0' NOT NULL,
 	crdate int(11) DEFAULT '0' NOT NULL,
 
-	ExtensionFilePath tinytext NOT NULL,
+	ExtensionKey tinytext NOT NULL,
+	FilePath tinytext NOT NULL,
+	FilePath tinytext NOT NULL,
+	FileKey tinytext NOT NULL,
+	FileLocation tinytext NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)

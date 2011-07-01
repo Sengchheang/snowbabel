@@ -79,6 +79,12 @@ class tx_snowbabel_Cache {
 
 				break;
 
+			case 'Files':
+
+				return $this->getCachedFiles($Optional);
+
+				break;
+
 			default:
 				return false;
 		}
@@ -90,7 +96,7 @@ class tx_snowbabel_Cache {
 	 * @param  $Data
 	 * @return void
 	 */
-	public function writeCache($Type, $Data) {
+	public function writeCache($Type, $Data, $Optional=false) {
 
 		switch($Type) {
 
@@ -103,6 +109,12 @@ class tx_snowbabel_Cache {
 			case 'ExtensionData':
 
 				$this->writeCachedExtensionData($Data);
+
+				break;
+
+			case 'Files':
+
+				$this->writeCachedFiles($Type, $Data, $Optional);
 
 				break;
 		}
@@ -119,6 +131,12 @@ class tx_snowbabel_Cache {
 			case 'Extensions':
 
 				$this->deleteCachedExtensions();
+
+				break;
+
+			case 'Files':
+
+				$this->deleteCachedFiles($Optional);
 
 				break;
 
@@ -195,6 +213,7 @@ class tx_snowbabel_Cache {
 		if($CacheCheck) {
 
 				// Prepare ExtensionData-Array For Return
+				// Remove Database Fields -> tstamp, crdate etc
 			$ExtensionData = array();
 
 			foreach($tempExtensionData as $Extension) {
@@ -229,6 +248,69 @@ class tx_snowbabel_Cache {
 
 			// Update Cache
 		$this->db->updateCachedExtensionData($Data);
+
+	}
+
+	/**
+	 * @param  $ExtensionKey
+	 * @return array|bool
+	 */
+	private function getCachedFiles($ExtensionKey) {
+
+			// Get Cached Data From Database
+		$tempFiles = $this->db->getCachedFiles($ExtensionKey);
+
+			// Check Records If Cache Is Ok
+		$CacheCheck = $this->checkCache($tempFiles, true);
+
+		if($CacheCheck) {
+
+				// Prepare File-Array For Return
+				// Remove Database Fields -> tstamp, crdate etc
+			$Files = array();
+
+			foreach($tempFiles as $File) {
+
+				array_push($Files, array(
+					'FilePath'		=> $File['FilePath'],
+					'FileKey'		=> $File['FileKey'],
+					'FileLocation'	=> $File['FileLocation'],
+				));
+
+			}
+
+			return $Files;
+
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * @param  $Type
+	 * @param  $Data
+	 * @param  $ExtensionKey
+	 * @return void
+	 */
+	private function writeCachedFiles($Type, $Data, $ExtensionKey) {
+
+			// Delete Cache
+		$this->deleteCache($Type, $ExtensionKey);
+
+			// Write Cache
+		$this->db->insertCachedFiles($Data, $ExtensionKey);
+
+	}
+
+	/**
+	 * @param  $ExtensionKey
+	 * @return void
+	 */
+	private function deleteCachedFiles($ExtensionKey) {
+
+			// Delete Cache
+		$this->db->deleteCachedFiles($ExtensionKey);
 
 	}
 

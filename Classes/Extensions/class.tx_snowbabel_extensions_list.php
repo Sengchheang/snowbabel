@@ -321,41 +321,57 @@ class tx_snowbabel_Extensions {
      */
     public function getFiles($ExtensionKey) {
 
-        $Files = array();
+		$Files = false;
 
-            // Get Extension Data
-        $Extension = $this->getExtension($ExtensionKey);
+			// Init Cache
+		if($this->CacheActivated) {
+			$Files = $this->cacheObj->readCache('Files', $ExtensionKey);
+		}
 
-            // Get Extension Files
-        $TempFiles1 = t3lib_div::getAllFilesAndFoldersInPath(
-            array(),
-            $Extension['ExtensionPath'],
-            'xml',
-            0,
-            99,
-            '\.svn'
-        );
+			// No Cache Available
+		if(!$Files) {
 
-        $TempFiles2 = t3lib_div::removePrefixPathFromList(
-            $TempFiles1,
-            $Extension['ExtensionPath']
-        );
+			$Files = array();
 
-            // Adds New Keys
-        if(is_array($TempFiles2)) {
-            foreach($TempFiles2 as $Key => $File) {
+				// Get Extension Data
+			$Extension = $this->getExtension($ExtensionKey);
 
-					// Check Name Convention 'locallang'
-				if(strstr($TempFiles2[$Key], 'locallang') !== false) {
-					array_push($Files, array(
-						'FilePath'  	=> $TempFiles1[$Key],
-						'FileKey'   	=> $TempFiles2[$Key],
-						'FileLocation'	=> $Extension['ExtensionLocation']
-					));
+				// Get Extension Files
+			$TempFiles1 = t3lib_div::getAllFilesAndFoldersInPath(
+				array(),
+				$Extension['ExtensionPath'],
+				'xml',
+				0,
+				99,
+				'\.svn'
+			);
+
+			$TempFiles2 = t3lib_div::removePrefixPathFromList(
+				$TempFiles1,
+				$Extension['ExtensionPath']
+			);
+
+				// Adds New Keys
+			if(is_array($TempFiles2)) {
+				foreach($TempFiles2 as $Key => $File) {
+
+						// Check Name Convention 'locallang'
+					if(strstr($TempFiles2[$Key], 'locallang') !== false) {
+						array_push($Files, array(
+							'FilePath'  	=> $TempFiles1[$Key],
+							'FileKey'   	=> $TempFiles2[$Key],
+							'FileLocation'	=> $Extension['ExtensionLocation']
+						));
+					}
+
 				}
+			}
 
-            }
-        }
+				// Write Cache
+			if($this->CacheActivated) {
+				$this->cacheObj->writeCache('Files', $Files, $ExtensionKey);
+			}
+		}
 
         return $Files;
     }

@@ -355,6 +355,39 @@ class tx_snowbabel_Db {
 
 	}
 
+	/**
+	 *
+	 */
+	public function getCachedFiles($ExtensionKey) {
+
+		$Select = $this->db->exec_SELECTgetRows(
+			'*',
+			'tx_snowbabel_cache_files',
+			'ExtensionKey=\'' . $ExtensionKey . '\'',
+			'',
+			'',
+			''
+		);
+
+		if(!count($Select)) {
+
+			return NULL;
+
+		}
+		else {
+
+			if(is_array($Select)) {
+
+				return $Select;
+
+			}
+			else {
+				return NULL;
+			}
+		}
+
+	}
+
 ///////////////////////////////////////////////////////
 // update db - set
 ///////////////////////////////////////////////////////
@@ -402,9 +435,9 @@ class tx_snowbabel_Db {
 		$insert = $this->db->exec_INSERTquery(
 			$table = 'tx_snowbabel_users',
 			$fields_values = array(
-					'tstamp' => time(),
-					'crdate' => time(),
-					'be_users_uid' => $BeUserId
+				'tstamp'		=> time(),
+				'crdate'		=> time(),
+				'be_users_uid'	=> $BeUserId
 			)
 		);
 
@@ -422,9 +455,36 @@ class tx_snowbabel_Db {
 				$insert = $this->db->exec_INSERTquery(
 					$table = 'tx_snowbabel_cache_extensions',
 					$fields_values = array(
-							'tstamp' => time(),
-							'crdate' => time(),
-							'ExtensionKey' => $Extension
+						'tstamp'		=> time(),
+						'crdate'		=> time(),
+						'ExtensionKey'	=> $Extension
+					)
+				);
+
+			}
+
+		}
+
+	}
+
+	/**
+	 *
+	 */
+	public function insertCachedFiles($Files, $ExtensionKey) {
+
+		if(is_array($Files) && count($Files) > 0) {
+
+			foreach($Files as $File) {
+
+				$insert = $this->db->exec_INSERTquery(
+					$table = 'tx_snowbabel_cache_files',
+					$fields_values = array(
+						'tstamp'		=> time(),
+						'crdate'		=> time(),
+						'ExtensionKey'	=> $ExtensionKey,
+						'FilePath'		=> $File['FilePath'],
+						'FileKey'		=> $File['FileKey'],
+						'FileLocation'	=> $File['FileLocation'],
 					)
 				);
 
@@ -441,12 +501,24 @@ class tx_snowbabel_Db {
 	/**
 	 *
 	 */
-	public function deleteCachedExtensions($ExtensionKey) {
+	public function deleteCachedExtensions() {
 
-				$delete = $this->db->exec_DELETEquery(
-					$table = 'tx_snowbabel_cache_extensions',
-					$where = ''
-				);
+		$delete = $this->db->exec_DELETEquery(
+			$table = 'tx_snowbabel_cache_extensions',
+			$where = ''
+		);
+
+	}
+
+	/**
+	 *
+	 */
+	public function deleteCachedFiles($ExtensionKey) {
+
+		$delete = $this->db->exec_DELETEquery(
+			$table = 'tx_snowbabel_cache_files',
+			$where = 'ExtensionKey=\'' . $ExtensionKey . '\''
+		);
 
 	}
 }
