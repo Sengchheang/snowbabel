@@ -388,6 +388,72 @@ class tx_snowbabel_Db {
 
 	}
 
+	/**
+	 *
+	 */
+	public function getCachedLabels($ExtensionKey) {
+
+		$Select = $this->db->exec_SELECTgetRows(
+			'*',
+			'tx_snowbabel_cache_labels',
+			'LabelExtension=\'' . $ExtensionKey . '\'',
+			'',
+			'',
+			''
+		);
+
+		if(!count($Select)) {
+
+			return NULL;
+
+		}
+		else {
+
+			if(is_array($Select)) {
+
+				return $Select;
+
+			}
+			else {
+				return NULL;
+			}
+		}
+
+	}
+
+	/**
+	 *
+	 */
+	public function getCachedTranslations($ExtensionKey) {
+
+		$Select = $this->db->exec_SELECTgetRows(
+			'LabelTranslationValue,LabelTranslationName,LabelTranslationLanguage',
+			'tx_snowbabel_cache_labeltranslations',
+			'LabelExtension=\'' . $ExtensionKey . '\'',
+			'',
+			'',
+			''
+		);
+
+		if(!count($Select)) {
+
+			return NULL;
+
+		}
+		else {
+
+			if(is_array($Select)) {
+
+				return $Select;
+
+			}
+			else {
+				return NULL;
+			}
+		}
+
+	}
+
 ///////////////////////////////////////////////////////
 // update db - set
 ///////////////////////////////////////////////////////
@@ -494,6 +560,135 @@ class tx_snowbabel_Db {
 
 	}
 
+	/**
+	 *
+	 */
+	public function insertCachedLabels($Labels) {
+
+		if(is_array($Labels) && count($Labels) > 0) {
+
+			$table = 'tx_snowbabel_cache_labels';
+			$Rows = array();
+
+			foreach($Labels as $Label) {
+
+				if(version_compare(TYPO3_version, '4.4.0', '<')) {
+
+						// multipeRows supported since 4.4
+					$insert = $this->db->exec_INSERTquery(
+						$table,
+						$fields_values = array(
+							'tstamp'		=> time(),
+							'crdate'		=> time(),
+							'LabelName'	=> $Label['LabelName'],
+							'LabelDefault'		=> $Label['LabelDefault'],
+							'LabelPath'		=> $Label['LabelPath'],
+							'LabelLocation'		=> $Label['LabelLocation'],
+							'LabelExtension'	=> $Label['LabelExtension'],
+						)
+					);
+
+				}
+				else {
+
+					array_push($Rows, array(
+						time(),
+						time(),
+						$Label['LabelName'],
+						$Label['LabelDefault'],
+						$Label['LabelPath'],
+						$Label['LabelLocation'],
+						$Label['LabelExtension'],
+					));
+
+				}
+
+			}
+
+				// Do Insert All At Once - Supported Since 4.4
+			if(version_compare(TYPO3_version, '4.3.99', '>')) {
+				$insert = $this->db->exec_INSERTmultipleRows(
+					$table,
+					$fields = array(
+						'tstamp',
+						'crdate',
+						'LabelName',
+						'LabelDefault',
+						'LabelPath',
+						'LabelLocation',
+						'LabelExtension'
+					),
+					$Rows
+				);
+			}
+
+		}
+
+	}
+
+	/**
+	 *
+	 */
+	public function insertCachedTranslations($Translations) {
+
+		if(is_array($Translations) && count($Translations) > 0) {
+
+			$table = 'tx_snowbabel_cache_labeltranslations';
+			$Rows = array();
+
+			foreach($Translations as $Translation) {
+
+				if(version_compare(TYPO3_version, '4.4.0', '<')) {
+
+						// multipeRows supported since 4.4
+					$insert = $this->db->exec_INSERTquery(
+						$table,
+						$fields_values = array(
+							'tstamp'		=> time(),
+							'crdate'		=> time(),
+							'LabelTranslationValue'	=> $Translation['LabelTranslationValue'],
+							'LabelTranslationName'		=> $Translation['LabelTranslationName'],
+							'LabelTranslationLanguage'		=> $Translation['LabelTranslationLanguage'],
+							'LabelExtension'		=> $Translation['LabelExtension'],
+						)
+					);
+
+				}
+				else {
+
+					array_push($Rows, array(
+						time(),
+						time(),
+						$Translation['LabelTranslationValue'],
+						$Translation['LabelTranslationName'],
+						$Translation['LabelTranslationLanguage'],
+						$Translation['LabelExtension'],
+					));
+
+				}
+
+			}
+
+				// Do Insert All At Once - Supported Since 4.4
+			if(version_compare(TYPO3_version, '4.3.99', '>')) {
+				$insert = $this->db->exec_INSERTmultipleRows(
+					$table,
+					$fields = array(
+						'tstamp',
+						'crdate',
+						'LabelTranslationValue',
+						'LabelTranslationName',
+						'LabelTranslationLanguage',
+						'LabelExtension'
+					),
+					$Rows
+				);
+			}
+
+		}
+
+	}
+
 ///////////////////////////////////////////////////////
 // delete db - delete
 ///////////////////////////////////////////////////////
@@ -518,6 +713,30 @@ class tx_snowbabel_Db {
 		$delete = $this->db->exec_DELETEquery(
 			$table = 'tx_snowbabel_cache_files',
 			$where = 'ExtensionKey=\'' . $ExtensionKey . '\''
+		);
+
+	}
+
+	/**
+	 *
+	 */
+	public function deleteCachedLabels($ExtensionKey) {
+
+		$delete = $this->db->exec_DELETEquery(
+			$table = 'tx_snowbabel_cache_labels',
+			$where = 'LabelExtension=\'' . $ExtensionKey . '\''
+		);
+
+	}
+
+	/**
+	 *
+	 */
+	public function deleteCachedTranslations($ExtensionKey) {
+
+		$delete = $this->db->exec_DELETEquery(
+			$table = 'tx_snowbabel_cache_labeltranslations',
+			$where = 'LabelExtension=\'' . $ExtensionKey . '\''
 		);
 
 	}

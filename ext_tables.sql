@@ -74,7 +74,10 @@ CREATE TABLE tx_snowbabel_cache_labels (
 	crdate int(11) DEFAULT '0' NOT NULL,
 
 	LabelName tinytext NOT NULL,
-	LabelValue tinytext NOT NULL,
+	LabelDefault text,
+	LabelPath text,
+	LabelLocation tinytext NOT NULL,
+	LabelExtension tinytext NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)
@@ -86,8 +89,10 @@ CREATE TABLE tx_snowbabel_cache_labeltranslations (
 	tstamp int(11) DEFAULT '0' NOT NULL,
 	crdate int(11) DEFAULT '0' NOT NULL,
 
-	LabelTranslationValue tinytext NOT NULL,
-	LabelTranslationLanguage int(11) DEFAULT '0' NOT NULL,
+	LabelTranslationValue text,
+	LabelTranslationName tinytext NOT NULL,
+	LabelTranslationLanguage tinytext NOT NULL,
+	LabelExtension tinytext NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)

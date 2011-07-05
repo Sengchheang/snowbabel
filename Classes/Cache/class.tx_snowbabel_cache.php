@@ -85,6 +85,18 @@ class tx_snowbabel_Cache {
 
 				break;
 
+			case 'Labels':
+
+				return $this->getCachedLabels($Optional);
+
+				break;
+
+			case 'Translations':
+
+				return $this->getCachedTranslations($Optional);
+
+				break;
+
 			default:
 				return false;
 		}
@@ -117,6 +129,18 @@ class tx_snowbabel_Cache {
 				$this->writeCachedFiles($Type, $Data, $Optional);
 
 				break;
+
+			case 'Labels':
+
+				$this->writeCachedLabels($Type, $Data, $Optional);
+
+				break;
+
+			case 'Translations':
+
+				$this->writeCachedTranslations($Type, $Data, $Optional);
+
+				break;
 		}
 
 	}
@@ -139,6 +163,16 @@ class tx_snowbabel_Cache {
 				$this->deleteCachedFiles($Optional);
 
 				break;
+
+			case 'Labels':
+
+				$this->deleteCachedLabels($Optional);
+
+				break;
+
+			case 'Translations':
+
+				$this->deleteCachedTranslations($Optional);
 
 		}
 
@@ -311,6 +345,114 @@ class tx_snowbabel_Cache {
 
 			// Delete Cache
 		$this->db->deleteCachedFiles($ExtensionKey);
+
+	}
+
+	private function getCachedLabels($ExtensionKey) {
+
+			// Get Cached Data From Database
+		$tempLabels = $this->db->getCachedLabels($ExtensionKey);
+
+			// Check Records If Cache Is Ok
+		$CacheCheck = $this->checkCache($tempLabels, true);
+
+		if($CacheCheck) {
+
+				// Prepare Label-Array For Return
+				// Remove Database Fields -> tstamp, crdate etc
+			$Labels = array();
+
+			foreach($tempLabels as $Label) {
+
+				array_push($Labels, array(
+					'LabelName'			=> $Label['LabelName'],
+					'LabelDefault'		=> $Label['LabelDefault'],
+					'LabelPath'			=> $Label['LabelPath'],
+					'LabelLocation'		=> $Label['LabelLocation'],
+					'LabelExtension'	=> $Label['LabelExtension'],
+				));
+
+			}
+
+			return $Labels;
+
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * @param  $Type
+	 * @param  $Data
+	 * @param  $ExtensionKey
+	 * @return void
+	 */
+	private function writeCachedLabels($Type, $Data, $ExtensionKey) {
+
+			// Delete Cache
+		$this->deleteCache($Type, $ExtensionKey);
+
+			// Write Cache
+		$this->db->insertCachedLabels($Data);
+
+	}
+
+	/**
+	 * @param  $ExtensionKey
+	 * @return void
+	 */
+	private function deleteCachedLabels($ExtensionKey) {
+
+			// Delete Cache
+		$this->db->deleteCachedLabels($ExtensionKey);
+
+	}
+
+	private function getCachedTranslations($ExtensionKey) {
+
+			// Get Cached Data From Database
+		$tempTranslations = $this->db->getCachedTranslations($ExtensionKey);
+
+		if(is_array($tempTranslations) && count($tempTranslations) > 0) {
+
+			$Translations = array();
+
+			foreach($tempTranslations as $Translation) {
+				$Translations[$Translation['LabelTranslationLanguage']][$Translation['LabelTranslationName']] = $Translation['LabelTranslationValue'];
+			}
+
+			return $Translations;
+
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param  $Type
+	 * @param  $Data
+	 * @param  $ExtensionKey
+	 * @return void
+	 */
+	private function writeCachedTranslations($Type, $Data, $ExtensionKey) {
+
+			// Delete Cache
+		$this->deleteCache($Type, $ExtensionKey);
+
+			// Write Cache
+		$this->db->insertCachedTranslations($Data);
+
+	}
+
+	/**
+	 * @param  $ExtensionKey
+	 * @return void
+	 */
+	private function deleteCachedTranslations($ExtensionKey) {
+
+			// Delete Cache
+		$this->db->deleteCachedTranslations($ExtensionKey);
 
 	}
 

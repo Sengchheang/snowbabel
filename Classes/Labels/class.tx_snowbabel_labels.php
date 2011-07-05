@@ -49,6 +49,11 @@ class tx_snowbabel_Labels {
 	/**
 	 *
 	 */
+	private $cacheObj;
+
+	/**
+	 *
+	 */
 	private $debug;
 
 	/**
@@ -75,6 +80,11 @@ class tx_snowbabel_Labels {
 	 *
 	 */
 	private $GlobalExtensionPath;
+
+	/**
+	 *
+	 */
+	private $CacheActivated;
 
 	/**
 	 *
@@ -120,6 +130,16 @@ class tx_snowbabel_Labels {
 	 *
 	 */
 	private $RawLabels = array();
+
+	/**
+	 *
+	 */
+	private $RawLabelsCache = array();
+
+	/**
+	 *
+	 */
+	private $TranslationCache = array();
 
 	/**
 	 *
@@ -201,6 +221,8 @@ class tx_snowbabel_Labels {
 		$this->SystemExtensionPath = $this->confObj->getApplicationConfiguration('SystemExtensionPath');
 		$this->GlobalExtensionPath = $this->confObj->getApplicationConfiguration('GlobalExtensionPath');
 
+		$this->CacheActivated = $this->confObj->getApplicationConfiguration('CacheActivated');
+
 			// get Extension params
 		$this->SitePath = $this->confObj->getExtensionConfiguration('SitePath');
 		$this->L10nPath = $this->confObj->getExtensionConfiguration('L10nPath');
@@ -237,6 +259,9 @@ class tx_snowbabel_Labels {
 
 	  		// get extensions object
 	  	$this->getExtensionsObject();
+
+			// Cache
+		$this->getCacheObject();
 	}
 
 	/**
@@ -512,15 +537,44 @@ class tx_snowbabel_Labels {
      */
     private function getLabelsFromFiles($Files, $ExtensionKey) {
 
-        if(count($Files) > 0) {
+		$Labels = false;
 
-            foreach($Files as $File) {
+			// Init Cache
+		if($this->CacheActivated) {
+			$Labels = $this->cacheObj->readCache('Labels', $ExtensionKey);
 
-                $this->getLabelsFromFile($File['FilePath'], $File['FileKey'], $File['FileLocation'], $ExtensionKey);
+		}
 
-            }
+			// No Cache Available
+		if(!$Labels) {
+			if(count($Files) > 0) {
 
-        }
+				foreach($Files as $File) {
+
+					$this->getLabelsFromFile($File['FilePath'], $File['FileKey'], $File['FileLocation'], $ExtensionKey);
+
+				}
+
+					// Write Cache
+				if($this->CacheActivated) {
+					$this->cacheObj->writeCache('Labels', $this->RawLabelsCache, $ExtensionKey);
+					$this->cacheObj->writeCache('Translations', $this->TranslationCache, $ExtensionKey);
+				}
+
+			}
+		}
+			// Prepare Cache For Output
+		else {
+
+				// Counter
+			$this->LabelCounter	= $this->LabelCounter + count($Labels);
+
+				// Labels
+			$this->RawLabels	= $Labels;
+
+				// Translations
+			$this->getLabelsFromTranslationCache($ExtensionKey);
+		}
 
     }
 
@@ -550,11 +604,17 @@ class tx_snowbabel_Labels {
 					$this->RawLabels[$this->LabelCounter]['LabelLocation']	= $FileLocation;
 					$this->RawLabels[$this->LabelCounter]['LabelExtension']	= $ExtensionKey;
 
+						// Write LabelData To Cache -> Separated From Translations
+					$this->RawLabelsCache[$this->LabelCounter] = $this->RawLabels[$this->LabelCounter];
+
 						// Checks Translations To Show
 					if(is_array($this->Languages)) {
 						foreach($this->Languages as $Language) {
 
 							if($Language['LanguageSelected']) {
+
+									// Add 'Language Col'
+								$this->RawLabels[$this->LabelCounter]['Label' . strtoupper($Language['LanguageKey']) . 'Language'] = $Language['LanguageKey'];
 
 									// Get Labels From Translation
 								$LabelTranslation = $this->getLabelFromTranslation(
@@ -564,11 +624,20 @@ class tx_snowbabel_Labels {
 									$LabelName
 								);
 
+									// Add Translation
 								if($LabelTranslation) {
-									$this->RawLabels[$this->LabelCounter]['Label' . strtoupper($Language['LanguageKey'])] = $LabelTranslation;
-								}
 
-								$this->RawLabels[$this->LabelCounter]['Label' . strtoupper($Language['LanguageKey']) . 'Language'] = $Language['LanguageKey'];
+									$this->RawLabels[$this->LabelCounter]['Label' . strtoupper($Language['LanguageKey'])] = $LabelTranslation;
+
+										// Write Cache
+									$this->TranslationCache[$this->LabelCounter] = array(
+										'LabelTranslationValue'		=> $LabelTranslation,
+										'LabelTranslationName'		=> $LabelName,
+										'LabelTranslationLanguage'	=> $Language['LanguageKey'],
+										'LabelExtension'	=> $ExtensionKey,
+									);
+
+								}
 
 							}
 						}
@@ -617,6 +686,42 @@ class tx_snowbabel_Labels {
 
 	    return false;
     }
+
+	/**
+	 * @param  $ExtensionKey
+	 * @return void
+	 */
+	private function getLabelsFromTranslationCache($ExtensionKey) {
+
+		$Translations = $this->cacheObj->readCache('Translations', $ExtensionKey);
+
+		if($Translations) {
+
+			foreach($this->RawLabels as $Index => $RawLabel) {
+
+				if(is_array($this->Languages)) {
+					foreach($this->Languages as $Language) {
+
+						if($Language['LanguageSelected']) {
+
+								// LabelName
+							$this->RawLabels[$Index]['Label' . strtoupper($Language['LanguageKey']) . 'Language'] = $Language['LanguageKey'];
+
+								// LabelValue
+							$Translation = $Translations[$Language['LanguageKey']][$RawLabel['LabelName']];
+
+							if(isset($Translation)) {
+								$this->RawLabels[$Index]['Label' . strtoupper($Language['LanguageKey'])] = $Translation;
+							}
+
+						}
+					}
+				}
+
+			}
+		}
+
+	}
 
     /**
      *
@@ -860,6 +965,17 @@ class tx_snowbabel_Labels {
 	private function getExtensionsObject() {
 		if (!is_object($this->extObj) && !($this->extObj instanceof tx_snowbabel_extensions)) {
 			$this->extObj = t3lib_div::makeInstance('tx_snowbabel_extensions', $this->confObj);
+		}
+	}
+
+	/**
+	 *
+	 */
+	private function getCacheObject() {
+		if($this->CacheActivated) {
+			if (!is_object($this->cacheObj) && !($this->cacheObj instanceof tx_snowbabel_cache)) {
+				$this->cacheObj = t3lib_div::makeInstance('tx_snowbabel_cache', $this->confObj);
+			}
 		}
 	}
 }
