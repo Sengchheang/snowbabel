@@ -170,10 +170,27 @@ class tx_snowbabel_Cache {
 
 				break;
 
+			case 'Translation':
+
+				$this->deleteCachedTranslation($Optional);
+
 			case 'Translations':
 
 				$this->deleteCachedTranslations($Optional);
 
+		}
+
+	}
+
+	public function updateCache($Type, $Optional=false) {
+
+		switch($Type) {
+
+			case 'Translation':
+
+				$this->updateCachedTranslation($Optional);
+
+				break;
 		}
 
 	}
@@ -409,6 +426,42 @@ class tx_snowbabel_Cache {
 
 	}
 
+	/**
+	 * @param  $LabelExtension
+	 * @param  $LabelTranslationLanguage
+	 * @param  $LabelTranslationName
+	 * @param  $LabelTranslationValue
+	 * @return void
+	 */
+	private function updateCachedTranslation($Conf) {
+
+		$this->db->updateCachedTranslation(
+			$Conf['LabelExtension'],
+			$Conf['LabelPath'],
+			$Conf['LabelLocation'],
+			$Conf['LabelTranslationLanguage'],
+			$Conf['LabelTranslationName'],
+			$Conf['LabelTranslationValue']
+		);
+
+	}
+
+	private function deleteCachedTranslation($Conf) {
+
+		$this->db->deleteCachedTranslation (
+			$Conf['LabelExtension'],
+			$Conf['LabelPath'],
+			$Conf['LabelLocation'],
+			$Conf['LabelTranslationLanguage'],
+			$Conf['LabelTranslationName']
+		);
+
+	}
+
+	/**
+	 * @param  $ExtensionKey
+	 * @return array|bool
+	 */
 	private function getCachedTranslations($ExtensionKey) {
 
 			// Get Cached Data From Database

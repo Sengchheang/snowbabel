@@ -427,7 +427,7 @@ class tx_snowbabel_Db {
 	public function getCachedTranslations($ExtensionKey) {
 
 		$Select = $this->db->exec_SELECTgetRows(
-			'LabelTranslationValue,LabelTranslationName,LabelTranslationLanguage',
+			'*',
 			'tx_snowbabel_cache_labeltranslations',
 			'LabelExtension=\'' . $ExtensionKey . '\'',
 			'',
@@ -472,6 +472,10 @@ class tx_snowbabel_Db {
 		);
 	}
 
+	/**
+	 *
+	 *
+	 */
 	public function updateCachedExtensionData($ExtensionData) {
 		$this->db->exec_UPDATEquery(
 			$table = 'tx_snowbabel_cache_extensions',
@@ -487,6 +491,23 @@ class tx_snowbabel_Db {
 				'ExtensionPath'			=> $ExtensionData['ExtensionPath'],
 			)
 		);
+	}
+
+	/**
+	 *
+	 */
+	public function updateCachedTranslation($LabelExtension, $LabelPath, $LabelLocation, $LabelTranslationLanguage, $LabelTranslationName, $LabelTranslationValue) {
+
+		$this->db->exec_UPDATEquery(
+			$table = 'tx_snowbabel_cache_labeltranslations',
+			$where_clause = 'LabelExtension=\'' . $LabelExtension . ' AND LabelPath=\'' . $LabelPath . '\' AND LabelLocation=\'' . $LabelLocation . '\'' .
+				' AND LabelTranslationLanguage=\'' . $LabelTranslationLanguage . '\' AND LabelTranslationName=\'' . $LabelTranslationName . '\'',
+			$fields_values = array(
+				'tstamp'=>time(),
+				'LabelTranslationValue'		=> $LabelTranslationValue
+			)
+		);
+
 	}
 
 ///////////////////////////////////////////////////////
@@ -649,6 +670,8 @@ class tx_snowbabel_Db {
 							'LabelTranslationValue'	=> $Translation['LabelTranslationValue'],
 							'LabelTranslationName'		=> $Translation['LabelTranslationName'],
 							'LabelTranslationLanguage'		=> $Translation['LabelTranslationLanguage'],
+							'LabelPath'		=> $Translation['LabelPath'],
+							'LabelLocation'		=> $Translation['LabelLocation'],
 							'LabelExtension'		=> $Translation['LabelExtension'],
 						)
 					);
@@ -662,6 +685,8 @@ class tx_snowbabel_Db {
 						$Translation['LabelTranslationValue'],
 						$Translation['LabelTranslationName'],
 						$Translation['LabelTranslationLanguage'],
+						$Translation['LabelPath'],
+						$Translation['LabelLocation'],
 						$Translation['LabelExtension'],
 					));
 
@@ -679,6 +704,8 @@ class tx_snowbabel_Db {
 						'LabelTranslationValue',
 						'LabelTranslationName',
 						'LabelTranslationLanguage',
+						'LabelPath',
+						'LabelLocation',
 						'LabelExtension'
 					),
 					$Rows
@@ -737,6 +764,16 @@ class tx_snowbabel_Db {
 		$delete = $this->db->exec_DELETEquery(
 			$table = 'tx_snowbabel_cache_labeltranslations',
 			$where = 'LabelExtension=\'' . $ExtensionKey . '\''
+		);
+
+	}
+
+	public function deleteCachedTranslation($LabelExtension, $LabelPath, $LabelLocation, $LabelTranslationLanguage, $LabelTranslationName) {
+
+		$delete = $this->db->exec_DELETEquery(
+			$table = 'tx_snowbabel_cache_labeltranslations',
+			$where = 'LabelExtension=\'' . $LabelExtension . ' AND LabelPath=\'' . $LabelPath . '\'' . ' AND LabelLocation=\'' . $LabelLocation . '\'' .
+			'\' AND LabelTranslationLanguage=\'' . $LabelTranslationLanguage . '\' AND LabelTranslationName=\'' . $LabelTranslationName . '\''
 		);
 
 	}

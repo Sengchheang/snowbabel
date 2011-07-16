@@ -260,8 +260,14 @@ class tx_snowbabel_Labels {
 	  		// get extensions object
 	  	$this->getExtensionsObject();
 
-			// Cache
-		$this->getCacheObject();
+	  		// Only Needed If Caching Is Activated
+	  	if($this->CacheActivated) {
+
+				// Cache Object
+			$this->getCacheObject();
+
+		}
+
 	}
 
 	/**
@@ -353,7 +359,6 @@ class tx_snowbabel_Labels {
 							'header' => $Language['LanguageName'],
 							'dataIndex' => 'Label' . strtoupper($Language['LanguageKey']),
 							'sortable' => true,
-							'id' => 'editable',
 							'editor' => array (
 								'xtype' => 'textarea',
 								'multiline' => true,
@@ -369,7 +374,7 @@ class tx_snowbabel_Labels {
 						// Language Key
 					$addColumn = array (
 						'header' => 'Label' . $Language['LanguageName'] . 'Language',
-						'dataIndex' => 'LabelLanguage' . strtoupper($Language['LanguageKey'] . 'Language'),
+						'dataIndex' => 'Label' . strtoupper($Language['LanguageKey']) . 'Language',
 						'hidden' => true
 					);
 
@@ -391,7 +396,6 @@ class tx_snowbabel_Labels {
      *
      */
     public function getSearchGlobal() {
-
 
 	        // Get All Extensions
 	   $Extensions = $this->extObj->getExtensions();
@@ -519,11 +523,43 @@ class tx_snowbabel_Labels {
 			// Change Value If Not Empty
 		if(strlen($this->LabelValue)) {
 			$Translation['data'][$this->LabelLanguage][$this->LabelName] = $this->LabelValue;
+
+				// Write Cache
+			if($this->CacheActivated) {
+
+				$Conf = array(
+					'LabelExtension'			=> $this->LabelExtension,
+					'LabelPath'					=> $this->LabelPath,
+					'LabelLocation'				=> $this->LabelLocation,
+					'LabelTranslationLanguage'	=> $this->LabelLanguage,
+					'LabelTranslationName'		=> $this->LabelName,
+					'LabelTranslationValue'		=> $this->LabelValue
+				);
+
+					// Update Entry
+				$this->cacheObj->updateCache('Translation', $Conf);
+			}
+
 		}
 			// Otherwise Unset Value
 		else {
 			if($Translation['data'][$this->LabelLanguage][$this->LabelName]){
 				unset($Translation['data'][$this->LabelLanguage][$this->LabelName]);
+			}
+
+				// Write Cache
+			if($this->CacheActivated) {
+
+				$Conf = array(
+					'LabelExtension'			=> $this->LabelExtension,
+					'LabelPath'					=> $this->LabelPath,
+					'LabelLocation'				=> $this->LabelLocation,
+					'LabelTranslationLanguage'	=> $this->LabelLanguage,
+					'LabelTranslationName'		=> $this->LabelName
+				);
+
+					// Delete Entry
+				$this->cacheObj->deleteCache('Translation', $Conf);
 			}
 		}
 
@@ -565,15 +601,8 @@ class tx_snowbabel_Labels {
 		}
 			// Prepare Cache For Output
 		else {
-
-				// Counter
-			$this->LabelCounter	= $this->LabelCounter + count($Labels);
-
-				// Labels
-			$this->RawLabels	= $Labels;
-
-				// Translations
-			$this->getLabelsFromTranslationCache($ExtensionKey);
+				// Prepare Cache Data For Output
+			$this->getLabelsFromCache($Labels, $ExtensionKey);
 		}
 
     }
@@ -634,6 +663,8 @@ class tx_snowbabel_Labels {
 										'LabelTranslationValue'		=> $LabelTranslation,
 										'LabelTranslationName'		=> $LabelName,
 										'LabelTranslationLanguage'	=> $Language['LanguageKey'],
+										'LabelPath'	=> $FileKey,
+										'LabelLocation'	=> $FileLocation,
 										'LabelExtension'	=> $ExtensionKey,
 									);
 
@@ -691,34 +722,42 @@ class tx_snowbabel_Labels {
 	 * @param  $ExtensionKey
 	 * @return void
 	 */
-	private function getLabelsFromTranslationCache($ExtensionKey) {
+	private function getLabelsFromCache($Labels, $ExtensionKey) {
 
+		// TODO:
+		// - Paging via MySQL?
+		// - Search via MySQL?
+
+			// Translations
 		$Translations = $this->cacheObj->readCache('Translations', $ExtensionKey);
 
-		if($Translations) {
+		foreach($Labels as $RawLabel) {
 
-			foreach($this->RawLabels as $Index => $RawLabel) {
+				// Standard Data
+			$this->RawLabels[$this->LabelCounter] = $RawLabel;
 
-				if(is_array($this->Languages)) {
-					foreach($this->Languages as $Language) {
+				// Add Translations
+			if($Translations && is_array($this->Languages)) {
+				foreach($this->Languages as $Language) {
 
-						if($Language['LanguageSelected']) {
+					if($Language['LanguageSelected']) {
 
-								// LabelName
-							$this->RawLabels[$Index]['Label' . strtoupper($Language['LanguageKey']) . 'Language'] = $Language['LanguageKey'];
+							// LabelName
+						$this->RawLabels[$this->LabelCounter]['Label' . strtoupper($Language['LanguageKey']) . 'Language'] = $Language['LanguageKey'];
 
-								// LabelValue
-							$Translation = $Translations[$Language['LanguageKey']][$RawLabel['LabelName']];
+							// LabelValue
+						$Translation = $Translations[$Language['LanguageKey']][$RawLabel['LabelName']];
 
-							if(isset($Translation)) {
-								$this->RawLabels[$Index]['Label' . strtoupper($Language['LanguageKey'])] = $Translation;
-							}
-
+						if(isset($Translation)) {
+							$this->RawLabels[$this->LabelCounter]['Label' . strtoupper($Language['LanguageKey'])] = $Translation;
 						}
+
 					}
 				}
-
 			}
+
+			++$this->LabelCounter;
+
 		}
 
 	}

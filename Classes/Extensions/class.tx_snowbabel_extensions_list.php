@@ -156,7 +156,9 @@ class tx_snowbabel_Extensions {
 		$this->AllocatedGroups = $this->confObj->getUserConfiguration('AllocatedGroups');
 
 			// Cache
-		$this->getCacheObject();
+		if($this->CacheActivated) {
+			$this->getCacheObject();
+		}
 	}
 
 	/**

@@ -92,6 +92,8 @@ CREATE TABLE tx_snowbabel_cache_labeltranslations (
 	LabelTranslationValue text,
 	LabelTranslationName tinytext NOT NULL,
 	LabelTranslationLanguage tinytext NOT NULL,
+	LabelPath text,
+	LabelLocation  tinytext NOT NULL,
 	LabelExtension tinytext NOT NULL,
 
 	PRIMARY KEY (uid),
