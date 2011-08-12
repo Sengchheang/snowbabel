@@ -601,9 +601,7 @@ class tx_snowbabel_Configuration {
 
 				'CopyDefaultLanguage'		=> 1,
 
-				'AvailableLanguages'		=> '30',
-
-				'CacheActivated'			=> 0
+				'AvailableLanguages'		=> '30'
 
 			);
 

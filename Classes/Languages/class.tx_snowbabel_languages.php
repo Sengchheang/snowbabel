@@ -146,7 +146,7 @@ class tx_snowbabel_Languages {
 
 				foreach($this->AvailableLanguages as $AvailableLanguage) {
 
-					if(array_search($AvailableLanguage['LanguageId'], $PermittedLanguages) !== false) {
+					if(array_search($AvailableLanguage['LanguageKey'], $PermittedLanguages) !== false) {
 
 								// add permitted language to language array
 							array_push($this->UserLanguages, $AvailableLanguage);
