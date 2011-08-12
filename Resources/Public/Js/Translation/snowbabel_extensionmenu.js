@@ -47,12 +47,14 @@ TYPO3.Snowbabel.ExtensionMenu = Ext.extend(Ext.Panel , {
 			root: '',
 			remoteSort: true,
 			fields: [
+				'ExtensionId',
 				'ExtensionKey',
 				'ExtensionTitle',
 				'ExtensionDescription',
 				'ExtensionCategory',
 				'ExtensionIcon',
-				'ExtensionCss'
+				'ExtensionCss',
+				'ExtensionLoaded'
 			]
 		});
 
@@ -60,7 +62,7 @@ TYPO3.Snowbabel.ExtensionMenu = Ext.extend(Ext.Panel , {
 		var ExtensionMenuTpl = new Ext.XTemplate(
 			'<ul id="ExtensionMenu" class="snowbabel-menu">',
 			'<tpl for=".">',
-				'<li ext:qtip="<b>' + TYPO3.lang.translation_extensionmenu_QtipKey + ':</b> {ExtensionKey}<br><b>' + TYPO3.lang.translation_extensionmenu_QtipDescription + ':</b> {ExtensionDescription}<br><b>' + TYPO3.lang.translation_extensionmenu_QtipCategory + ':</b> {ExtensionCategory}" class="snowbabel-menu-item {ExtensionCss}" style="background-image: url({ExtensionIcon});">',
+				'<li ext:qtip="<b>' + TYPO3.lang.translation_extensionmenu_QtipKey + ':</b> {ExtensionKey}<br><b>' + TYPO3.lang.translation_extensionmenu_QtipDescription + ':</b> {ExtensionDescription}<br><b>' + TYPO3.lang.translation_extensionmenu_QtipCategory + ':</b> {ExtensionCategory}" class="snowbabel-menu-item {ExtensionCss} loaded{ExtensionLoaded}" style="background-image: url({ExtensionIcon});">',
 					'{ExtensionTitle}',
 				'</li>',
 			'</tpl>',
@@ -87,7 +89,7 @@ TYPO3.Snowbabel.ExtensionMenu = Ext.extend(Ext.Panel , {
 
 						// set params for view
 					LoadParams = new Array();
-					LoadParams['ExtensionKey'] = record.data.ExtensionKey;
+					LoadParams['ExtensionId'] = record.data.ExtensionId;
 					LoadParams['ActionKey'] = '';
                     LoadParams['LanguageKey'] = '';
 					LoadParams['SearchGlobal'] = false;

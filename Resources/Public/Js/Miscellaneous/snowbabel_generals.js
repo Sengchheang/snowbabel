@@ -31,7 +31,7 @@
 Ext.ns('TYPO3.Snowbabel', 'TYPO3.Snowbabel.Generals', 'TYPO3.Snowbabel.ExtDirect');
 
 	// Standard Values For Baseparams
-TYPO3.Snowbabel.Generals.ExtensionKey		= '';
+TYPO3.Snowbabel.Generals.ExtensionId		= '';
 
 TYPO3.Snowbabel.Generals.ActionKey			= '';
 
@@ -45,7 +45,7 @@ TYPO3.Snowbabel.Generals.LabelLanguage		= '';
 
 TYPO3.Snowbabel.Generals.LoadListView		= false;
 TYPO3.Snowbabel.Generals.ListViewStart		= 0;
-TYPO3.Snowbabel.Generals.ListViewLimit		= 50;
+TYPO3.Snowbabel.Generals.ListViewLimit		= 20;
 
 TYPO3.Snowbabel.Generals.SearchGlobal		= true;
 TYPO3.Snowbabel.Generals.SearchString		= '';
@@ -54,7 +54,7 @@ TYPO3.Snowbabel.Generals.SearchString		= '';
 TYPO3.Snowbabel.Generals.ListViewBaseParams = {
 
         // Extension Selection
-	ExtensionKey:   TYPO3.Snowbabel.Generals.ExtensionKey,
+	ExtensionId:   TYPO3.Snowbabel.Generals.ExtensionId,
 
 		// Listview
     ListViewStart:  TYPO3.Snowbabel.Generals.ListViewStart,
@@ -72,7 +72,7 @@ TYPO3.Snowbabel.Generals.LoadListView = function(LoadParams) {
 	///////////////////////////
 	// Extension Selection
 	///////////////////////////
-	TYPO3.Snowbabel.Generals.SetLoadParams('ExtensionKey', Store, LoadParams);
+	TYPO3.Snowbabel.Generals.SetLoadParams('ExtensionId', Store, LoadParams);
 
 	///////////////////////////
 	// Search
@@ -106,13 +106,9 @@ TYPO3.Snowbabel.Generals.ActionController = function(ActionParams) {
 	else if(ActionParams['ActionKey'] == 'ColumnSelection') {
 		TYPO3.Snowbabel.Generals.SetLoadParams('ColumnId', Store, ActionParams);
 	}
-	else if(ActionParams['ActionKey'] == 'ListView') {
-		TYPO3.Snowbabel.Generals.SetLoadParams('LabelValue', Store, ActionParams);
-		TYPO3.Snowbabel.Generals.SetLoadParams('LabelName', Store, ActionParams);
-		TYPO3.Snowbabel.Generals.SetLoadParams('LabelPath', Store, ActionParams);
-		TYPO3.Snowbabel.Generals.SetLoadParams('LabelLanguage', Store, ActionParams);
-		TYPO3.Snowbabel.Generals.SetLoadParams('LabelLocation', Store, ActionParams);
-		TYPO3.Snowbabel.Generals.SetLoadParams('LabelExtension', Store, ActionParams);
+	else if(ActionParams['ActionKey'] == 'ListView_Update') {
+		TYPO3.Snowbabel.Generals.SetLoadParams('TranslationId', Store, ActionParams);
+		TYPO3.Snowbabel.Generals.SetLoadParams('TranslationValue', Store, ActionParams);
 	}
 
 	Store.load({
@@ -126,14 +122,14 @@ TYPO3.Snowbabel.Generals.ActionController = function(ActionParams) {
 				var LoadParams = new Array();
 				TYPO3.Snowbabel.Generals.LoadListView(LoadParams);
 			}
-			else if(ActionParams['ActionKey'] == 'ListView') {
+			else if(ActionParams['ActionKey'] == 'ListView_Update') {
 
 				if(success) {
 					ActionParams['Record'].commit();
-					TYPO3.Snowbabel.Generals.ShowMessage(2, TYPO3.lang.translation_msg_SaveOkTitle, TYPO3.lang.translation_msg_SaveOkMessage + ' ' + ActionParams['LabelValue'], 1);
+					TYPO3.Snowbabel.Generals.ShowMessage(2, TYPO3.lang.translation_msg_SaveOkTitle, TYPO3.lang.translation_msg_SaveOkMessage + ' ' + ActionParams['TranslationValue'], 1);
 				}
 				else {
-					TYPO3.Snowbabel.Generals.ShowMessage(4, TYPO3.lang.translation_msg_SaveErrorTitle, TYPO3.lang.translation_msg_SaveErrorMessage + ' ' + ActionParams['LabelValue'], 3);
+					TYPO3.Snowbabel.Generals.ShowMessage(4, TYPO3.lang.translation_msg_SaveErrorTitle, TYPO3.lang.translation_msg_SaveErrorMessage + ' ' + ActionParams['TranslationValue'], 3);
 				}
 			}
 		}

@@ -73,9 +73,9 @@ class tx_snowbabel_ExtDirectServer {
 		$this->getExtensionsObject();
 
 			// get all extensions for this user
-		$allExtensions = $this->extObj->getExtensions($OutputData = true);
+		$Extensions = $this->extObj->getExtensions();
 
-		return $allExtensions;
+		return $Extensions;
 	}
 
 	/**
@@ -134,7 +134,7 @@ class tx_snowbabel_ExtDirectServer {
 
         }
             // Do Extension Search
-        elseif(!empty($extjsParams->SearchString) && !empty($extjsParams->ExtensionKey)) {
+        elseif(!empty($extjsParams->SearchString) && !empty($extjsParams->ExtensionId)) {
 
 				// Set Metadata For Extjs
 			$this->labelsObj->setMetaData();
@@ -143,14 +143,16 @@ class tx_snowbabel_ExtDirectServer {
 			$Labels = $this->labelsObj->getSearchExtension();
 
         }
+
             // Show Extension Labels
-		elseif(!empty($extjsParams->ExtensionKey)) {
+		elseif(!empty($extjsParams->ExtensionId)) {
 
 				// Set Metadata For Extjs
 			$this->labelsObj->setMetaData();
 
 				// Get Labels From Selected Extension
 			$Labels = $this->labelsObj->getLabels();
+
 		}
 		else {
 			$Labels = NULL;
@@ -166,7 +168,7 @@ class tx_snowbabel_ExtDirectServer {
 			// get configuration object
 		$this->getConfigurationObject($extjsParams);
 
-		if($extjsParams->ActionKey == 'ListView') {
+		if($extjsParams->ActionKey == 'ListView_Update') {
 				// Get Label Object
 			$this->getLabelsObject();
 
@@ -212,8 +214,6 @@ class tx_snowbabel_ExtDirectServer {
 		$FormData['data']['AutoBackupCronjob']			= $this->confObj->getApplicationConfiguration('AutoBackupCronjob') ? 1 : 0;
 
 		$FormData['data']['CopyDefaultLanguage']		= $this->confObj->getApplicationConfiguration('CopyDefaultLanguage') ? 1 : 0;
-
-		$FormData['data']['CacheActivated']				= $this->confObj->getApplicationConfiguration('CacheActivated') ? 1 : 0;
 
 		return $FormData;
 

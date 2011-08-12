@@ -66,7 +66,7 @@ class tx_snowbabel_Configuration {
 	/**
 	 *
 	 */
-	public function __construct($extjsParams) {
+	public function __construct($extjsParams=false) {
 
 			// TODO: remove after development !!!
 		$this->initFirephp();
@@ -432,8 +432,6 @@ class tx_snowbabel_Configuration {
 
 		$ExtjsParams['CopyDefaultLanguage']			= $this->configuration['Extjs']['CopyDefaultLanguage'];
 
-		$ExtjsParams['CacheActivated']				= $this->configuration['Extjs']['CacheActivated'];
-
 		return $ExtjsParams;
 	}
 
@@ -638,7 +636,7 @@ class tx_snowbabel_Configuration {
 			// blacklist extensions
 		$this->setApplicationConfiguration($LocalconfValues['BlacklistedExtensions'], 'BlacklistedExtensions');
 			// blacklist categories
-		$this->setApplicationConfiguration(explode(',',$LocalconfValues['BlacklistedCategories']), 'BlacklistedCategories');
+		$this->setApplicationConfiguration($LocalconfValues['BlacklistedCategories'], 'BlacklistedCategories');
 
 
 			// xml filter
@@ -663,9 +661,6 @@ class tx_snowbabel_Configuration {
 			),
 			'AvailableLanguages'
 		);
-
-			// activated cache
-		$this->setApplicationConfiguration($LocalconfValues['CacheActivated'], 'CacheActivated');
 	}
 
 	/**
@@ -680,13 +675,10 @@ class tx_snowbabel_Configuration {
 		$this->setUserConfiguration($GLOBALS['BE_USER']->user['uid'], 'Id');
 
 			// set user permitted extensions
-		$this->setUserConfiguration($GLOBALS['BE_USER']->user['tx_snowbabel_extensions'], 'PermittedExtensions');
+		$this->setUserConfiguration($this->getPermittedExtensions($GLOBALS['BE_USER']->user['tx_snowbabel_extensions'], $GLOBALS['BE_USER']->userGroups), 'PermittedExtensions');
 
 			// set user permitted languages
-		$this->setUserConfiguration($GLOBALS['BE_USER']->user['tx_snowbabel_languages'], 'PermittedLanguages');
-
-			// set user groups
-		$this->setUserConfiguration($GLOBALS['BE_USER']->userGroups, 'AllocatedGroups');
+		$this->setUserConfiguration($this->getPermittedLanguages($GLOBALS['BE_USER']->user['tx_snowbabel_languages'], $GLOBALS['BE_USER']->userGroups), 'PermittedLanguages');
 
 
 			// checks if database record already written
@@ -769,6 +761,76 @@ class tx_snowbabel_Configuration {
 	}
 
 	/**
+	 * @param  $PermittedExtensions
+	 * @param  $AllocatedGroups
+	 * @return string
+	 */
+	private function getPermittedExtensions($PermittedExtensions, $AllocatedGroups) {
+
+		$AllowedExtensions1 = array();
+		$AllowedExtensions2 = array();
+
+		if ($PermittedExtensions) {
+			 $Values = explode(',',$PermittedExtensions);
+			 foreach($Values as $Extension) {
+				 array_push($AllowedExtensions1, $Extension);
+			 }
+		}
+
+			// Get Allocated Groups -> Group/User Permissions
+		if(is_array($AllocatedGroups)){
+			foreach($AllocatedGroups as $group){
+				if ($group['tx_snowbabel_extensions']) {
+					$Values = explode(',',$group['tx_snowbabel_extensions']);
+					 foreach($Values as $Extension) {
+						 array_push($AllowedExtensions2, $Extension);
+					 }
+				}
+			}
+		}
+
+			// Merge Both Together
+		$AllowedExtensions = array_unique(array_merge($AllowedExtensions1, $AllowedExtensions2));
+
+		return implode($AllowedExtensions, ',');
+	}
+
+	/**
+	 * @param  $PermittedLanguages
+	 * @param  $AllocatedGroups
+	 * @return string
+	 */
+	private function getPermittedLanguages($PermittedLanguages, $AllocatedGroups) {
+
+		$AllowedLanguages1 = array();
+		$AllowedLanguages2 = array();
+
+		if ($PermittedLanguages) {
+			 $Values = explode(',',$PermittedLanguages);
+			 foreach($Values as $Extension) {
+				 array_push($AllowedLanguages1, $Extension);
+			 }
+		}
+
+			// Get Allocated Groups -> Group/User Permissions
+		if(is_array($AllocatedGroups)){
+			foreach($AllocatedGroups as $group){
+				if ($group['tx_snowbabel_languages']) {
+					$Values = explode(',',$group['tx_snowbabel_languages']);
+					 foreach($Values as $Extension) {
+						 array_push($AllowedLanguages2, $Extension);
+					 }
+				}
+			}
+		}
+
+			// Merge Both Together
+		$AllowedLanguages = array_unique(array_merge($AllowedLanguages1, $AllowedLanguages2));
+
+		return implode($AllowedLanguages, ',');
+	}
+
+	/**
 	 *
 	 */
 	private function initFirephp() {
@@ -790,7 +852,7 @@ class tx_snowbabel_Configuration {
 	private function initDatabase() {
 
 		if (!is_object($this->db) && !($this->db instanceof tx_snowbabel_Db)) {
-			$this->db = t3lib_div::makeInstance('tx_snowbabel_Db');
+			$this->db = t3lib_div::makeInstance('tx_snowbabel_Db', $this->debug);
 		}
 
 	}

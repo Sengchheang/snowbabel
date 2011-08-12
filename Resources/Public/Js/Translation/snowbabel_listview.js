@@ -44,6 +44,7 @@ TYPO3.Snowbabel.ListView = Ext.extend(Ext.Panel , {
 			directFn: TYPO3.Snowbabel.ExtDirect.getListView,
 			paramsAsHash: true,
 			autoSave: false,
+			remoteSort: true,
 			root: '',
 			fields: [],
 			baseParams: TYPO3.Snowbabel.Generals.ListViewBaseParams,
@@ -51,10 +52,9 @@ TYPO3.Snowbabel.ListView = Ext.extend(Ext.Panel , {
 				'metachange': function(Store) {
 
 						// Get Total Results From Request
-					var TotalResults = Store.reader.jsonData.results;
+					var TotalResults = Store.reader.jsonData.ResultCount;
 
-					if(TotalResults == 0) {
-
+					if(TotalResults == 0 || TotalResults == undefined) {
 							// Clear Listview
 						this.removeAll();
 
@@ -80,15 +80,14 @@ TYPO3.Snowbabel.ListView = Ext.extend(Ext.Panel , {
 				'afteredit': function(e) {
 
 					var ActionParams	= new Array();
+					var TranslationValueIndex = e.field;
+					var Language = TranslationValueIndex.replace('TranslationValue_', '');
+					var TranslationIdIndex = 'TranslationId_' + Language;
 
-					ActionParams['ActionKey']		= 'ListView';
-					ActionParams['LabelValue']		= e.record.data[e.field];
-					ActionParams['LabelName']		= e.record.data.LabelName;
-					ActionParams['LabelPath']		= e.record.data.LabelPath;
-					ActionParams['LabelLanguage']	= e.record.data[e.field + 'Language'];
-					ActionParams['LabelLocation']	= e.record.data.LabelLocation;
-					ActionParams['LabelExtension']	= e.record.data.LabelExtension;
-					ActionParams['Record']	= e.record;
+					ActionParams['ActionKey']			= 'ListView_Update';
+					ActionParams['TranslationValue']	= e.record.data[TranslationValueIndex];
+					ActionParams['TranslationId']		= e.record.data[TranslationIdIndex];
+					ActionParams['Record']				= e.record;
 
 					TYPO3.Snowbabel.Generals.ActionController(ActionParams);
 

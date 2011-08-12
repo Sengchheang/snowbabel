@@ -32,19 +32,24 @@
 class tx_snowbabel_Extensions {
 
 	/**
-	 *
+	 * @var tx_snowbabel_configuration
 	 */
 	private $confObj;
 
 	/**
-	 *
+	 * @var tx_snowbabel_db
 	 */
-	private $cacheObj;
+	private $Db;
 
 	/**
 	 *
 	 */
 	private $debug;
+
+	/**
+	 * @var
+	 */
+	private $CurrentTableId;
 
 	/**
 	 *
@@ -79,36 +84,6 @@ class tx_snowbabel_Extensions {
 	/**
 	 *
 	 */
-	private $LocalExtensionPath;
-
-	/**
-	 *
-	 */
-	private $SystemExtensionPath;
-
-	/**
-	 *
-	 */
-	private $GlobalExtensionPath;
-
-	/**
-	 *
-	 */
-	private $CacheActivated;
-
-	/**
-	 *
-	 */
-	private $SitePath;
-
-	/**
-	 *
-	 */
-	private $LoadedExtensions;
-
-	/**
-	 *
-	 */
 	private $IsAdmin;
 
 	/**
@@ -117,18 +92,16 @@ class tx_snowbabel_Extensions {
 	private $PermittedExtensions;
 
 	/**
-	 *
-	 */
-	private $AllocatedGroups;
-
-	/**
 	 * @param  $confObj
 	 */
 	public function __construct($confObj) {
 
 		$this->confObj = $confObj;
-
+		$this->Db = $this->confObj->getDb();
 		$this->debug = $confObj->debug;
+
+			// Get Current TableId
+		$this->CurrentTableId = $this->Db->getCurrentTableId();
 
 			// get Application params
 		$this->ShowLocalExtensions = $this->confObj->getApplicationConfiguration('ShowLocalExtensions');
@@ -140,584 +113,37 @@ class tx_snowbabel_Extensions {
 
 		$this->ShowOnlyLoadedExtensions = $this->confObj->getApplicationConfiguration('ShowOnlyLoadedExtensions');
 
-		$this->LocalExtensionPath = $this->confObj->getApplicationConfiguration('LocalExtensionPath');
-		$this->SystemExtensionPath = $this->confObj->getApplicationConfiguration('SystemExtensionPath');
-		$this->GlobalExtensionPath = $this->confObj->getApplicationConfiguration('GlobalExtensionPath');
-
-		$this->CacheActivated = $this->confObj->getApplicationConfiguration('CacheActivated');
-
-			// get Extension params
-		$this->SitePath = $this->confObj->getExtensionConfiguration('SitePath');
-		$this->LoadedExtensions = $this->confObj->getExtensionConfigurationLoadedExtensions();
-
-			// get User parasm
+			// get User params
 		$this->IsAdmin = $this->confObj->getUserConfigurationIsAdmin();
 		$this->PermittedExtensions = $this->confObj->getUserConfiguration('PermittedExtensions');
-		$this->AllocatedGroups = $this->confObj->getUserConfiguration('AllocatedGroups');
 
-			// Cache
-		if($this->CacheActivated) {
-			$this->getCacheObject();
-		}
 	}
 
 	/**
-	 *
+	 * @return
 	 */
-	public function getExtensions($OutputData = false) {
+	public function getExtensions() {
 
-		$Extensions		= array();
-		$ExtensionList	= false;
+		$Conf = array(
+			'Fields' => 'uid AS ExtensionId,ExtensionKey,ExtensionTitle,ExtensionDescription,ExtensionCategory,ExtensionIcon,ExtensionLocation,ExtensionPath,ExtensionLoaded',
+			'Local' => $this->ShowLocalExtensions,
+			'System' => $this->ShowSystemExtensions,
+			'Global' => $this->ShowGlobalExtensions,
+			'OnlyLoaded' => $this->ShowOnlyLoadedExtensions,
+			'BlacklistedExtensions' => $this->BlacklistedExtensions,
+			'BlacklistedCategories' => $this->BlacklistedCategories,
+			'OrderBy' => 'ExtensionTitle',
+			'Debug' => '0',
+		);
 
-			// Init Cache
-		if($this->CacheActivated) {
-			$ExtensionList = $this->cacheObj->readCache('Extensions');
-		}
-
-			// No Cache Available
-		if(!$ExtensionList) {
-				// Get All Extensions From local/global/system Directory
-			$ExtensionList = $this->getExtensionList();
-
-				// Merge Data To One Array
-			$ExtensionList = $this->mergeExtensionList($ExtensionList);
-
-			if($this->CacheActivated) {
-				$this->cacheObj->writeCache('Extensions', $ExtensionList);
-			}
-		}
-
-			// Remove Not Allowed Extensions If User Is No Admin
 		if(!$this->IsAdmin) {
-			$ExtensionList = $this->removeNotAllowedExtensions($ExtensionList);
+			$Conf['PermittedExtensions'] = $this->PermittedExtensions;
 		}
 
-			// Remove Blacklisted Extensions
-		$ExtensionList = $this->removeBlacklistedExtensions($ExtensionList);
-
-			// Get Data For Every Extension
-		if(is_array($ExtensionList)) {
-			foreach($ExtensionList as $ExtensionKey) {
-
-				$ExtensionData = $this->getExtension($ExtensionKey, $OutputData);
-
-					// Just Add If Data Available
-				if($ExtensionData) {
-					array_push($Extensions, $ExtensionData);
-				}
-
-			}
-		}
-
-		$Extensions = $this->sortExtensions($Extensions);
+		$Extensions = $this->Db->getExtensions($this->CurrentTableId, $Conf);
 
 		return $Extensions;
 
-	}
-
-	/**
-	 *
-	 */
-	public function getExtension($ExtensionKey, $OutputData = false) {
-
-		if(is_string($ExtensionKey)) {
-
-			$ExtensionData = false;
-
-				// Init Cache
-			if($this->CacheActivated) {
-				$ExtensionData = $this->cacheObj->readCache('ExtensionData', $ExtensionKey);
-			}
-
-				// No Cache Available
-			if(!$ExtensionData) {
-
-					// Is Extension Loaded
-				$ExtensionLoaded = $this->isExtensionLoaded($ExtensionKey);
-
-					// Show Only Loaded Extensions If Activated
-				if($this->ShowOnlyLoadedExtensions) {
-						// If Not Loaded Return
-					if(!$ExtensionLoaded) return false;
-				}
-
-					// Locate Where Extension Is Installed
-				$ExtensionPath = $this->getExtensionLocation($ExtensionKey);
-
-					// Get Extension Data From EmConf
-				$EMConf = $this->getEMConf($ExtensionPath['Path']);
-
-					// Is Extension In Blacklisted Category
-				$ExtensionIsBlacklisted = $this->isCategoryBlacklisted($EMConf['ExtensionCategory']);
-
-					// If Blacklisted Category Return
-				if($ExtensionIsBlacklisted) return false;
-
-					// Get Extension Icon
-				$ExtensionIcon = $this->getExtensionIcon($ExtensionPath, $ExtensionKey);
-
-					// Add CSS Class
-				$ExtensionCssClass = '';
-
-				if($ExtensionLoaded) {
-					$ExtensionCssClass .= 'extension-loaded';
-				}
-				else {
-					$ExtensionCssClass .= 'extension-installed';
-				}
-
-					// Add Extension Data
-				$ExtensionData = array();
-				$ExtensionData['ExtensionKey']              = $ExtensionKey;
-				$ExtensionData['ExtensionTitle']            = $EMConf['ExtensionTitle'] ? $this->getCleanedString($EMConf['ExtensionTitle']) : $ExtensionKey;
-				$ExtensionData['ExtensionDescription']      = $this->getCleanedString($EMConf['ExtensionDescription']);
-				$ExtensionData['ExtensionCategory']         = $this->getCleanedString($EMConf['ExtensionCategory']);
-				$ExtensionData['ExtensionIcon']             = $ExtensionIcon;
-				$ExtensionData['ExtensionCss']              = $ExtensionCssClass;
-				$ExtensionData['ExtensionLocation']			= $ExtensionPath['Location'];
-				$ExtensionData['ExtensionPath']        		= $ExtensionPath['Path'];
-
-				if($this->CacheActivated) {
-					$this->cacheObj->writeCache('ExtensionData', $ExtensionData);
-				}
-			}
-
-				// Do Not Get Back Following Data Because It Will Be Displayed
-			if($OutputData) {
-				unset($ExtensionData['ExtensionLocation']);
-				unset($ExtensionData['ExtensionPath']);
-			}
-
-			return $ExtensionData;
-
-		}
-		else {
-			return false;
-		}
-
-	}
-
-	/**
-	 *
-	 */
-	public function getDirectories($Path) {
-
-		if(isset($Path)) {
-
-			$Directories = t3lib_div::get_dirs($Path);
-
-			if(is_array($Directories)) {
-
-					return $Directories;
-			}
-			else {
-				return NULL;
-			}
-
-		}
-
-	}
-
-    /**
-     *
-     */
-    public function getFiles($ExtensionKey) {
-
-		$Files = false;
-
-			// Init Cache
-		if($this->CacheActivated) {
-			$Files = $this->cacheObj->readCache('Files', $ExtensionKey);
-		}
-
-			// No Cache Available
-		if(!$Files) {
-
-			$Files = array();
-
-				// Get Extension Data
-			$Extension = $this->getExtension($ExtensionKey);
-
-				// Get Extension Files
-			$TempFiles1 = t3lib_div::getAllFilesAndFoldersInPath(
-				array(),
-				$Extension['ExtensionPath'],
-				'xml',
-				0,
-				99,
-				'\.svn'
-			);
-
-			$TempFiles2 = t3lib_div::removePrefixPathFromList(
-				$TempFiles1,
-				$Extension['ExtensionPath']
-			);
-
-				// Adds New Keys
-			if(is_array($TempFiles2)) {
-				foreach($TempFiles2 as $Key => $File) {
-
-						// Check Name Convention 'locallang'
-					if(strstr($TempFiles2[$Key], 'locallang') !== false) {
-						array_push($Files, array(
-							'FilePath'  	=> $TempFiles1[$Key],
-							'FileKey'   	=> $TempFiles2[$Key],
-							'FileLocation'	=> $Extension['ExtensionLocation']
-						));
-					}
-
-				}
-			}
-
-				// Write Cache
-			if($this->CacheActivated) {
-				$this->cacheObj->writeCache('Files', $Files, $ExtensionKey);
-			}
-		}
-
-        return $Files;
-    }
-
-	private function getExtensionList() {
-
-		$Directories = array();
-
-			// get local extension dirs
-		if($this->ShowLocalExtensions) {
-			$Directories['Local'] = $this->getDirectories($this->SitePath.$this->LocalExtensionPath);
-		}
-			// get system extension dirs
-		if($this->ShowSystemExtensions) {
-			$Directories['System'] = $this->getDirectories($this->SitePath.$this->SystemExtensionPath);
-		}
-
-			// get global extension dirs
-		if($this->ShowGlobalExtensions) {
-			$Directories['Global'] = $this->getDirectories($this->SitePath.$this->GlobalExtensionPath);
-		}
-
-		return $Directories;
-	}
-
-	/**
-	 *
-	 */
-	private function mergeExtensionList(array $RawExtensionList) {
-
-		$ExtensionList = array();
-
-		if(count($RawExtensionList) > 0) {
-
-			if(count($RawExtensionList['System']) > 0) {
-				$ExtensionList = array_merge($ExtensionList, $RawExtensionList['System']);
-			}
-
-			if(count($RawExtensionList['Global']) > 0) {
-				$ExtensionList = array_merge($ExtensionList, $RawExtensionList['Global']);
-			}
-
-			if(count($RawExtensionList['Local']) > 0) {
-				$ExtensionList = array_merge($ExtensionList, $RawExtensionList['Local']);
-			}
-
-		}
-
-			// Removes Double Entries
-		$ExtensionList = array_unique($ExtensionList);
-
-		return $ExtensionList;
-	}
-
-	/**
-	 *
-	 */
-	private function removeNotAllowedExtensions(array $RawExtensionList) {
-
-			// Define Needed Arrays
-		$ExtensionList = array();
-		$AllowedExtensions1 = array();
-		$AllowedExtensions2 = array();
-
-			// Get Permitted Extensions -> System Configuration
-		if ($this->PermittedExtensions) {
-			 $Values = explode(',',$this->PermittedExtensions);
-			 foreach($Values as $Extension) {
-				 array_push($AllowedExtensions1, $Extension);
-			 }
-		}
-
-			// Get Allocated Groups -> Group/User Permissions
-		if(is_array($this->AllocatedGroups)){
-			foreach($this->AllocatedGroups as $group){
-				if ($group['tx_snowbabel_extensions']) {
-					$Values = explode(',',$group['tx_snowbabel_extensions']);
-					 foreach($Values as $Extension) {
-						 array_push($AllowedExtensions2, $Extension);
-					 }
-				}
-			}
-		}
-
-			// Merge Both Together
-		$AllowedExtensions = array_merge($AllowedExtensions1, $AllowedExtensions2);
-
-			// Just Use Allowed Extensions
-		if(count($RawExtensionList) > 0) {
-			foreach($RawExtensionList as $Extension) {
-
-				if(in_array($Extension, $AllowedExtensions)) {
-					array_push($ExtensionList, $Extension);
-				}
-
-			}
-		}
-
-		return $ExtensionList;
-
-	}
-
-	/**
-	 *
-	 */
-	private function removeBlacklistedExtensions($RawExtensionList) {
-
-		$ExtensionList = array();
-		$BlacklistedExtensions = array();
-
-			// Get Blacklisted Extensions
-		if ($this->BlacklistedExtensions) {
-			 $BlacklistedExtensions = explode(',',$this->BlacklistedExtensions);
-		}
-
-			// Just Use Allowed Extensions
-		if(count($RawExtensionList)) {
-			foreach($RawExtensionList as $Extension) {
-
-				if(!in_array($Extension, $BlacklistedExtensions)) {
-					array_push($ExtensionList, $Extension);
-				}
-
-			}
-		}
-
-		return $ExtensionList;
-
-	}
-
-	/**
-	 *
-	 */
-	private function isCategoryBlacklisted($ExtensionCategory) {
-
-			// Just Use Allowed Categories
-		if($ExtensionCategory && is_array($this->BlacklistedCategories)) {
-
-			if(in_array($ExtensionCategory, $this->BlacklistedCategories)) {
-				return true;
-			}
-
-		}
-
-		return false;
-
-	}
-
-	/**
-	 *
-	 */
-	private function getExtensionLocation($ExtensionKey) {
-
-		$ExtensionPath = false;
-
-			// ORDER'S IMPORTANT!
-
-			// Check System Extension
-		if($this->ShowSystemExtensions) {
-			$TempExtensionPath = $this->SitePath.$this->SystemExtensionPath.$ExtensionKey.'/';
-			if(is_dir($TempExtensionPath)) {
-				$ExtensionPath['Path'] = 		$TempExtensionPath;
-				$ExtensionPath['Location'] =	'System';
-			}
-		}
-			// Check Global Extension
-		if($this->ShowGlobalExtensions) {
-			$TempExtensionPath = $this->SitePath.$this->GlobalExtensionPath.$ExtensionKey.'/';
-			if(is_dir($TempExtensionPath)) {
-				$ExtensionPath['Path'] = 		$TempExtensionPath;
-				$ExtensionPath['Location'] =	'Global';
-			}
-		}
-
-			// Check Local Extension
-		if($this->ShowLocalExtensions) {
-			$TempExtensionPath = $this->SitePath.$this->LocalExtensionPath.$ExtensionKey.'/';
-			if(is_dir($TempExtensionPath)) {
-				$ExtensionPath['Path'] = 		$TempExtensionPath;
-				$ExtensionPath['Location'] =	'Local';
-			}
-		}
-
-		return $ExtensionPath;
-	}
-
-	/**
-	 *
-	 */
-	private function getExtensionIcon($ExtensionPath, $ExtensionKey) {
-
-		if($ExtensionPath && $ExtensionKey) {
-
-			if(file_exists($ExtensionPath['Path'] . 'ext_icon.gif')) {
-
-					// Check The Location And Get The CSS Path
-				switch($ExtensionPath['Location']) {
-
-					case 'Local':
-
-						$ExtensionPath = $this->LocalExtensionPath;
-
-						break;
-
-					case 'Global':
-
-						$ExtensionPath = $this->GlobalExtensionPath;
-
-						break;
-
-					case 'System':
-
-						$ExtensionPath = $this->SystemExtensionPath;
-
-						break;
-				}
-
-				$ExtensionIcon = '../../../../' . $ExtensionPath . $ExtensionKey . '/ext_icon.gif';
-
-			}
-                // Set Default Icon
-            else {
-
-                $ExtensionIcon = '../Resources/Public/Images/Miscellaneous/ext_icon.gif';
-
-            }
-
-            return $ExtensionIcon;
-
-		}
-
-	}
-
-	/**
-	 *
-	 */
-	private function getEMConf($ExtensionPath) {
-
-		if($ExtensionPath) {
-
-				// Set EMConf Path
-			$EMConfPath = $ExtensionPath . 'ext_emconf.php';
-
-			if(file_exists($EMConfPath)) {
-
-					// Include EMConf
-				$EM_CONF = NULL;
-				include ($EMConfPath);
-
-					// Add Needed EMConf Params To Array
-				$EMConf['ExtensionCategory'] =		$EM_CONF['']['category'];
-				$EMConf['ExtensionTitle'] =			$EM_CONF['']['title'];
-				$EMConf['ExtensionDescription'] =	$EM_CONF['']['description'];
-
-				return $EMConf;
-			}
-
-		}
-
-		return false;
-
-	}
-
-	/**
-	 * @param  $ExtensionKey
-	 * @return bool
-	 */
-	private function isExtensionLoaded($ExtensionKey) {
-
-		if(isset($ExtensionKey)) {
-			$InstalledExtensions = $this->LoadedExtensions;
-
-			$Check = array_key_exists($ExtensionKey, $InstalledExtensions);
-
-			if($Check) {
-				return true;
-			}
-			else {
-				return false;
-			}
-		}
-
-	}
-
-	/**
-	 * @param  $String
-	 * @return string
-	 */
-    private function getCleanedString($String) {
-
-        if($String) {
-
-            $String = htmlentities($String);
-
-        }
-
-        return $String;
-
-    }
-
-	/**
-	 * @param  $Extensions
-	 * @return array
-	 */
-	private function sortExtensions($Extensions) {
-
-
-		if(count($Extensions) > 0) {
-
-			$TempExtensionList	= array();
-
-				// Create Extension List
-			foreach($Extensions as $Key => $Extension) {
-
-				$TempExtensionList[$Key] = strtolower($Extension['ExtensionTitle']);
-
-			}
-
-				// Sort Extension List
-			asort($TempExtensionList);
-
-				// Reset Original Array
-			$TempExtensions		= $Extensions;
-			$Extensions			= array();
-
-				// Add Data
-			foreach($TempExtensionList as $Key => $Extension) {
-				array_push($Extensions, $TempExtensions[$Key]);
-			}
-
-		}
-
-		return $Extensions;
-	}
-
-	/**
-	 *
-	 */
-	private function getCacheObject() {
-		if($this->CacheActivated) {
-			if (!is_object($this->cacheObj) && !($this->cacheObj instanceof tx_snowbabel_cache)) {
-				$this->cacheObj = t3lib_div::makeInstance('tx_snowbabel_cache', $this->confObj);
-			}
-		}
 	}
 
 }

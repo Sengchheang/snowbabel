@@ -14,7 +14,11 @@ return array (
     'tx_snowbabel_columns'					=>		$incPath . 'Columns/class.tx_snowbabel_columns.php',
 
     'tx_snowbabel_application_translation'	=>		$incPath . 'Application/class.tx_snowbabel_application_translation.php',
-    'tx_snowbabel_application_settings'		=>		$incPath . 'Application/class.tx_snowbabel_application_settings.php'
+    'tx_snowbabel_application_settings'		=>		$incPath . 'Application/class.tx_snowbabel_application_settings.php',
+
+    'tx_snowbabel_system_indexing'			=>		$incPath . 'System/class.tx_snowbabel_system_indexing.php',
+    'tx_snowbabel_system_translations'		=>		$incPath . 'System/class.tx_snowbabel_system_translations.php',
+    'tx_snowbabel_system_statistics'		=>		$incPath . 'System/class.tx_snowbabel_system_statistics.php'
 );
 
 ?>

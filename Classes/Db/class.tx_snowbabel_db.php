@@ -32,24 +32,29 @@
 class tx_snowbabel_Db {
 
 	/**
-	 *
+	 * @var t3lib_DB
 	 */
 	private $db;
 
 	/**
-	 *
+	 * @var
 	 */
-	public function __construct() {
-			// set typo3 db
-		$this->db =& $GLOBALS['TYPO3_DB'];
-	}
-
-///////////////////////////////////////////////////////
-// select db - get
-///////////////////////////////////////////////////////
+	private $debug;
 
 	/**
-	 *
+	 * @param  $Debug
+	 */
+	public function __construct($Debug) {
+			// set typo3 db
+		$this->db =& $GLOBALS['TYPO3_DB'];
+
+		$this->debug = $Debug;
+	}
+
+	/**
+	 * @param  $LocalconfValue
+	 * @param bool $ShowTranslatedLanguages
+	 * @return array
 	 */
 	public function getAppConfAvailableLanguages($LocalconfValue, $ShowTranslatedLanguages = false) {
 
@@ -72,7 +77,8 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 *
+	 * @param  $BeUserId
+	 * @return null
 	 */
 	public function getUserConfSelectedLanguages($BeUserId) {
 
@@ -85,7 +91,8 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 *
+	 * @param  $BeUserId
+	 * @return null
 	 */
 	public function getUserConfShowColumnLabel($BeUserId) {
 
@@ -98,7 +105,8 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 *
+	 * @param  $BeUserId
+	 * @return null
 	 */
 	public function getUserConfShowColumnDefault($BeUserId) {
 
@@ -111,7 +119,8 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 *
+	 * @param  $BeUserId
+	 * @return null
 	 */
 	public function getUserConfShowColumnPath($BeUserId) {
 
@@ -124,7 +133,8 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 *
+	 * @param  $BeUserId
+	 * @return null
 	 */
 	public function getUserConfShowColumnLocation($BeUserId) {
 
@@ -137,7 +147,9 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 *
+	 * @param  $name
+	 * @param  $BeUserId
+	 * @return null
 	 */
 	public function getUserConf($name, $BeUserId) {
 		if(isset($name, $BeUserId)) {
@@ -161,18 +173,19 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 *
+	 * @param  $BeUserId
+	 * @return void
 	 */
 	public function getUserConfCheck($BeUserId) {
 
 		if($BeUserId > 0) {
 			$select = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
-				$select_fields = 'uid',
-				$from_table = 'tx_snowbabel_users',
-				$where_clause = 'deleted=0 AND be_users_uid=' . $BeUserId,
-				$groupBy = '',
-				$orderBy = '',
-				$limit = '1'
+				'uid',
+				'tx_snowbabel_users',
+				'deleted=0 AND be_users_uid=' . $BeUserId,
+				'',
+				'',
+				'1'
 			);
 
 			if(!$select) {
@@ -185,7 +198,7 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 *
+	 * @return null
 	 */
 	public function getSystemLanguages() {
 
@@ -219,7 +232,9 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 *
+	 * @param bool $LanguageId
+	 * @param bool $ShowTranslatedLanguages
+	 * @return array|null
 	 */
 	public function getStaticLanguages($LanguageId = false, $ShowTranslatedLanguages=false) {
 
@@ -290,182 +305,16 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 *
-	 */
-	public function getCachedExtensions() {
-
-		$Select = $this->db->exec_SELECTgetRows(
-			'crdate,ExtensionKey',
-			'tx_snowbabel_cache_extensions',
-			'',
-			'',
-			'ExtensionKey',
-			''
-		);
-
-		if(!count($Select)) {
-
-			return NULL;
-
-		}
-		else {
-
-			if(is_array($Select)) {
-
-				return $Select;
-
-			}
-			else {
-				return NULL;
-			}
-		}
-
-	}
-
-	/**
-	 *
-	 */
-	public function getCachedExtensionData($ExtensionKey) {
-
-		$Select = $this->db->exec_SELECTgetRows(
-			'*',
-			'tx_snowbabel_cache_extensions',
-			'ExtensionKey=\'' . $ExtensionKey . '\' AND ExtensionLocation != \'\'',
-			'',
-			'',
-			'1'
-		);
-
-		if(!count($Select)) {
-
-			return NULL;
-
-		}
-		else {
-
-			if(is_array($Select)) {
-
-				return $Select;
-
-			}
-			else {
-				return NULL;
-			}
-		}
-
-	}
-
-	/**
-	 *
-	 */
-	public function getCachedFiles($ExtensionKey) {
-
-		$Select = $this->db->exec_SELECTgetRows(
-			'*',
-			'tx_snowbabel_cache_files',
-			'ExtensionKey=\'' . $ExtensionKey . '\'',
-			'',
-			'',
-			''
-		);
-
-		if(!count($Select)) {
-
-			return NULL;
-
-		}
-		else {
-
-			if(is_array($Select)) {
-
-				return $Select;
-
-			}
-			else {
-				return NULL;
-			}
-		}
-
-	}
-
-	/**
-	 *
-	 */
-	public function getCachedLabels($ExtensionKey) {
-
-		$Select = $this->db->exec_SELECTgetRows(
-			'*',
-			'tx_snowbabel_cache_labels',
-			'LabelExtension=\'' . $ExtensionKey . '\'',
-			'',
-			'',
-			''
-		);
-
-		if(!count($Select)) {
-
-			return NULL;
-
-		}
-		else {
-
-			if(is_array($Select)) {
-
-				return $Select;
-
-			}
-			else {
-				return NULL;
-			}
-		}
-
-	}
-
-	/**
-	 *
-	 */
-	public function getCachedTranslations($ExtensionKey) {
-
-		$Select = $this->db->exec_SELECTgetRows(
-			'*',
-			'tx_snowbabel_cache_labeltranslations',
-			'LabelExtension=\'' . $ExtensionKey . '\'',
-			'',
-			'',
-			''
-		);
-
-		if(!count($Select)) {
-
-			return NULL;
-
-		}
-		else {
-
-			if(is_array($Select)) {
-
-				return $Select;
-
-			}
-			else {
-				return NULL;
-			}
-		}
-
-	}
-
-///////////////////////////////////////////////////////
-// update db - set
-///////////////////////////////////////////////////////
-
-	/**
-	 *
+	 * @param  $Name
+	 * @param  $Value
+	 * @param  $BeUserId
+	 * @return void
 	 */
 	public function setUserConf($Name, $Value, $BeUserId) {
 		$this->db->exec_UPDATEquery(
-			$table = 'tx_snowbabel_users',
-			$where_clause = 'deleted=0 AND be_users_uid=' . $BeUserId,
-			$fields_values = array(
+			'tx_snowbabel_users',
+			'deleted=0 AND be_users_uid=' . $BeUserId,
+			array(
 				'tstamp'=>time(),
 				$Name => $Value
 			)
@@ -473,55 +322,14 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 *
-	 *
-	 */
-	public function updateCachedExtensionData($ExtensionData) {
-		$this->db->exec_UPDATEquery(
-			$table = 'tx_snowbabel_cache_extensions',
-			$where_clause = 'ExtensionKey=\'' . $ExtensionData['ExtensionKey'] . '\'',
-			$fields_values = array(
-				'tstamp'=>time(),
-				'ExtensionCategory'		=> $ExtensionData['ExtensionCategory'],
-				'ExtensionTitle'		=> $ExtensionData['ExtensionTitle'],
-				'ExtensionDescription'	=> $ExtensionData['ExtensionDescription'],
-				'ExtensionIcon'			=> $ExtensionData['ExtensionIcon'],
-				'ExtensionCss'			=> $ExtensionData['ExtensionCss'],
-				'ExtensionLocation'		=> $ExtensionData['ExtensionLocation'],
-				'ExtensionPath'			=> $ExtensionData['ExtensionPath'],
-			)
-		);
-	}
-
-	/**
-	 *
-	 */
-	public function updateCachedTranslation($LabelExtension, $LabelPath, $LabelLocation, $LabelTranslationLanguage, $LabelTranslationName, $LabelTranslationValue) {
-
-		$this->db->exec_UPDATEquery(
-			$table = 'tx_snowbabel_cache_labeltranslations',
-			$where_clause = 'LabelExtension=\'' . $LabelExtension . ' AND LabelPath=\'' . $LabelPath . '\' AND LabelLocation=\'' . $LabelLocation . '\'' .
-				' AND LabelTranslationLanguage=\'' . $LabelTranslationLanguage . '\' AND LabelTranslationName=\'' . $LabelTranslationName . '\'',
-			$fields_values = array(
-				'tstamp'=>time(),
-				'LabelTranslationValue'		=> $LabelTranslationValue
-			)
-		);
-
-	}
-
-///////////////////////////////////////////////////////
-// insert db - insert
-///////////////////////////////////////////////////////
-
-	/**
-	 *
+	 * @param  $BeUserId
+	 * @return void
 	 */
 	public function insertUserConfCheck($BeUserId) {
 
-		$insert = $this->db->exec_INSERTquery(
-			$table = 'tx_snowbabel_users',
-			$fields_values = array(
+		$this->db->exec_INSERTquery(
+			'tx_snowbabel_users',
+			array(
 				'tstamp'		=> time(),
 				'crdate'		=> time(),
 				'be_users_uid'	=> $BeUserId
@@ -530,252 +338,718 @@ class tx_snowbabel_Db {
 
 	}
 
+	/*********/
+	/** API **/
+	/*********/
+
 	/**
-	 *
+	 * @return int
 	 */
-	public function insertCachedExtensions($Extensions) {
+	public function getCurrentTableId() {
 
-		if(is_array($Extensions) && count($Extensions) > 0) {
+		$Select = $this->db->exec_SELECTgetRows(
+			'TableId',
+			'tx_snowbabel_tableid',
+			'',
+			'',
+			'',
+			''
+		);
 
-			foreach($Extensions as $Extension) {
-
-				$insert = $this->db->exec_INSERTquery(
-					$table = 'tx_snowbabel_cache_extensions',
-					$fields_values = array(
-						'tstamp'		=> time(),
-						'crdate'		=> time(),
-						'ExtensionKey'	=> $Extension
-					)
-				);
-
-			}
-
+		if(count($Select) > 0) {
+			return $Select[0]['TableId'];
 		}
+
+		$this->db->exec_INSERTquery(
+			'tx_snowbabel_tableid',
+			array('TableId' => 0)
+		);
+
+		return 0;
 
 	}
 
 	/**
-	 *
+	 * @param  $TableId
+	 * @return void
 	 */
-	public function insertCachedFiles($Files, $ExtensionKey) {
+	public function setCurrentTableId($TableId) {
 
-		if(is_array($Files) && count($Files) > 0) {
+			// Negate
+		$TableId = $TableId ? 0 : 1;
 
-			foreach($Files as $File) {
+			// Update Field
+		$this->db->exec_UPDATEquery(
+			'tx_snowbabel_tableid',
+			'',
+			array(
+				'TableId'		=> $TableId
+			)
+		);
+	}
 
-				$insert = $this->db->exec_INSERTquery(
-					$table = 'tx_snowbabel_cache_files',
-					$fields_values = array(
-						'tstamp'		=> time(),
-						'crdate'		=> time(),
-						'ExtensionKey'	=> $ExtensionKey,
-						'FilePath'		=> $File['FilePath'],
-						'FileKey'		=> $File['FileKey'],
-						'FileLocation'	=> $File['FileLocation'],
-					)
-				);
+	/**
+	 * @param  $CurrentTableId
+	 * @param bool $Conf
+	 * @return null
+	 */
+	public function getExtensions($CurrentTableId, $Conf=false) {
+
+		$Table =	'tx_snowbabel_indexing_extensions_' . $CurrentTableId;
+		$Fields = 	'*';
+		$Where =	'';
+		$OrderBy =	'';
+		$GroupBy = 	'';
+		$Limit = 	'';
+
+		if(is_array($Conf)) {
+
+				// FIELDS
+			if($Conf['Fields']) $Fields = $Conf['Fields'];
+
+				// WHERE
+			$Where = array(
+				'OR'	=> array(),
+				'AND'	=> array(),
+			);
+
+			if($Conf['Local']) array_push($Where['OR'],'ExtensionLocation=\'Local\'');
+			if($Conf['System']) array_push($Where['OR'],'ExtensionLocation=\'System\'');
+			if($Conf['Global']) array_push($Where['OR'],'ExtensionLocation=\'Global\'');
+
+			if($Conf['OnlyLoaded']) array_push($Where['AND'],'ExtensionLoaded=1');
+
+			if($Conf['BlacklistedCategories']) {
+
+				$BlacklistedCategories = $this->prepareCommaSeparatedString($Conf['BlacklistedCategories'], $Table);
+				array_push($Where['AND'],'ExtensionCategory NOT IN (' . $BlacklistedCategories . ')');
 
 			}
 
+			if($Conf['BlacklistedExtensions']) {
+
+				$BlacklistedExtensions = $this->prepareCommaSeparatedString($Conf['BlacklistedExtensions'], $Table);
+				array_push($Where['AND'],'ExtensionKey NOT IN (' . $BlacklistedExtensions . ')');
+
+			}
+
+			if($Conf['PermittedExtensions']) {
+
+				$PermittedExtensions = $this->prepareCommaSeparatedString($Conf['PermittedExtensions'], $Table);
+				array_push($Where['AND'],'ExtensionKey IN (' . $PermittedExtensions . ')');
+
+			}
+
+			$Where = $this->where($Where);
+
+				// GROUP BY
+			if($Conf['GroupBy']) $GroupBy = $Conf['GroupBy'];
+
+				// ORDER BY
+			if($Conf['OrderBy']) $OrderBy = $Conf['OrderBy'];
+
+				// LIMIT
+			if($Conf['Limit']) $OrderBy = $Conf['Limit'];
 		}
+
+		return $this->select($Fields, $Table, $Where, $GroupBy, $OrderBy, $Limit, $Conf['Debug']);
 
 	}
 
 	/**
-	 *
+	 * @param  $Extensions
+	 * @param  $CurrentTableId
+	 * @return void
 	 */
-	public function insertCachedLabels($Labels) {
+	public function setExtensions($Extensions, $CurrentTableId) {
 
-		if(is_array($Labels) && count($Labels) > 0) {
+			// Define Table
+		$Table = 'tx_snowbabel_indexing_extensions_' . $CurrentTableId;
 
-			$table = 'tx_snowbabel_cache_labels';
-			$Rows = array();
+			// Empty Table
+		$this->truncate($Table);
 
-			foreach($Labels as $Label) {
+			// Add Records To Table
+		$this->insert($Table, $Extensions);
 
-				if(version_compare(TYPO3_version, '4.4.0', '<')) {
+	}
 
-						// multipeRows supported since 4.4
-					$insert = $this->db->exec_INSERTquery(
-						$table,
-						$fields_values = array(
-							'tstamp'		=> time(),
-							'crdate'		=> time(),
-							'LabelName'	=> $Label['LabelName'],
-							'LabelDefault'		=> $Label['LabelDefault'],
-							'LabelPath'		=> $Label['LabelPath'],
-							'LabelLocation'		=> $Label['LabelLocation'],
-							'LabelExtension'	=> $Label['LabelExtension'],
-						)
+	/**
+	 * @param  $CurrentTableId
+	 * @param bool $Conf
+	 * @return null
+	 */
+	public function getFiles($CurrentTableId, $Conf=false){
+
+		$Table1 =	'tx_snowbabel_indexing_extensions_' . $CurrentTableId;
+		$Table2 =	'tx_snowbabel_indexing_files_' . $CurrentTableId;
+		$Table =	$Table1 . ',' . $Table2;
+		$Fields = 	$Table1 . '.ExtensionKey,' . $Table1 . '.ExtensionTitle,' . $Table1 . '.ExtensionDescription,' . $Table1 . '.ExtensionCategory,'
+					. $Table1 . '.ExtensionIcon,' . $Table1 . '.ExtensionLocation,' . $Table1 . '.ExtensionPath,' . $Table1 . '.ExtensionLoaded,'
+					. $Table2 . '.uid AS FileId,' . $Table2 . '.ExtensionId,' . $Table2 . '.FileKey';
+		$Where = 	array(
+						'OR'	=> array(),
+						'AND'	=> array(),
 					);
+		$OrderBy =	'';
+		$GroupBy = 	'';
+		$Limit = 	'';
+
+		array_push($Where['AND'], $Table1 . '.uid=' . $Table2 . '.ExtensionId');
+
+		if(is_array($Conf)) {
+
+				// FIELDS
+			if($Conf['Fields']) $Fields = $Conf['Fields'];
+
+				// WHERE
+			if($Conf['ExtensionId']) array_push($Where['AND'],$Table1 . '.uid=' . intval($Conf['ExtensionId']));
+
+				// GROUP BY
+			if($Conf['GroupBy']) $GroupBy = $Conf['GroupBy'];
+
+				// ORDER BY
+			if($Conf['OrderBy']) $OrderBy = $Conf['OrderBy'];
+
+				// LIMIT
+			if($Conf['Limit']) $Limit = $Conf['Limit'];
+		}
+
+			// WHERE
+		$Where = $this->where($Where);
+
+		return $this->select($Fields, $Table, $Where, $GroupBy, $OrderBy, $Limit, $Conf['Debug']);
+
+	}
+
+	/**
+	 * @param  $FileArray
+	 * @param  $CurrentTableId
+	 * @return void
+	 */
+	public function setFiles($FileArray, $CurrentTableId) {
+
+			// Define Table
+		$Table = 'tx_snowbabel_indexing_files_' . $CurrentTableId;
+		$InsertFiles = array();
+
+			// Empty Table
+		$this->truncate($Table);
+
+		if(count($FileArray)) {
+
+			foreach($FileArray as $Files) {
+
+				if(count($Files)) {
+
+					foreach($Files as $File) {
+						array_push($InsertFiles, $File);
+					}
+
+				}
+
+			}
+
+				// Add Records To Table
+			$this->insert($Table, $InsertFiles);
+		}
+
+	}
+
+	/**
+	 * @param  $CurrentTableId
+	 * @param bool $Conf
+	 * @param bool $Count
+	 * @return null
+	 */
+	public function getLabels($CurrentTableId, $Conf=false, $Count=false) {
+
+		$Table1 =	'tx_snowbabel_indexing_extensions_' . $CurrentTableId;
+		$Table2 =	'tx_snowbabel_indexing_files_' . $CurrentTableId;
+		$Table3 =	'tx_snowbabel_indexing_labels_' . $CurrentTableId;
+		$Table =	$Table1 . ',' . $Table2 . ',' . $Table3;
+		$Fields = 	$Table1 . '.ExtensionKey,' . $Table1 . '.ExtensionTitle,' . $Table1 . '.ExtensionDescription,' . $Table1 . '.ExtensionCategory,'
+					. $Table1 . '.ExtensionIcon,' . $Table1 . '.ExtensionLocation,' . $Table1 . '.ExtensionPath,' . $Table1 . '.ExtensionLoaded,'
+					. $Table2 . '.uid AS FileId,' . $Table2 . '.ExtensionId,' . $Table2 . '.FileKey,'
+					. $Table3 . '.uid AS LabelId,' . $Table3 . '.LabelName,' . $Table3 . '.LabelDefault';
+		$Where = 	array(
+						'OR'			=> array(),
+						'AND'			=> array(),
+						'SEARCH_AND'	=> array(),
+						'SEARCH_OR'		=> array(),
+					);
+		$OrderBy =	'';
+		$GroupBy = 	'';
+		$Limit = 	'';
+
+		array_push($Where['AND'], $Table1 . '.uid=' . $Table2 . '.ExtensionId');
+		array_push($Where['AND'], $Table2 . '.uid=' . $Table3 . '.FileId');
+
+		if(is_array($Conf)) {
+
+				// FIELDS
+			if($Conf['Fields']) $Fields = $Conf['Fields'];
+
+				// WHERE
+			if($Conf['ExtensionId']) array_push($Where['AND'],$Table1 . '.uid=' . intval($Conf['ExtensionId']));
+
+				// GROUP BY
+			if($Conf['GroupBy']) $GroupBy = $Conf['GroupBy'];
+
+				// ORDER BY
+			if($Conf['OrderBy']) $OrderBy = $Conf['OrderBy'];
+
+				// LIMIT
+			if($Conf['Limit'] && !$Count) $Limit = $Conf['Limit'];
+
+				// SEARCH
+			if($Conf['Search']) {
+				array_push($Where['SEARCH_OR'], $Table3 . '.LabelName LIKE \'%' . $Conf['Search'] . '%\'');
+				array_push($Where['SEARCH_OR'], $Table3 . '.LabelDefault LIKE \'%' . $Conf['Search'] . '%\'');
+			}
+		}
+
+			// WHERE
+		$Where = $this->where($Where);
+
+		return $this->select($Fields, $Table, $Where, $GroupBy, $OrderBy, $Limit, $Conf['Debug'], $Count);
+
+	}
+
+	/**
+	 * @param  $LabelArray
+	 * @param  $CurrentTableId
+	 * @return void
+	 */
+	public function setLabels($LabelArray, $CurrentTableId) {
+
+			// Define Table
+		$Table = 'tx_snowbabel_indexing_labels_' . $CurrentTableId;
+		$InsertLabels = array();
+
+			// Empty Table
+		$this->truncate($Table);
+
+		if(count($LabelArray)) {
+
+			foreach($LabelArray as $Labels) {
+
+				if(count($Labels)) {
+
+					foreach($Labels as $LabelRow) {
+						array_push($InsertLabels, $LabelRow);
+					}
+
+				}
+
+			}
+
+				// Add Records To Table
+			$this->insert($Table, $InsertLabels);
+		}
+
+	}
+
+	/**
+	 * @param  $CurrentTableId
+	 * @param bool $Conf
+	 * @param array $Languages
+	 * @param bool $Count
+	 * @return array|int|null|string
+	 */
+	public function getTranslations($CurrentTableId, $Conf=false, $Languages = array(), $Count=false) {
+
+		$Table1 =		'tx_snowbabel_indexing_extensions_' . $CurrentTableId;
+		$Table2 =		'tx_snowbabel_indexing_files_' . $CurrentTableId;
+		$Table3 =		'tx_snowbabel_indexing_labels_' . $CurrentTableId;
+		$Table3_Alias =	'Labels';
+		$Table4 =		'tx_snowbabel_indexing_translations_' . $CurrentTableId;
+		$Table =	$Table1 . ',' . $Table2 . ',' . $Table3 . ' AS ' . $Table3_Alias; // Needed For Subqueries!!!
+		$Fields = 	$Table3_Alias . '.LabelName,' . $Table3_Alias . '.LabelDefault';
+
+		$Where = 	array(
+						'OR'			=> array(),
+						'AND'			=> array(),
+						'SEARCH_AND'	=> array(),
+						'SEARCH_OR'		=> array(),
+					);
+		$OrderBy =	'';
+		$GroupBy = 	'';
+		$Limit = 	'';
+
+		array_push($Where['AND'], $Table1 . '.uid=' . $Table2 . '.ExtensionId');
+		array_push($Where['AND'], $Table2 . '.uid=' . $Table3_Alias . '.FileId');
+
+		if(is_array($Conf)) {
+
+				// FIELDS
+			if($Conf['Fields']) $Fields = $Conf['Fields'];
+
+				// WHERE
+			if($Conf['ExtensionId']) array_push($Where['AND'],$Table1 . '.uid=' . intval($Conf['ExtensionId']));
+
+				// GROUP BY
+			if($Conf['GroupBy']) $GroupBy = $Conf['GroupBy'];
+
+				// ORDER BY
+			if($Conf['OrderBy']) $OrderBy = $Conf['OrderBy'];
+
+			if($Conf['Sort']) {
+					//
+				if(strpos($Conf['Sort'], 'TranslationValue_') !== false) {
+					// TODO: Seems To Be A Big Performance Issue!!!
+					//$OrderBy = $Conf['Sort'] . ' ' . $Conf['Dir'];
+				}
+				else {
+					$OrderBy = $Table3_Alias . '.' . $Conf['Sort'] . ' ' . $Conf['Dir'];
+				}
+
+			}
+
+				// LIMIT
+			if($Conf['Limit'] && !$Count) $Limit = $Conf['Limit'];
+
+				// SEARCH
+			if($Conf['Search']) {
+				array_push($Where['SEARCH_OR'], $Table3_Alias . '.LabelName LIKE \'%' . $Conf['Search'] . '%\'');
+				array_push($Where['SEARCH_OR'], $Table3_Alias . '.LabelDefault LIKE \'%' . $Conf['Search'] . '%\'');
+			}
+
+				// LANGUAGES
+			if(count($Languages)) {
+
+				foreach($Languages as $Language) {
+
+					$Search = '';
+
+						// SEARCH
+					if($Conf['Search']) {
+						$Search = ' AND TranslationValue LIKE \'%' . $Conf['Search'] . '%\'';
+					}
+
+						// ORDER BY
+
+						// TranslationId
+					$Fields .= '
+						,(SELECT TranslationValue
+						FROM ' . $Table4 . '
+						WHERE Labels.uid = LabelId
+						AND TranslationLanguage = \'' . $Language . '\'' . $Search . '
+						LIMIT 1
+						) AS TranslationValue_' . $Language;
+
+						// TranslationValue
+					$Fields .= '
+						,(SELECT uid
+						FROM ' . $Table4 . '
+						WHERE Labels.uid = LabelId
+						AND TranslationLanguage = \'' . $Language . '\'' . $Search . '
+						LIMIT 1
+						) AS TranslationId_' . $Language;
+
+				}
+
+			}
+		}
+
+			// WHERE
+		$Where = $this->where($Where);
+
+		return $this->select($Fields, $Table, $Where, $GroupBy, $OrderBy, $Limit, $Conf['Debug'], $Count);
+
+	}
+
+	/**
+	 * @return void
+	 */
+	public function getTranslation($CurrentTableId, $Conf=false) {
+		$Table1 =		'tx_snowbabel_indexing_extensions_' . $CurrentTableId;
+		$Table2 =		'tx_snowbabel_indexing_files_' . $CurrentTableId;
+		$Table3 =		'tx_snowbabel_indexing_labels_' . $CurrentTableId;
+		$Table4 =		'tx_snowbabel_indexing_translations_' . $CurrentTableId;
+		$Table =	$Table1 . ',' . $Table2 . ',' . $Table3 . ',' . $Table4;
+		$Fields = 	$Table1 . '.ExtensionKey,' . $Table1 . '.ExtensionTitle,' . $Table1 . '.ExtensionDescription,' . $Table1 . '.ExtensionCategory,'
+					. $Table1 . '.ExtensionIcon,' . $Table1 . '.ExtensionLocation,' . $Table1 . '.ExtensionPath,' . $Table1 . '.ExtensionLoaded,'
+					. $Table2 . '.uid AS FileId,' . $Table2 . '.ExtensionId,' . $Table2 . '.FileKey,'
+					. $Table3 . '.uid AS LabelId,' . $Table3 . '.LabelName,' . $Table3 . '.LabelDefault,'
+					. $Table4 . '.uid AS TranslationId,' . $Table4 . '.TranslationValue,' . $Table4 . '.TranslationLanguage,' . $Table4 . '.TranslationEmpty';
+
+		$Where = 	array(
+						'OR'			=> array(),
+						'AND'			=> array(),
+						'SEARCH_AND'	=> array(),
+						'SEARCH_OR'		=> array(),
+					);
+		$OrderBy =	'';
+		$GroupBy = 	'';
+		$Limit = 	'';
+
+		array_push($Where['AND'], $Table1 . '.uid=' . $Table2 . '.ExtensionId');
+		array_push($Where['AND'], $Table2 . '.uid=' . $Table3 . '.FileId');
+		array_push($Where['AND'], $Table3 . '.uid=' . $Table4 . '.LabelId');
+
+		if(is_array($Conf)) {
+
+				// FIELDS
+			if($Conf['Fields']) $Fields = $Conf['Fields'];
+
+				// WHERE
+			if($Conf['TranslationId']) array_push($Where['AND'],$Table4 . '.uid=' . intval($Conf['TranslationId']));
+
+				// GROUP BY
+			if($Conf['GroupBy']) $GroupBy = $Conf['GroupBy'];
+
+				// ORDER BY
+			if($Conf['OrderBy']) $OrderBy = $Conf['OrderBy'];
+
+		}
+
+			// WHERE
+		$Where = $this->where($Where);
+
+		return $this->select($Fields, $Table, $Where, $GroupBy, $OrderBy, $Limit, $Conf['Debug']);
+
+	}
+
+	/**
+	 * @param  $TranslationArray
+	 * @param  $CurrentTableId
+	 * @return void
+	 */
+	public function setTranslations($TranslationArray, $CurrentTableId) {
+
+			// Define Table
+		$Table = 'tx_snowbabel_indexing_translations_' . $CurrentTableId;
+		$InsertTranslations = array();
+
+			// Empty Table
+		$this->truncate($Table);
+
+		if(count($TranslationArray)) {
+
+			foreach($TranslationArray as $Translations) {
+
+				if(count($Translations)) {
+
+					foreach($Translations as $Translation) {
+						array_push($InsertTranslations, $Translation);
+					}
+
+				}
+
+			}
+
+				// Add Records To Table
+			$this->insert($Table, $InsertTranslations);
+		}
+
+	}
+
+	/**
+	 * @param  $TranslationId
+	 * @param  $TranslationValue
+	 * @param  $CurrentTableId
+	 * @return void
+	 */
+	public function setTranslation($TranslationId, $TranslationValue, $CurrentTableId) {
+
+		$this->db->exec_UPDATEquery(
+			'tx_snowbabel_indexing_translations_' . $CurrentTableId,
+			'uid=' . intval($TranslationId),
+			array(
+				'tstamp'=>time(),
+				'TranslationValue' => $TranslationValue
+			)
+		);
+
+	}
+
+	/**
+	 * @param  $Fields
+	 * @param  $Table
+	 * @param string $Where
+	 * @param string $GroupBy
+	 * @param string $OrderBy
+	 * @param string $Limit
+	 * @param bool $Debug
+	 * @param bool $Count
+	 * @return array|int|null|string
+	 */
+	private function select($Fields, $Table, $Where = '', $GroupBy = '', $OrderBy = '', $Limit = '', $Debug=false, $Count=false) {
+
+		if($Debug) return $this->db->SELECTquery($Fields,$Table,$Where,$GroupBy,$OrderBy,$Limit);
+
+		$Select = $this->db->exec_SELECTgetRows(
+			$Fields,
+			$Table,
+			$Where,
+			$GroupBy,
+			$OrderBy,
+			$Limit
+		);
+
+		if(!count($Select)) {
+
+			if($Count) return 0;
+			return NULL;
+
+		}
+		else {
+
+			if(is_array($Select)) {
+
+				if($Count) return count($Select);
+				return $Select;
+
+			}
+			else {
+				if($Count) return 0;
+				return NULL;
+			}
+		}
+
+	}
+
+	/**
+	 * @param  $Table
+	 * @param  $DataArray
+	 * @return bool|null
+	 *
+	 * Simply add table name and data array. The function will take care of inserting data
+	 * depending on typo3 version (single insert / all at once)
+	 *
+	 * data array format:
+	 * $DataArray[0]['Field1'] = Value1 // First row
+	 * $DataArray[0]['Field2'] = Value2
+	 * $DataArray[1]['Field1'] = Value3 // Second row
+	 * $DataArray[1]['Field2'] = Value4
+	 *
+	 */
+	private function insert($Table, $DataArray) {
+
+		if(is_array($DataArray) && count($DataArray) > 0) {
+
+			$FieldNames 	= array();
+			$FieldValues	= array();
+
+			foreach($DataArray as $Row) {
+
+				$Row['tstamp'] = strval(time());
+				$Row['crdate'] = strval(time());
+
+				// TODO: exec_INSERTmultipleRows -> something's wrong in big inserts
+				if(1 < 0) {
+				//if(version_compare(TYPO3_version, '4.3.99', '>')) {
+
+						// Reset Records-Array
+					$Records = array();
+
+						// Create Field Names On First Run
+					if(count($FieldNames) == 0) {
+						$FieldNames = array_keys($Row);
+					}
+
+						// Prepare Data
+					foreach($FieldNames as $FieldName) {
+						$Records[] = $Row[$FieldName];
+					}
+
+						// Add Data
+					array_push($FieldValues, $Records);
 
 				}
 				else {
 
-					array_push($Rows, array(
-						time(),
-						time(),
-						$Label['LabelName'],
-						$Label['LabelDefault'],
-						$Label['LabelPath'],
-						$Label['LabelLocation'],
-						$Label['LabelExtension'],
-					));
-
-				}
-
-			}
-
-				// Do Insert All At Once - Supported Since 4.4
-			if(version_compare(TYPO3_version, '4.3.99', '>')) {
-				$insert = $this->db->exec_INSERTmultipleRows(
-					$table,
-					$fields = array(
-						'tstamp',
-						'crdate',
-						'LabelName',
-						'LabelDefault',
-						'LabelPath',
-						'LabelLocation',
-						'LabelExtension'
-					),
-					$Rows
-				);
-			}
-
-		}
-
-	}
-
-	/**
-	 *
-	 */
-	public function insertCachedTranslations($Translations) {
-
-		if(is_array($Translations) && count($Translations) > 0) {
-
-			$table = 'tx_snowbabel_cache_labeltranslations';
-			$Rows = array();
-
-			foreach($Translations as $Translation) {
-
-				if(version_compare(TYPO3_version, '4.4.0', '<')) {
-
-						// multipeRows supported since 4.4
-					$insert = $this->db->exec_INSERTquery(
-						$table,
-						$fields_values = array(
-							'tstamp'		=> time(),
-							'crdate'		=> time(),
-							'LabelTranslationValue'	=> $Translation['LabelTranslationValue'],
-							'LabelTranslationName'		=> $Translation['LabelTranslationName'],
-							'LabelTranslationLanguage'		=> $Translation['LabelTranslationLanguage'],
-							'LabelPath'		=> $Translation['LabelPath'],
-							'LabelLocation'		=> $Translation['LabelLocation'],
-							'LabelExtension'		=> $Translation['LabelExtension'],
-						)
+					$this->db->exec_INSERTquery(
+						$Table,
+						$Row
 					);
 
 				}
-				else {
-
-					array_push($Rows, array(
-						time(),
-						time(),
-						$Translation['LabelTranslationValue'],
-						$Translation['LabelTranslationName'],
-						$Translation['LabelTranslationLanguage'],
-						$Translation['LabelPath'],
-						$Translation['LabelLocation'],
-						$Translation['LabelExtension'],
-					));
-
-				}
 
 			}
 
+			/*
 				// Do Insert All At Once - Supported Since 4.4
 			if(version_compare(TYPO3_version, '4.3.99', '>')) {
-				$insert = $this->db->exec_INSERTmultipleRows(
-					$table,
-					$fields = array(
-						'tstamp',
-						'crdate',
-						'LabelTranslationValue',
-						'LabelTranslationName',
-						'LabelTranslationLanguage',
-						'LabelPath',
-						'LabelLocation',
-						'LabelExtension'
-					),
-					$Rows
+
+				$this->db->exec_INSERTmultipleRows(
+					$Table,
+					$FieldNames,
+					$FieldValues
 				);
 			}
+			*/
 
+				// Success
+			return true;
+
+		}
+		else {
+			return NULL;
 		}
 
 	}
 
-///////////////////////////////////////////////////////
-// delete db - delete
-///////////////////////////////////////////////////////
-
 	/**
-	 *
+	 * @param  $Table
+	 * @return void
 	 */
-	public function deleteCachedExtensions() {
-
-		$delete = $this->db->exec_DELETEquery(
-			$table = 'tx_snowbabel_cache_extensions',
-			$where = ''
-		);
-
+	private function truncate($Table) {
+		$this->db->exec_TRUNCATEquery ($Table);
 	}
 
 	/**
-	 *
+	 * @param  $Where
+	 * @return string
 	 */
-	public function deleteCachedFiles($ExtensionKey) {
+	private function where($Where) {
 
-		$delete = $this->db->exec_DELETEquery(
-			$table = 'tx_snowbabel_cache_files',
-			$where = 'ExtensionKey=\'' . $ExtensionKey . '\''
-		);
+		if(count($Where['OR']))		{
+			$Where['OR']	= '(' . implode($Where['OR'], ' OR ') . ')';
+		}
+		else {
+			unset($Where['OR']);
+		}
 
+		if(count($Where['AND']))	{
+			$Where['AND']	= '(' . implode($Where['AND'], ' AND ') . ')';
+		}
+		else {
+			unset($Where['AND']);
+		}
+
+		if(count($Where['SEARCH_OR'])) {
+			$Where['SEARCH_OR'] = '(' . implode($Where['SEARCH_OR'], ' OR ') . ')';
+		}
+		else {
+			unset($Where['SEARCH_OR']);
+		}
+
+		if(count($Where['SEARCH_AND'])) {
+			$Where['SEARCH_AND'] = '(' . implode($Where['SEARCH_AND'], ' AND ') . ')';
+		}
+		else {
+			unset($Where['SEARCH_AND']);
+		}
+
+		$Where = implode($Where, ' AND ');
+
+		return $Where;
 	}
 
 	/**
-	 *
+	 * @param  $CommaSeparatedString
+	 * @param  $Table
+	 * @return string
 	 */
-	public function deleteCachedLabels($ExtensionKey) {
+	private function prepareCommaSeparatedString($CommaSeparatedString, $Table) {
 
-		$delete = $this->db->exec_DELETEquery(
-			$table = 'tx_snowbabel_cache_labels',
-			$where = 'LabelExtension=\'' . $ExtensionKey . '\''
-		);
+		$CommaSeparatedString = explode(',', $CommaSeparatedString);
 
-	}
+		$CommaSeparatedString = $this->db->fullQuoteArray($CommaSeparatedString, $Table);
 
-	/**
-	 *
-	 */
-	public function deleteCachedTranslations($ExtensionKey) {
-
-		$delete = $this->db->exec_DELETEquery(
-			$table = 'tx_snowbabel_cache_labeltranslations',
-			$where = 'LabelExtension=\'' . $ExtensionKey . '\''
-		);
-
-	}
-
-	public function deleteCachedTranslation($LabelExtension, $LabelPath, $LabelLocation, $LabelTranslationLanguage, $LabelTranslationName) {
-
-		$delete = $this->db->exec_DELETEquery(
-			$table = 'tx_snowbabel_cache_labeltranslations',
-			$where = 'LabelExtension=\'' . $LabelExtension . ' AND LabelPath=\'' . $LabelPath . '\'' . ' AND LabelLocation=\'' . $LabelLocation . '\'' .
-			'\' AND LabelTranslationLanguage=\'' . $LabelTranslationLanguage . '\' AND LabelTranslationName=\'' . $LabelTranslationName . '\''
-		);
-
+		return implode(',', $CommaSeparatedString);
 	}
 }
 

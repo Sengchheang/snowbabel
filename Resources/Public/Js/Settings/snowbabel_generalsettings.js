@@ -232,39 +232,6 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 							valueField: 'LanguageId'
 						}]
 					}]
-				},{
-					title: TYPO3.lang.settings_formtab_Experimental,
-					layout: 'form',
-					items: [{
-						xtype: 'checkbox',
-						fieldLabel: TYPO3.lang.settings_formlabel_CacheActivated,
-						name: 'CacheActivated',
-						listeners: ({
-							'check': function() {
-		//						TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
-					},{
-						xtype: 'checkbox',
-						disabled: true,
-						fieldLabel: TYPO3.lang.settings_formlabel_AutoBackupCronjob,
-						name: 'AutoBackupCronjob',
-						listeners: ({
-							'check': function() {
-		//						TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
-					},{
-						xtype: 'checkbox',
-						disabled: true,
-						fieldLabel: TYPO3.lang.settings_formlabel_AutoBackupEditing,
-						name: 'AutoBackupEditing',
-						listeners: ({
-							'check': function() {
-		//						TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
-					}]
 				}]
 			},
 			buttons: [{
