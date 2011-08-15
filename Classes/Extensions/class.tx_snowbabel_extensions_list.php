@@ -120,7 +120,7 @@ class tx_snowbabel_Extensions {
 	}
 
 	/**
-	 * @return
+	 * @return null
 	 */
 	public function getExtensions() {
 

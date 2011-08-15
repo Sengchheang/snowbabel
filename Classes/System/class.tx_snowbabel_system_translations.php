@@ -39,6 +39,11 @@ class tx_snowbabel_system_translations {
 	/**
 	 * @var
 	 */
+	private $debug;
+
+	/**
+	 * @var
+	 */
 	private $CopyDefaultLanguage;
 
 	/**
@@ -107,6 +112,7 @@ class tx_snowbabel_system_translations {
 	public function __construct($confObj) {
 
 		$this->confObj = $confObj;
+		$this->debug = $confObj->debug;
 
 			// get Application params
 		$this->CopyDefaultLanguage = $this->confObj->getApplicationConfiguration('CopyDefaultLanguage');
@@ -254,6 +260,9 @@ class tx_snowbabel_system_translations {
 
 			// Write File
 		$this->writeTranslation($Translation, $TranslationFilePath);
+
+			// Delete Temp Files In typo3temp-Folder
+		$this->deleteSystemCache($FilePath, $Language);
 
 	}
 
@@ -864,6 +873,38 @@ class tx_snowbabel_system_translations {
 
 	}
 
+	/**
+	 * @param  $FilePath
+	 * @param  $Language
+	 * @return void
+	 */
+	private function deleteSystemCache($FilePath, $Language) {
+
+				// Delete Cached Language File
+			$cacheFileName = $this->getCacheFileName($FilePath, $Language);
+			t3lib_div::unlink_tempfile($cacheFileName);
+
+				// Delete 'default'
+			if($Language != 'default') {
+				$cacheFileNameDefault = $this->getCacheFileName($FilePath);
+				t3lib_div::unlink_tempfile($cacheFileNameDefault);
+			}
+	}
+
+	/**
+	 * @param  $FilePath
+	 * @param string $Language
+	 * @return string
+	 */
+	private function getCacheFileName($FilePath, $Language='default') {
+
+			$hashSource = substr($FilePath, strlen(PATH_site)) . '|' . date('d-m-Y H:i:s', filemtime($FilePath)) . '|version=2.3';
+			$hash = '_' . t3lib_div::shortMD5($hashSource);
+			$tempPath = PATH_site . 'typo3temp/llxml/';
+			$fileExtension = substr(basename($FilePath), 10, 15);
+
+			return $tempPath . $fileExtension . $hash . '.' . $Language . '.' . 'utf-8' . '.cache';
+	}
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/snowbabel/Classes/System/class.tx_snowbabel_system_translations.php'])	{

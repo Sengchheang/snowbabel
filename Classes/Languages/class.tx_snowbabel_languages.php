@@ -81,10 +81,11 @@ class tx_snowbabel_Languages {
 	 */
 	private $SelectedLanguages;
 
+
 	/**
-	 *
+	 * @param  $confObj
 	 */
-  public function __construct($confObj) {
+	public function __construct($confObj) {
 
 	  	// TODO: Pathes Should Be Editable
 
@@ -204,7 +205,8 @@ class tx_snowbabel_Languages {
 	}
 
 	/**
-	 *
+	 * @param  $LanguageId
+	 * @return string
 	 */
 	private function getLanguageFlag($LanguageId) {
 
