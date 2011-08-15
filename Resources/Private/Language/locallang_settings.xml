@@ -7,7 +7,7 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 
-			<label index="settings_formtab_Pathes">Pathes</label>
+			<label index="settings_formtab_Pathes">Paths</label>
 			<label index="settings_formtab_Blacklists">Blacklists</label>
 			<label index="settings_formtab_DisplayOptions">Display Options</label>
 			<label index="settings_formtab_Editing">Editing</label>
