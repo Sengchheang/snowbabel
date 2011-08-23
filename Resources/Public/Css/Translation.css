@@ -39,7 +39,13 @@
 		border-color: #B9B9B9;
 	}
 
-	.snowbabel-menu-item-selected {
+
+
+	#ExtensionMenu .snowbabel-menu-item-selected {
+		font-weight: bold;
+	}
+
+	#ColumnSelection .snowbabel-menu-item-selected {
 		background-image: url(../Images/Silk/accept.png);
 	}
 
