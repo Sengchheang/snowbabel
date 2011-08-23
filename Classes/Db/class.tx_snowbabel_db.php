@@ -760,7 +760,9 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 * @return void
+	 * @param  $CurrentTableId
+	 * @param bool $Conf
+	 * @return array|int|null|string
 	 */
 	public function getTranslation($CurrentTableId, $Conf=false) {
 		$Table1 =		'tx_snowbabel_indexing_extensions_' . $CurrentTableId;

@@ -63,7 +63,17 @@ TYPO3.Snowbabel.Translation = {
 				TYPO3.Snowbabel.ViewportCenter,
 				TYPO3.Snowbabel.ViewportWest,
 				TYPO3.Snowbabel.ViewportEast
-			]
+			],
+			listeners: ({
+				'afterrender': function() {
+
+					var ActionParams	= new Array();
+					ActionParams['ActionKey'] = 'CheckScheduler';
+
+					TYPO3.Snowbabel.Generals.ActionController(ActionParams);
+
+				}
+			})
 		});
 
 	}

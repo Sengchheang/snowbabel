@@ -62,7 +62,8 @@ class tx_snowbabel_ExtDirectServer {
 	private $debug;
 
 	/**
-	 *
+	 * @param  $extjsParams
+	 * @return
 	 */
 	public function getExtensionMenu($extjsParams) {
 
@@ -79,7 +80,8 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 *
+	 * @param  $extjsParams
+	 * @return
 	 */
 	public function getLanguageSelection($extjsParams) {
 
@@ -96,7 +98,8 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 *
+	 * @param  $extjsParams
+	 * @return
 	 */
 	public function getColumnSelection($extjsParams) {
 
@@ -113,7 +116,8 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 *
+	 * @param  $extjsParams
+	 * @return null
 	 */
 	public function getListView($extjsParams) {
 
@@ -162,7 +166,8 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 *
+	 * @param  $extjsParams
+	 * @return bool
 	 */
 	public function ActionController($extjsParams) {
 			// get configuration object
@@ -176,12 +181,22 @@ class tx_snowbabel_ExtDirectServer {
 			$this->labelsObj->updateTranslation();
 
 		}
+		elseif($extjsParams->ActionKey == 'CheckScheduler') {
+
+			if($this->confObj->getApplicationConfiguration('SchedulerCheck')) {
+				return true;
+			}
+			else {
+				return null;
+			}
+
+		}
 
 		return true;
 	}
 
 	/**
-	 *
+	 * @return
 	 */
 	public function getGeneralSettings() {
 
@@ -235,7 +250,8 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 *
+	 * @param  $extjsParams
+	 * @return
 	 */
 	public function getGeneralSettingsLanguages($extjsParams) {
 
@@ -252,7 +268,8 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 *
+	 * @param  $extjsParams
+	 * @return
 	 */
 	public function getGeneralSettingsLanguagesAdded($extjsParams) {
 
@@ -269,7 +286,8 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 *
+	 * @param  $extjsParams
+	 * @return void
 	 */
 	private function getConfigurationObject($extjsParams) {
 
@@ -282,7 +300,7 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 *
+	 * @return void
 	 */
 	private function getExtensionsObject() {
 		if (!is_object($this->extObj) && !($this->extObj instanceof tx_snowbabel_extensions)) {
@@ -291,7 +309,7 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 *
+	 * @return void
 	 */
 	private function getLabelsObject() {
 		if (!is_object($this->labelsObj) && !($this->labelsObj instanceof tx_snowbabel_labels)) {
@@ -300,7 +318,7 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 *
+	 * @return void
 	 */
 	private function getLanguageObject() {
 		if (!is_object($this->langObj) && !($this->langObj instanceof tx_snowbabel_languages)) {
@@ -309,7 +327,7 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 *
+	 * @return void
 	 */
 	private function getColumnObject() {
 		if (!is_object($this->colObj) && !($this->colObj instanceof tx_snowbabel_columns)) {

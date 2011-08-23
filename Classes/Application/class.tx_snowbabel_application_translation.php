@@ -137,6 +137,7 @@ class tx_snowbabel_Application_Translation {
 
 			// plugins
 		$this->pageRenderer->addJsFile($this->jsExtensionPath . 'SearchField.js');
+		$this->pageRenderer->addJsFile($this->jsExtensionPath . 'Spotlight.js');
 
 			// functions
 		$this->pageRenderer->addJsFile($this->jsPathMiscellaneous . 'snowbabel_generals.js');

@@ -132,9 +132,15 @@ TYPO3.Snowbabel.Generals.ActionController = function(ActionParams) {
 					TYPO3.Snowbabel.Generals.ShowMessage(4, TYPO3.lang.translation_msg_SaveErrorTitle, TYPO3.lang.translation_msg_SaveErrorMessage + ' ' + ActionParams['TranslationValue'], 3);
 				}
 			}
+			else if(ActionParams['ActionKey'] == 'CheckScheduler') {
+
+				if(!success) {
+					TYPO3.Snowbabel.Generals.ShowMessageBox(TYPO3.lang.translation_msg_SchedulerTitle, TYPO3.lang.translation_msg_SchedulerMessage, true);
+				}
+
+			}
 		}
 	});
-
 };
 
 /**
@@ -223,6 +229,34 @@ TYPO3.Snowbabel.Generals.ShowMessage = function(severity, title, message, durati
 		// Check If Flashmessages Are Available
 	if (typeof TYPO3.Flashmessage === "object") {
 		TYPO3.Flashmessage.display(severity, title, message, duration);
+	}
+
+};
+
+TYPO3.Snowbabel.Generals.ShowMessageBox = function(title, message, spotlight) {
+
+	var window = new Ext.Window({
+		title: title,
+		width: 300,
+		height: 50,
+		layout: 'fit',
+		bodyStyle:'padding:5px; background-color: white;',
+		closable: false,
+		draggable: false,
+		resizable: false,
+		html: '<p align="middle">' + message + '</p>'
+	});
+
+	window.show();
+
+	if(spotlight) {
+
+		var spot = new Ext.ux.Spotlight({
+			animate: false
+		});
+
+		spot.show(window.getId());
+
 	}
 
 };

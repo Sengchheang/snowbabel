@@ -6,7 +6,6 @@ CREATE TABLE be_groups (
 	tx_snowbabel_languages tinytext
 );
 
-
 #
 # Add field to table 'be_users'
 #
@@ -32,76 +31,8 @@ CREATE TABLE tx_snowbabel_users (
 	KEY parent (pid)
 );
 
-CREATE TABLE tx_snowbabel_cache_extensions (
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-	tstamp int(11) DEFAULT '0' NOT NULL,
-	crdate int(11) DEFAULT '0' NOT NULL,
-
-	ExtensionKey tinytext NOT NULL,
-	ExtensionTitle tinytext NOT NULL,
-	ExtensionDescription text,
-	ExtensionCategory tinytext NOT NULL,
-	ExtensionIcon tinytext NOT NULL,
-	ExtensionCss tinytext NOT NULL,
-	ExtensionLocation tinytext NOT NULL,
-	ExtensionPath text,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid)
-);
-
-CREATE TABLE tx_snowbabel_cache_files (
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-	tstamp int(11) DEFAULT '0' NOT NULL,
-	crdate int(11) DEFAULT '0' NOT NULL,
-
-	ExtensionKey tinytext NOT NULL,
-	FilePath tinytext NOT NULL,
-	FilePath tinytext NOT NULL,
-	FileKey tinytext NOT NULL,
-	FileLocation tinytext NOT NULL,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid)
-);
-
-CREATE TABLE tx_snowbabel_cache_labels (
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-	tstamp int(11) DEFAULT '0' NOT NULL,
-	crdate int(11) DEFAULT '0' NOT NULL,
-
-	LabelName tinytext NOT NULL,
-	LabelDefault text,
-	LabelPath text,
-	LabelLocation tinytext NOT NULL,
-	LabelExtension tinytext NOT NULL,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid)
-);
-
-CREATE TABLE tx_snowbabel_cache_labeltranslations (
-	uid int(11) NOT NULL auto_increment,
-	pid int(11) DEFAULT '0' NOT NULL,
-	tstamp int(11) DEFAULT '0' NOT NULL,
-	crdate int(11) DEFAULT '0' NOT NULL,
-
-	LabelTranslationValue text,
-	LabelTranslationName tinytext NOT NULL,
-	LabelTranslationLanguage tinytext NOT NULL,
-	LabelPath text,
-	LabelLocation  tinytext NOT NULL,
-	LabelExtension tinytext NOT NULL,
-
-	PRIMARY KEY (uid),
-	KEY parent (pid)
-);
-
 CREATE TABLE tx_snowbabel_tableid (
-	TableId int(11) DEFAULT '0' NOT NULL,
+	TableId int(11) DEFAULT '0' NOT NULL
 );
 
 CREATE TABLE tx_snowbabel_indexing_extensions_0 (

@@ -98,6 +98,9 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 			// Switch CurrentTableId
 		$this->Db->setCurrentTableId($this->CurrentTableId);
 
+			// Add Scheduler Check To Localconf
+		$this->confObj->setSchedulerCheck();
+
 		return true;
 	}
 

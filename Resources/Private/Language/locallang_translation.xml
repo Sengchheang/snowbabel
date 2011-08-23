@@ -56,6 +56,8 @@
 			<label index="translation_msg_SaveOkMessage">Following value correctly saved:</label>
 			<label index="translation_msg_SaveErrorTitle">Not Saved</label>
 			<label index="translation_msg_SaveErrorMessage">Please try to save following label again:</label>
+			<label index="translation_msg_SchedulerTitle">Application Error</label>
+			<label index="translation_msg_SchedulerMessage">You need to run scheduler task first!</label>
 
 		</languageKey>
 
