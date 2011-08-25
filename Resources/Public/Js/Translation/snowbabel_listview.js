@@ -55,12 +55,16 @@ TYPO3.Snowbabel.ListView = Ext.extend(Ext.Panel , {
 					var TotalResults = Store.reader.jsonData.ResultCount;
 
 					if(TotalResults == 0 || TotalResults == undefined) {
+
 							// Clear Listview
 						this.removeAll();
 
-							// Clear Pagebar -> TODO: remove "afterPageText"
-						var PagerBar = this.getBottomToolbar();
+							// Get Pager
+						var PagerBar = Ext.getCmp('ListViewGrid').getBottomToolbar();
+
+							// Clear Pager
 						PagerBar.setDisabled(true);
+						
 					}
 				}
 			})
