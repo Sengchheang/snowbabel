@@ -270,11 +270,6 @@ class tx_snowbabel_Configuration {
 			if(isset($ExtjsParams[$StandartKey])) {
 
 				$Value = $ExtjsParams[$StandartKey];
-
-					// checkbox
-				if($Value == 'on') $Value = 1;
-				if($Value == NULL) $Value = 0;
-
 				$NewLocalconfValues[$StandartKey] = $Value;
 
 			}
@@ -503,6 +498,13 @@ class tx_snowbabel_Configuration {
 		$ExtjsParams['AutoBackupCronjob']			= $this->configuration['Extjs']['AutoBackupCronjob'];
 
 		$ExtjsParams['CopyDefaultLanguage']			= $this->configuration['Extjs']['CopyDefaultLanguage'];
+
+		foreach($ExtjsParams as $Key => $Param) {
+
+			if($Param === NULL) $ExtjsParams[$Key] = 0;
+			if($Param === 'on') $ExtjsParams[$Key] = 1;
+
+		}
 
 		return $ExtjsParams;
 	}
