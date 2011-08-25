@@ -58,7 +58,7 @@ class tx_snowbabel_TCA {
 		$this->getExtensionsObject();
 
 			// get all extensions for this user
-		$Extensions = $this->extObj->getExtensions($OutputData = true);
+		$Extensions = $this->extObj->getExtensions();
 
 		if(is_array($Extensions)) {
 			foreach($Extensions as $Extension) {
