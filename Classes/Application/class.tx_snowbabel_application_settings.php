@@ -134,7 +134,6 @@ class tx_snowbabel_Application_Settings {
 		$this->pageRenderer->addInlineLanguageLabelArray($this->getLLArray());
 
 		$this->pageRenderer->addCssFile($this->resPath . 'Public/Css/Settings.css');
-		$this->pageRenderer->addCssFile($this->resPath . 'Public/Css/MultiSelect.css');
 
 			// plugins
 		$this->pageRenderer->addJsFile($this->jsExtensionPath . 'MultiSelect.js');
