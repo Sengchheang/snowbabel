@@ -89,6 +89,16 @@
 
 }
 
+/* button*/
+.x-btn-pressed {
+	background-color: #BDBCBC;
+	background-image: -moz-linear-gradient(center top , #F6F6F6 10%, #BDBCBC 90%);
+	border-color: #BDBCBC;
+
+	-webkit-box-shadow:0 0 3px green;
+	-moz-box-shadow: 0 0 3px green;
+	box-shadow: 0 0 3px green;
+}
 
 
 
