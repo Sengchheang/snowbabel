@@ -55,6 +55,33 @@ class tx_snowbabel_Configuration {
 	 */
 	private $extjsParams;
 
+	private $StandartValues = array(
+		'LocalExtensionPath'		=> 'typo3conf/ext/',
+		'SystemExtensionPath'		=> 'typo3/sysext/',
+		'GlobalExtensionPath'		=> 'typo3/ext/',
+
+		'ShowLocalExtensions'		=> 1,
+		'ShowSystemExtensions'		=> 1,
+		'ShowGlobalExtensions'		=> 1,
+
+		'ShowOnlyLoadedExtensions'	=> 1,
+		'ShowTranslatedLanguages'	=> 0,
+
+		'BlacklistedExtensions'		=> 't3quixplorer,indexed_search,rtehtmlarea,t3editor,sv,sys_action,t3skin,belog,ics_awstats,ics_web_awstats,phpmyadmin,terminal,api_macmade,css_styled_content',
+		'BlacklistedCategories'		=> 'module,services,misc,be',
+
+		'XmlFilter'					=> 1,
+
+		'AutoBackupEditing'			=> 1,
+		'AutoBackupCronjob'			=> 0,
+
+		'CopyDefaultLanguage'		=> 1,
+
+		'AvailableLanguages'		=> '30',
+
+		'SchedulerCheck'			=> 0
+	);
+
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
 
@@ -228,32 +255,44 @@ class tx_snowbabel_Configuration {
 	 */
 	public function saveFormSettings() {
 
-		$LocalconfValues = array();
+		$NewLocalconfValues = array();
+
+			// Get Old Values
+		$LocalconfValues = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['snowbabel']);
 
 			// Get Defined Extjs Values
 		$ExtjsParams = $this->getExtjsConfigurationFormSettings();
 
-			// Write Defined Extjs Values To Database
-		if(count($ExtjsParams) > 0) {
-			foreach($ExtjsParams as $Name => $Value) {
+		// Write Defined Extjs Values To Database
+		foreach($this->StandartValues as $StandartKey => $StandartValue) {
+
+				// New Value From Submit
+			if(isset($ExtjsParams[$StandartKey])) {
+
+				$Value = $ExtjsParams[$StandartKey];
 
 					// checkbox
 				if($Value == 'on') $Value = 1;
 				if($Value == NULL) $Value = 0;
 
-				$LocalconfValues[$Name] = $Value;
+				$NewLocalconfValues[$StandartKey] = $Value;
 
 			}
+				// Already Defined in Localconf
+			elseif(isset($LocalconfValues[$StandartKey])) {
+				$NewLocalconfValues[$StandartKey] = $LocalconfValues[$StandartKey];
+			}
 		}
+
 
 			// Set Languages If Added
 		$Languages = $this->getExtjsConfiguration('AddedLanguages');
 
 		if($Languages) {
-			$LocalconfValues['AvailableLanguages'] = $Languages;
+			$NewLocalconfValues['AvailableLanguages'] = $Languages;
 		}
 
-		$this->writeLocalconfArray($LocalconfValues);
+		$this->writeLocalconfArray($NewLocalconfValues);
 	}
 
 	/**
@@ -609,40 +648,15 @@ class tx_snowbabel_Configuration {
 	 */
 	private function loadApplicationConfiguration($SetConfiguration = true) {
 
-		$StandartValues = array(
-			'LocalExtensionPath'		=> 'typo3conf/ext/',
-			'SystemExtensionPath'		=> 'typo3/sysext/',
-			'GlobalExtensionPath'		=> 'typo3/ext/',
 
-			'ShowLocalExtensions'		=> 1,
-			'ShowSystemExtensions'		=> 1,
-			'ShowGlobalExtensions'		=> 1,
-
-			'ShowOnlyLoadedExtensions'	=> 1,
-			'ShowTranslatedLanguages'	=> 0,
-
-			'BlacklistedExtensions'		=> 't3quixplorer,indexed_search,rtehtmlarea,t3editor,sv,sys_action,t3skin,belog,ics_awstats,ics_web_awstats,phpmyadmin,terminal,api_macmade,css_styled_content',
-			'BlacklistedCategories'		=> 'module,services,misc,be',
-
-			'XmlFilter'					=> 1,
-
-			'AutoBackupEditing'			=> 1,
-			'AutoBackupCronjob'			=> 0,
-
-			'CopyDefaultLanguage'		=> 1,
-
-			'AvailableLanguages'		=> '30',
-
-			'SchedulerCheck'			=> 0
-		);
 
 		$LocalconfValues = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['snowbabel']);
 
 			// Check Configuration
-		if(!is_array($LocalconfValues) || count($StandartValues) > count($LocalconfValues)) {
+		if(!is_array($LocalconfValues) || count($this->StandartValues) > count($LocalconfValues)) {
 
 				// Otherwise Set StandartValue
-			foreach($StandartValues as $StandartKey => $StandartValue) {
+			foreach($this->StandartValues as $StandartKey => $StandartValue) {
 				if(!isset($LocalconfValues[$StandartKey])) {
 					$LocalconfValues[$StandartKey] = $StandartValue;
 				}
