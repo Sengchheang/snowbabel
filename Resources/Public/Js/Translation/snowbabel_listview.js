@@ -76,7 +76,6 @@ TYPO3.Snowbabel.ListView = Ext.extend(Ext.Panel , {
 			stripeRows: true,
 			columns:[],
 			listeners: ({
-
 				'afteredit': function(e) {
 
 					var ActionParams	= new Array();
@@ -121,7 +120,15 @@ TYPO3.Snowbabel.ListView = Ext.extend(Ext.Panel , {
 					this.syncFocusEl(0);
 				},
 				forceFit: true,
-				emptyText: '<p id="noRecords">' + TYPO3.lang.translation_listview_GroupingViewEmptyText + '</p>'
+				emptyText: '<p id="noRecords">' + TYPO3.lang.translation_listview_GroupingViewEmptyText + '</p>',
+				/* makes cells selectable */
+				templates: {
+					cell: new Ext.Template(
+						'<td class="x-grid3-col x-grid3-cell x-grid3-td-{id} x-selectable {css}" style="{style}" tabIndex="0" {cellAttr}>',
+						'<div class="x-grid3-cell-inner x-grid3-col-{id}" {attr}>{value}</div>',
+						'</td>'
+					)
+				}
 			},
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: TYPO3.Snowbabel.Generals.ListViewLimit,

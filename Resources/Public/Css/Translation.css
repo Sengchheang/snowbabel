@@ -100,6 +100,11 @@
 	box-shadow: 0 0 3px green;
 }
 
+/* makes cells selectable */
+.x-selectable, .x-selectable * {
+	-moz-user-select: text!important;
+	-khtml-user-select: text!important;
+}
 
 
 /**
