@@ -78,7 +78,7 @@ TYPO3.Snowbabel.ExtensionMenu = Ext.extend(Ext.Panel , {
 			overClass:'snowbabel-menu-item-over',
 			selectedClass: 'snowbabel-menu-item-selected',
 			itemSelector:'li.snowbabel-menu-item',
-			emptyText: '###detailView.NoRecordsAvailable###',
+			emptyText: TYPO3.lang.translation_extensionmenu_filterNoResult,
 			store: ExtensionMenuStore,
 			tpl: ExtensionMenuTpl,
 			loadingText: TYPO3.lang.translation_extensionmenu_LoadingText,
@@ -102,9 +102,26 @@ TYPO3.Snowbabel.ExtensionMenu = Ext.extend(Ext.Panel , {
 			})
 		});
 
+		var ExtensionFilter = new Ext.Toolbar({
+			items: [{
+				xtype: 'textfield',
+				id: 'ExtensionFilter',
+				selectOnFocus: true,
+				width: 181,
+				listeners: {
+					'render': {fn:function(){
+						Ext.getCmp('ExtensionFilter').getEl().on('keyup', function(){
+							this.filter();
+						}, this, {buffer:500})
+					}, scope:this}
+				}
+			}]
+		});
+
 			//config
 		var config = {
-			items: ExtensionMenuView
+			items: ExtensionMenuView,
+			tbar: ExtensionFilter
 		};
 
 		Ext.apply(this, Ext.apply(this.initialConfig, config));
@@ -113,6 +130,17 @@ TYPO3.Snowbabel.ExtensionMenu = Ext.extend(Ext.Panel , {
 		ExtensionMenuStore.load();
 
 		TYPO3.Snowbabel.ExtensionMenu.superclass.initComponent.apply(this, arguments);
+	},
+
+	filter: function() {
+
+		var ExtensionFilter = Ext.getCmp('ExtensionFilter');
+		var View = Ext.getCmp('snowbabel-extension-menu-view');
+
+		console.log(View);
+
+		View.store.filter('ExtensionTitle', ExtensionFilter.getValue());
+		//View.select(0);
 	}
 
 });

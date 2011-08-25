@@ -10,6 +10,10 @@
 	background-image: url("../Images/Miscellaneous/menu.gif");
 }
 
+	#snowbabel-extension-menu .x-panel-tbar {
+		padding-bottom: 0;
+	}
+
 .snowbabel-menu {
 	background-color: transparent;
 	border: 0 none;
