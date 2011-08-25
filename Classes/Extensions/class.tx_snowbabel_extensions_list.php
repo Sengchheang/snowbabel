@@ -137,7 +137,14 @@ class tx_snowbabel_Extensions {
 		);
 
 		if(!$this->IsAdmin) {
-			$Conf['PermittedExtensions'] = $this->PermittedExtensions;
+
+				// Do Not Show Anything If No Permitted Extensions Available
+			if($this->PermittedExtensions == '') {
+				return NULL;
+			}
+			else {
+				$Conf['PermittedExtensions'] = $this->PermittedExtensions;
+			}
 		}
 
 		$Extensions = $this->Db->getExtensions($this->CurrentTableId, $Conf);

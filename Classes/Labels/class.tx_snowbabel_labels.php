@@ -94,6 +94,16 @@ class tx_snowbabel_Labels {
 	/**
 	 *
 	 */
+	private $IsAdmin;
+
+	/**
+	 *
+	 */
+	private $PermittedExtensions;
+
+	/**
+	 *
+	 */
 	private $Labels;
 
 	/**
@@ -140,6 +150,9 @@ class tx_snowbabel_Labels {
 		$this->ShowColumnDefault = $this->ColumnsConfiguration['ShowColumnDefault'];
 		$this->ShowColumnPath = $this->ColumnsConfiguration['ShowColumnPath'];
 		$this->ShowColumnLocation = $this->ColumnsConfiguration['ShowColumnLocation'];
+
+		$this->IsAdmin = $this->confObj->getUserConfigurationIsAdmin();
+		$this->PermittedExtensions = $this->confObj->getUserConfiguration('PermittedExtensions');
 
 			// extjs params
 		$this->SearchString = $this->confObj->getExtjsConfiguration('SearchString');
@@ -294,43 +307,48 @@ class tx_snowbabel_Labels {
 	 */
 	public function getLabels() {
 
-		$Languages = array();
+		if(!$this->IsAdmin && $this->PermittedExtensions == '') {
+			$this->Labels['LabelRows'] = NULL;
+		}
+		else {
+			$Languages = array();
 
-		if(is_array($this->Languages)) {
-			foreach($this->Languages as $Language) {
-				if($Language['LanguageSelected']) {
-					array_push($Languages, $Language['LanguageKey']);
+			if(is_array($this->Languages)) {
+				foreach($this->Languages as $Language) {
+					if($Language['LanguageSelected']) {
+						array_push($Languages, $Language['LanguageKey']);
+					}
 				}
 			}
-		}
 
-		$Conf = array(
-			'ExtensionId' => $this->SearchModus == 'global' ? '' : $this->ExtensionId,
-			'Sort' => $this->Sort ? $this->Sort : '',
-			'Dir' => $this->Dir ? $this->Dir : '',
-			'Limit' => $this->ListViewStart . ',' . $this->ListViewLimit,
-			'Search' => !$this->SearchString ? '' : $this->SearchString,
-			'Languages' => $Languages,
-			'Debug' => '0',
-		);
+			$Conf = array(
+				'ExtensionId' => $this->SearchModus == 'global' ? '' : $this->ExtensionId,
+				'Sort' => $this->Sort ? $this->Sort : '',
+				'Dir' => $this->Dir ? $this->Dir : '',
+				'Limit' => $this->ListViewStart . ',' . $this->ListViewLimit,
+				'Search' => !$this->SearchString ? '' : $this->SearchString,
+				'Languages' => $Languages,
+				'Debug' => '0',
+			);
 
-		$Translations = $this->Db->getTranslations($this->CurrentTableId, $Conf, $Languages);
+			$Translations = $this->Db->getTranslations($this->CurrentTableId, $Conf, $Languages);
 
-		if($Translations) {
+			if($Translations) {
 
-				// Because Of Performance Do Not Select Translation Selects, Only Need Labels
-			if(!$this->SearchString) {
-				$Conf['Fields'] = 'tx_snowbabel_indexing_labels_' . $this->CurrentTableId . '.uid';
-				$this->Labels['ResultCount'] = $this->Db->getLabels($this->CurrentTableId, $Conf, true);
+					// Because Of Performance Do Not Select Translation Selects, Only Need Labels
+				if(!$this->SearchString) {
+					$Conf['Fields'] = 'tx_snowbabel_indexing_labels_' . $this->CurrentTableId . '.uid';
+					$this->Labels['ResultCount'] = $this->Db->getLabels($this->CurrentTableId, $Conf, true);
+				}
+				else {
+					$this->Labels['ResultCount'] = $this->Db->getTranslations($this->CurrentTableId, $Conf, $Languages, true);
+				}
+
 			}
-			else {
-				$this->Labels['ResultCount'] = $this->Db->getTranslations($this->CurrentTableId, $Conf, $Languages, true);
-			}
 
+				// Add Result To Array
+			$this->Labels['LabelRows'] = $Translations;
 		}
-
-			// Add Result To Array
-		$this->Labels['LabelRows'] = $Translations;
 
 		return $this->Labels;
 	}
