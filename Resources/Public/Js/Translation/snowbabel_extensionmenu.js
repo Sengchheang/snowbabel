@@ -137,10 +137,7 @@ TYPO3.Snowbabel.ExtensionMenu = Ext.extend(Ext.Panel , {
 		var ExtensionFilter = Ext.getCmp('ExtensionFilter');
 		var View = Ext.getCmp('snowbabel-extension-menu-view');
 
-		console.log(View);
-
 		View.store.filter('ExtensionTitle', ExtensionFilter.getValue());
-		//View.select(0);
 	}
 
 });
