@@ -45,7 +45,7 @@ TYPO3.Snowbabel.Generals.LabelLanguage		= '';
 
 TYPO3.Snowbabel.Generals.LoadListView		= false;
 TYPO3.Snowbabel.Generals.ListViewStart		= 0;
-TYPO3.Snowbabel.Generals.ListViewLimit		= 20;
+TYPO3.Snowbabel.Generals.ListViewLimit		= 50;
 
 TYPO3.Snowbabel.Generals.SearchGlobal		= true;
 TYPO3.Snowbabel.Generals.SearchString		= '';
