@@ -139,7 +139,8 @@ CREATE TABLE tx_snowbabel_indexing_translations_0 (
 	TranslationEmpty tinyint(4) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
-	KEY parent (pid)
+	KEY parent (pid),
+	KEY `labellang` (`LabelId`,`TranslationLanguage`(4))
 );
 
 CREATE TABLE tx_snowbabel_indexing_translations_1 (
@@ -154,5 +155,6 @@ CREATE TABLE tx_snowbabel_indexing_translations_1 (
 	TranslationEmpty tinyint(4) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
-	KEY parent (pid)
+	KEY parent (pid),
+	KEY `labellang` (`LabelId`,`TranslationLanguage`(4))
 );
