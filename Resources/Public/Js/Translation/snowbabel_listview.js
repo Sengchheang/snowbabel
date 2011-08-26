@@ -64,7 +64,7 @@ TYPO3.Snowbabel.ListView = Ext.extend(Ext.Panel , {
 
 							// Clear Pager
 						PagerBar.setDisabled(true);
-						
+
 					}
 				}
 			})

@@ -695,11 +695,12 @@ class tx_snowbabel_Db {
 			if($Conf['OrderBy']) $OrderBy = $Conf['OrderBy'];
 
 			if($Conf['Sort']) {
-					//
+
+					// Translations
 				if(strpos($Conf['Sort'], 'TranslationValue_') !== false) {
-					// TODO: Seems To Be A Big Performance Issue!!!
-					//$OrderBy = $Conf['Sort'] . ' ' . $Conf['Dir'];
+					$OrderBy = $Conf['Sort'] . ' ' . $Conf['Dir'];
 				}
+					// Label-Table
 				else {
 					$OrderBy = $Table3_Alias . '.' . $Conf['Sort'] . ' ' . $Conf['Dir'];
 				}
@@ -715,38 +716,25 @@ class tx_snowbabel_Db {
 				array_push($Where['SEARCH_OR'], $Table3_Alias . '.LabelDefault LIKE \'%' . $Conf['Search'] . '%\'');
 			}
 
-				// LANGUAGES
-			if(count($Languages)) {
+		}
 
-				foreach($Languages as $Language) {
+			// LANGUAGES
+		if(count($Languages)) {
+			foreach($Languages as $Language) {
 
-					$Search = '';
+					// FORM
+				$Table .= ',' . $Table4 . ' trans_' . $Language;
 
-						// SEARCH
-					if($Conf['Search']) {
-						$Search = ' AND TranslationValue LIKE \'%' . $Conf['Search'] . '%\'';
-					}
+					// SELECT
+				$Fields .= ',trans_' . $Language . '.TranslationValue as TranslationValue_' . $Language;
 
-						// ORDER BY
+					// WHERE
+				array_push($Where['AND'], 'Labels.uid = trans_' . $Language . '.LabelId');
+				array_push($Where['AND'], 'trans_' . $Language . '.TranslationLanguage = \'' . $Language . '\'');
 
-						// TranslationId
-					$Fields .= '
-						,(SELECT TranslationValue
-						FROM ' . $Table4 . '
-						WHERE Labels.uid = LabelId
-						AND TranslationLanguage = \'' . $Language . '\'' . $Search . '
-						LIMIT 1
-						) AS TranslationValue_' . $Language;
-
-						// TranslationValue
-					$Fields .= '
-						,(SELECT uid
-						FROM ' . $Table4 . '
-						WHERE Labels.uid = LabelId
-						AND TranslationLanguage = \'' . $Language . '\'' . $Search . '
-						LIMIT 1
-						) AS TranslationId_' . $Language;
-
+					// SEARCH
+				if($Conf['Search']) {
+					array_push($Where['SEARCH_OR'], 'trans_' . $Language . '.TranslationValue LIKE \'%' . $Conf['Search'] . '%\'');
 				}
 
 			}

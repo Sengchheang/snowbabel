@@ -255,7 +255,7 @@ class tx_snowbabel_Labels {
 					$addColumn = array (
 							'header' => $Language['LanguageName'],
 							'dataIndex' => 'TranslationValue_' . $Language['LanguageKey'],
-							'sortable' => false, // TODO: Deactivated Because Of Performance -> tx_snowbabel_db->getTranslations
+							'sortable' => true,
 							'editor' => array (
 								'xtype' => 'textarea',
 								'multiline' => true,
@@ -343,6 +343,7 @@ class tx_snowbabel_Labels {
 				else {
 					$this->Labels['ResultCount'] = $this->Db->getTranslations($this->CurrentTableId, $Conf, $Languages, true);
 				}
+
 
 			}
 
