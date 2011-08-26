@@ -95,8 +95,9 @@ class tx_snowbabel_Configuration {
 	 */
 	public function __construct($extjsParams=false) {
 
-			// TODO: remove after development !!!
-		$this->initFirephp();
+		if(t3lib_div::_GET('debug')) {
+			$this->initFirephp();
+		}
 
 		$this->extjsParams = $extjsParams;
 
@@ -903,8 +904,6 @@ class tx_snowbabel_Configuration {
 	 */
 	private function initFirephp() {
 
-			// TODO: check if firephp already included
-			// TODO: add var to autoinclude firephp in configuration
 			// firephp - for debugging only
 		require_once (t3lib_extMgm::extPath('snowbabel') . 'Resources/Private/Firephp/FirePHP.class.php');
 

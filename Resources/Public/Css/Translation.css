@@ -45,6 +45,7 @@
 
 
 
+	#snowbabel-language-menu .snowbabel-menu-item-selected,
 	#ExtensionMenu .snowbabel-menu-item-selected {
 		font-weight: bold;
 	}
