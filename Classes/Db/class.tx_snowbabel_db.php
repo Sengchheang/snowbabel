@@ -347,9 +347,6 @@ class tx_snowbabel_Db {
 	 */
 	public function setCurrentTableId($TableId) {
 
-			// Negate
-		$TableId = $TableId ? 0 : 1;
-
 			// Update Field
 		$this->db->exec_UPDATEquery(
 			'tx_snowbabel_tableid',

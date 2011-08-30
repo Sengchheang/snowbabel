@@ -80,8 +80,8 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 
 		$this->init();
 
-			// Get Current TableId
-		$this->CurrentTableId = $this->Db->getCurrentTableId();
+			// Get Current TableId & Negate
+		$this->CurrentTableId = $this->Db->getCurrentTableId() ? 0 : 1;
 
 			// Indexing Extensions
 		$this->indexingExtensions();
