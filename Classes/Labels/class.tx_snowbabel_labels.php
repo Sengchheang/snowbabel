@@ -311,8 +311,8 @@ class tx_snowbabel_Labels {
 
 			$Conf = array(
 				'ExtensionId' => $this->SearchModus == 'global' ? '' : $this->ExtensionId,
-				'Sort' => $this->Sort ? $this->Sort : '',
-				'Dir' => $this->Dir ? $this->Dir : '',
+				'Sort' => $this->Sort ? $this->Sort : 'LabelName',
+				'Dir' => $this->Dir ? $this->Dir : 'ASC',
 				'Limit' => $this->ListViewStart . ',' . $this->ListViewLimit,
 				'Search' => !$this->SearchString ? '' : $this->SearchString,
 				'Languages' => $Languages,
