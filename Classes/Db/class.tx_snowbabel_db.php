@@ -726,6 +726,7 @@ class tx_snowbabel_Db {
 				$Table .= ',' . $Table4 . ' trans_' . $Language;
 
 					// SELECT
+				$Fields .= ',trans_' . $Language . '.uid as TranslationId_' . $Language;
 				$Fields .= ',trans_' . $Language . '.TranslationValue as TranslationValue_' . $Language;
 
 					// WHERE
