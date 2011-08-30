@@ -95,9 +95,8 @@ class tx_snowbabel_Configuration {
 	 */
 	public function __construct($extjsParams=false) {
 
-		if(t3lib_div::_GET('debug')) {
-			$this->initFirephp();
-		}
+			// Only for dev
+		//$this->initFirephp();
 
 		$this->extjsParams = $extjsParams;
 
