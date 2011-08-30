@@ -24,8 +24,6 @@ CREATE TABLE tx_snowbabel_users (
 	SelectedLanguages tinytext NOT NULL,
 	ShowColumnLabel tinyint(4) DEFAULT '1' NOT NULL,
 	ShowColumnDefault tinyint(4) DEFAULT '1' NOT NULL,
-	ShowColumnPath tinyint(4) DEFAULT '0' NOT NULL,
-	ShowColumnLocation tinyint(4) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),
 	KEY parent (pid)

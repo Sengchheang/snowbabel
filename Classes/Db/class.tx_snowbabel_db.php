@@ -119,34 +119,6 @@ class tx_snowbabel_Db {
 	}
 
 	/**
-	 * @param  $BeUserId
-	 * @return null
-	 */
-	public function getUserConfShowColumnPath($BeUserId) {
-
-			// set configuration
-		$name = 'ShowColumnPath';
-
-			// get value
-		return $this->getUserConf($name, $BeUserId);
-
-	}
-
-	/**
-	 * @param  $BeUserId
-	 * @return null
-	 */
-	public function getUserConfShowColumnLocation($BeUserId) {
-
-			// set configuration
-		$name = 'ShowColumnLocation';
-
-			// get value
-		return $this->getUserConf($name, $BeUserId);
-
-	}
-
-	/**
 	 * @param  $name
 	 * @param  $BeUserId
 	 * @return null

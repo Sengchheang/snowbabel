@@ -97,7 +97,7 @@ TYPO3.Snowbabel.ViewportEast = {
 			xtype: 'TYPO3.Snowbabel.ColumnSelection',
 			id: 'snowbabel-column-menu',
 			region: 'south',
-			height: 92
+			height: 48
 		}
 	]
 };

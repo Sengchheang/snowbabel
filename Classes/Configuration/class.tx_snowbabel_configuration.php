@@ -756,8 +756,6 @@ class tx_snowbabel_Configuration {
 			// get "showColumn" values from database
 		$this->setUserConfigurationColumn($this->db->getUserConfShowColumnLabel($this->getUserConfigurationId()), 'ShowColumnLabel');
 		$this->setUserConfigurationColumn($this->db->getUserConfShowColumnDefault($this->getUserConfigurationId()), 'ShowColumnDefault');
-		$this->setUserConfigurationColumn($this->db->getUserConfShowColumnPath($this->getUserConfigurationId()), 'ShowColumnPath');
-		$this->setUserConfigurationColumn($this->db->getUserConfShowColumnLocation($this->getUserConfigurationId()), 'ShowColumnLocation');
 
 	}
 

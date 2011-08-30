@@ -13,6 +13,7 @@
 
 			<label index="translation_extensionmenu_LoadingText">Loading...</label>
 			<label index="translation_extensionmenu_QtipKey">Key</label>
+			<label index="translation_extensionmenu_QtipLocation">Location</label>
 			<label index="translation_extensionmenu_QtipDescription">Description</label>
 			<label index="translation_extensionmenu_QtipCategory">Category</label>
 
@@ -37,8 +38,6 @@
 			<label index="translation_columnselection_ShowColumnId">Label Id</label>
 			<label index="translation_columnselection_ShowColumnLabel">Label Name</label>
 			<label index="translation_columnselection_ShowColumnDefault">Default Label</label>
-			<label index="translation_columnselection_ShowColumnPath">Path</label>
-			<label index="translation_columnselection_ShowColumnLocation">Location</label>
 
 			<label index="translation_listview_GridSearch">Search: </label>
 			<label index="translation_listview_GridSearchToggle">Global search</label>

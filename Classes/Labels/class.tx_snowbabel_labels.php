@@ -84,16 +84,6 @@ class tx_snowbabel_Labels {
 	/**
 	 *
 	 */
-	private $ShowColumnPath;
-
-	/**
-	 *
-	 */
-	private $ShowColumnLocation;
-
-	/**
-	 *
-	 */
 	private $IsAdmin;
 
 	/**
@@ -148,8 +138,6 @@ class tx_snowbabel_Labels {
 
 		$this->ShowColumnLabel = $this->ColumnsConfiguration['ShowColumnLabel'];
 		$this->ShowColumnDefault = $this->ColumnsConfiguration['ShowColumnDefault'];
-		$this->ShowColumnPath = $this->ColumnsConfiguration['ShowColumnPath'];
-		$this->ShowColumnLocation = $this->ColumnsConfiguration['ShowColumnLocation'];
 
 		$this->IsAdmin = $this->confObj->getUserConfigurationIsAdmin();
 		$this->PermittedExtensions = $this->confObj->getUserConfiguration('PermittedExtensions');
