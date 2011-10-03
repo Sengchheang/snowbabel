@@ -34,14 +34,14 @@ class tx_snowbabel_system_statistics {
 	/**
 	 * @var
 	 */
-	private $confObj;
+	private static $confObj;
 
 	/**
 	 * @param  $confObj
 	 */
-	public function __construct($confObj) {
+	public static function init($confObj) {
 
-		$this->confObj = $confObj;
+		self::$confObj = $confObj;
 
 	}
 

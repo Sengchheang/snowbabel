@@ -32,114 +32,119 @@
 class tx_snowbabel_system_translations {
 
 	/**
-	 * @var
+	 * @var tx_snowbabel_configuration
 	 */
-	private $confObj;
+	private static $confObj;
 
 	/**
 	 * @var
 	 */
-	private $debug;
+	private static $debug;
 
 	/**
 	 * @var
 	 */
-	private $CopyDefaultLanguage;
+	private static $CopyDefaultLanguage;
 
 	/**
 	 * @var
 	 */
-	private $AvailableLanguages;
+	private static $AvailableLanguages;
 
 	/**
 	 * @var
 	 */
-	private $BlacklistedExtensions;
+	private static $BlacklistedExtensions;
 
 	/**
 	 * @var
 	 */
-	private $BlacklistedCategories;
+	private static $BlacklistedCategories;
 
 	/**
 	 * @var
 	 */
-	private $LocalExtensionPath;
+	private static $LocalExtensionPath;
 
 	/**
 	 * @var
 	 */
-	private $SystemExtensionPath;
+	private static $SystemExtensionPath;
 
 	/**
 	 * @var
 	 */
-	private $GlobalExtensionPath;
+	private static $GlobalExtensionPath;
 
 	/**
 	 * @var
 	 */
-	private $SitePath;
+	private static $SitePath;
 
 	/**
 	 * @var
 	 */
-	private $L10nPath;
+	private static $L10nPath;
 
 	/**
 	 * @var
 	 */
-	private $LoadedExtensions;
+	private static $LoadedExtensions;
 
 	/**
 	 * @var
 	 */
-	private $Translations;
+	private static $CacheTranslationsPath = '';
 
 	/**
 	 * @var
 	 */
-	private $CacheFilePath = '';
+	private static $CachedTranslations;
 
 	/**
 	 * @var
 	 */
-	private $CacheLanguageFile = array();
+	private static $CacheFilePath = '';
 
 	/**
-	 * @param  $confObj
+	 * @var
 	 */
-	public function __construct($confObj) {
+	private static $CacheLanguageFile = array();
 
-		$this->confObj = $confObj;
-		$this->debug = $confObj->debug;
+	/**
+	 * @param $confObj
+	 * @return void
+	 */
+	public static function init($confObj) {
+
+		self::$confObj = $confObj;
+		self::$debug = $confObj->debug;
 
 			// get Application params
-		$this->CopyDefaultLanguage = $this->confObj->getApplicationConfiguration('CopyDefaultLanguage');
-		$this->AvailableLanguages = $this->confObj->getApplicationConfiguration('AvailableLanguages');
-		$this->BlacklistedExtensions = $this->confObj->getApplicationConfiguration('BlacklistedExtensions');
-		$this->BlacklistedCategories = $this->confObj->getApplicationConfiguration('BlacklistedCategories');
-		$this->LocalExtensionPath = $this->confObj->getApplicationConfiguration('LocalExtensionPath');
-		$this->SystemExtensionPath = $this->confObj->getApplicationConfiguration('SystemExtensionPath');
-		$this->GlobalExtensionPath = $this->confObj->getApplicationConfiguration('GlobalExtensionPath');
+		self::$CopyDefaultLanguage = self::$confObj->getApplicationConfiguration('CopyDefaultLanguage');
+		self::$AvailableLanguages = self::$confObj->getApplicationConfiguration('AvailableLanguages');
+		self::$BlacklistedExtensions = self::$confObj->getApplicationConfiguration('BlacklistedExtensions');
+		self::$BlacklistedCategories = self::$confObj->getApplicationConfiguration('BlacklistedCategories');
+		self::$LocalExtensionPath = self::$confObj->getApplicationConfiguration('LocalExtensionPath');
+		self::$SystemExtensionPath = self::$confObj->getApplicationConfiguration('SystemExtensionPath');
+		self::$GlobalExtensionPath = self::$confObj->getApplicationConfiguration('GlobalExtensionPath');
 
 			// get Extension params
-		$this->SitePath = $this->confObj->getExtensionConfiguration('SitePath');
-		$this->L10nPath = $this->confObj->getExtensionConfiguration('L10nPath');
-		$this->LoadedExtensions = $this->confObj->getExtensionConfigurationLoadedExtensions();
-
+		self::$SitePath = self::$confObj->getExtensionConfiguration('SitePath');
+		self::$L10nPath = self::$confObj->getExtensionConfiguration('L10nPath');
+		self::$LoadedExtensions = self::$confObj->getExtensionConfigurationLoadedExtensions();
 	}
 
 	/**
 	 * @return array
 	 */
-	public function getExtensions() {
+	public static function getExtensions() {
 
-		$Extensions = $this->getDirectories();
+		$Extensions = self::getDirectories();
 
-		$Extensions = $this->removeBlacklistedExtensions($Extensions);
+		$Extensions = self::removeBlacklistedExtensions($Extensions);
 
-		$Extensions = $this->getExtensionData($Extensions);
+		$Extensions = self::getExtensionData($Extensions);
 
 		return $Extensions;
 
@@ -149,7 +154,7 @@ class tx_snowbabel_system_translations {
 	 * @param array $Extensions
 	 * @return array
 	 */
-	public function getFiles($Extensions) {
+	public static function getFiles($Extensions) {
 
 		$Files = array();
 
@@ -157,7 +162,7 @@ class tx_snowbabel_system_translations {
 			foreach($Extensions as $Extension) {
 
 					// Get Extension Files
-				$Files[$Extension['uid']] = $this->getSystemFiles($Extension['ExtensionPath'], $Extension['uid']);
+				$Files[$Extension['uid']] = self::getSystemFiles($Extension['ExtensionPath'], $Extension['uid']);
 
 			}
 	    }
@@ -170,7 +175,7 @@ class tx_snowbabel_system_translations {
 	 * @param array $Files
 	 * @return array
 	 */
-	public function getLabels($Files) {
+	public static function getLabels($Files) {
 
 		$Labels = array();
 
@@ -178,7 +183,7 @@ class tx_snowbabel_system_translations {
 
 			foreach($Files as $File) {
 
-				$Labels[$File['FileId']] = $this->getSystemLabels($File['ExtensionPath'] . $File['FileKey'], $File['FileId']);
+				$Labels[$File['FileId']] = self::getSystemLabels($File['ExtensionPath'] . $File['FileKey'], $File['FileId']);
 
 			}
 
@@ -192,25 +197,17 @@ class tx_snowbabel_system_translations {
 	 * @param  $Labels
 	 * @return array
 	 */
-	public function getTranslations($Labels) {
+	public static function getTranslations($Labels) {
 
 		$Translations = array();
 
 		if(count($Labels)) {
 
-				// Make Sure To Reset Variables
-			unset($this->CacheFilePath);
-			unset($this->CacheLanguageFile);
-
 			foreach($Labels as $Label) {
 
-				$Translations[$Label['LabelId']] = $this->getSystemTranslations($Label['LabelName'], $Label['ExtensionPath'] . $Label['FileKey'], $Label['LabelId']);
+				$Translations[$Label['LabelId']] = self::getSystemTranslations($Label['LabelName'], $Label['ExtensionPath'] . $Label['FileKey'], $Label['LabelId']);
 
 			}
-
-				// Make Sure To Reset Variables
-			unset($this->CacheFilePath);
-			unset($this->CacheLanguageFile);
 
 		}
 
@@ -222,7 +219,7 @@ class tx_snowbabel_system_translations {
 	 * @param  $Translation
 	 * @return void
 	 */
-	public function updateTranslation($Translation) {
+	public static function updateTranslation($Translation) {
 
 		$FilePath			= $Translation['ExtensionPath'] . $Translation['FileKey'];
 		$Language			= $Translation['TranslationLanguage'];
@@ -234,10 +231,10 @@ class tx_snowbabel_system_translations {
 		$TranslationFilePath = t3lib_div::getFileAbsFileName($TranslationFileName);
 
 			// Get Data From L10n File
-		$Translation = $this->getSystemLanguageFile($TranslationFilePath);
+		$Translation = self::getSystemLanguageFile_New($TranslationFilePath);
 
 			// Get Original Label
-		$Extension = $this->getSystemLanguageFile($FilePath);
+		$Extension = self::getSystemLanguageFile_New($FilePath);
 
 		if($Extension) {
 				// Get Hash From Original Label
@@ -259,29 +256,29 @@ class tx_snowbabel_system_translations {
 		}
 
 			// Write File
-		$this->writeTranslation($Translation, $TranslationFilePath);
+		self::writeTranslation($Translation, $TranslationFilePath);
 
 			// Delete Temp Files In typo3temp-Folder
-		$this->deleteSystemCache($FilePath, $Language);
+		self::deleteSystemCache($FilePath, $Language);
 
 	}
 
 	/**
 	 * @return array
 	 */
-	private function getDirectories() {
+	private static function getDirectories() {
 
 		$Directories	= array();
 		$RawDirectories = array();
 
 		// get local extension dirs
-		$RawDirectories['Local'] = $this->getSystemDirectories($this->SitePath.$this->LocalExtensionPath);
+		$RawDirectories['Local'] = self::getSystemDirectories(self::$SitePath.self::$LocalExtensionPath);
 
 		// get system extension dirs
-		$RawDirectories['System'] = $this->getSystemDirectories($this->SitePath.$this->SystemExtensionPath);
+		$RawDirectories['System'] = self::getSystemDirectories(self::$SitePath.self::$SystemExtensionPath);
 
 		// get global extension dirs
-		$RawDirectories['Global'] = $this->getSystemDirectories($this->SitePath.$this->GlobalExtensionPath);
+		$RawDirectories['Global'] = self::getSystemDirectories(self::$SitePath.self::$GlobalExtensionPath);
 
 
 		if(is_array($RawDirectories['System']) && count($RawDirectories['System']) > 0) {
@@ -306,14 +303,14 @@ class tx_snowbabel_system_translations {
 	 * @param  $RawExtensions
 	 * @return array
 	 */
-	private function removeBlacklistedExtensions($RawExtensions) {
+	private static function removeBlacklistedExtensions($RawExtensions) {
 
 		$Extensions = array();
 		$BlacklistedExtensions = array();
 
 			// Get Blacklisted Extensions
-		if ($this->BlacklistedExtensions) {
-			 $BlacklistedExtensions = explode(',',$this->BlacklistedExtensions);
+		if (self::$BlacklistedExtensions) {
+			 $BlacklistedExtensions = explode(',',self::$BlacklistedExtensions);
 		}
 
 			// Just Use Allowed Extensions
@@ -335,7 +332,7 @@ class tx_snowbabel_system_translations {
 	 * @param  $ExtensionList
 	 * @return array
 	 */
-	private function getExtensionData($ExtensionList) {
+	private static function getExtensionData($ExtensionList) {
 
 		$Extensions = array();
 
@@ -343,7 +340,7 @@ class tx_snowbabel_system_translations {
 		if(is_array($ExtensionList)) {
 			foreach($ExtensionList as $ExtensionKey) {
 
-				$ExtensionData = $this->getExtension($ExtensionKey);
+				$ExtensionData = self::getExtension($ExtensionKey);
 
 					// Just Add If Data Available
 				if($ExtensionData) {
@@ -361,29 +358,29 @@ class tx_snowbabel_system_translations {
 	 * @param  $ExtensionKey
 	 * @return array|bool
 	 */
-	private function getExtension($ExtensionKey) {
+	private static function getExtension($ExtensionKey) {
 
 		if(is_string($ExtensionKey)) {
 
 				// Locate Where Extension Is Installed
-			$ExtensionLocation = $this->getSystemExtensionLocation($ExtensionKey);
+			$ExtensionLocation = self::getSystemExtensionLocation($ExtensionKey);
 
 				// Get Extension Data From EmConf
-			$EMConf = $this->getSystemEMConf($ExtensionLocation['Path']);
+			$EMConf = self::getSystemEMConf($ExtensionLocation['Path']);
 
 				// If Blacklisted Category Return
-			if($this->isCategoryBlacklisted($EMConf['ExtensionCategory'])) return false;
+			if(self::isCategoryBlacklisted($EMConf['ExtensionCategory'])) return false;
 
 				// Add Extension Data
 			$ExtensionData = array(
 				'ExtensionKey' 					=> $ExtensionKey,
-				'ExtensionTitle'				=> $EMConf['ExtensionTitle'] ? $this->getCleanedString($EMConf['ExtensionTitle']) : $ExtensionKey,
-				'ExtensionDescription'			=> $this->getCleanedString($EMConf['ExtensionDescription']),
-				'ExtensionCategory'				=> $this->getCleanedString($EMConf['ExtensionCategory']),
-				'ExtensionIcon'					=> $this->getExtensionIcon($ExtensionLocation, $ExtensionKey),
+				'ExtensionTitle'				=> $EMConf['ExtensionTitle'] ? self::getCleanedString($EMConf['ExtensionTitle']) : $ExtensionKey,
+				'ExtensionDescription'			=> self::getCleanedString($EMConf['ExtensionDescription']),
+				'ExtensionCategory'				=> self::getCleanedString($EMConf['ExtensionCategory']),
+				'ExtensionIcon'					=> self::getExtensionIcon($ExtensionLocation, $ExtensionKey),
 				'ExtensionLocation'				=> $ExtensionLocation['Location'],
 				'ExtensionPath'					=> $ExtensionLocation['Path'],
-				'ExtensionLoaded'				=> $this->isExtensionLoaded($ExtensionKey)
+				'ExtensionLoaded'				=> self::isExtensionLoaded($ExtensionKey)
 			);
 
 			return $ExtensionData;
@@ -398,12 +395,12 @@ class tx_snowbabel_system_translations {
 	 * @param  $ExtensionCategory
 	 * @return bool
 	 */
-	private function isCategoryBlacklisted($ExtensionCategory) {
+	private static function isCategoryBlacklisted($ExtensionCategory) {
 
 			// Just Use Allowed Categories
-		if($ExtensionCategory && is_array($this->BlacklistedCategories)) {
+		if($ExtensionCategory && is_array(self::$BlacklistedCategories)) {
 
-			if(in_array($ExtensionCategory, $this->BlacklistedCategories)) {
+			if(in_array($ExtensionCategory, self::$BlacklistedCategories)) {
 				return true;
 			}
 
@@ -417,21 +414,21 @@ class tx_snowbabel_system_translations {
 	 * @param  $ExtensionKey
 	 * @return bool
 	 */
-	private function getSystemExtensionLocation($ExtensionKey) {
+	private static function getSystemExtensionLocation($ExtensionKey) {
 
 		$ExtensionPath = false;
 
 		// ORDER'S IMPORTANT!
 
 			// Check System Extension
-		$TempExtensionPath = $this->SitePath.$this->SystemExtensionPath.$ExtensionKey.'/';
+		$TempExtensionPath = self::$SitePath.self::$SystemExtensionPath.$ExtensionKey.'/';
 		if(is_dir($TempExtensionPath)) {
 			$ExtensionPath['Path'] = 		$TempExtensionPath;
 			$ExtensionPath['Location'] =	'System';
 		}
 
 			// Check Global Extension
-		$TempExtensionPath = $this->SitePath.$this->GlobalExtensionPath.$ExtensionKey.'/';
+		$TempExtensionPath = self::$SitePath.self::$GlobalExtensionPath.$ExtensionKey.'/';
 		if(is_dir($TempExtensionPath)) {
 			$ExtensionPath['Path'] = 		$TempExtensionPath;
 			$ExtensionPath['Location'] =	'Global';
@@ -439,7 +436,7 @@ class tx_snowbabel_system_translations {
 
 
 			// Check Local Extension
-		$TempExtensionPath = $this->SitePath.$this->LocalExtensionPath.$ExtensionKey.'/';
+		$TempExtensionPath = self::$SitePath.self::$LocalExtensionPath.$ExtensionKey.'/';
 		if(is_dir($TempExtensionPath)) {
 			$ExtensionPath['Path'] = 		$TempExtensionPath;
 			$ExtensionPath['Location'] =	'Local';
@@ -453,7 +450,7 @@ class tx_snowbabel_system_translations {
 	 * @param  $ExtensionPath
 	 * @return bool
 	 */
-	private function getSystemEMConf($ExtensionPath) {
+	private static function getSystemEMConf($ExtensionPath) {
 
 		if($ExtensionPath) {
 
@@ -484,7 +481,7 @@ class tx_snowbabel_system_translations {
 	 * @param  $Path
 	 * @return array|null
 	 */
-	private function getSystemDirectories($Path) {
+	private static function getSystemDirectories($Path) {
 
 		if(isset($Path)) {
 
@@ -505,15 +502,14 @@ class tx_snowbabel_system_translations {
 	 * @param  $FileId
 	 * @return array
 	 */
-	private function getSystemLabels($FilePath, $FileId) {
+	private static function getSystemLabels($FilePath, $FileId) {
 
 		$Labels = array();
 
-		$this->CacheFilePath;
-		$this->CacheLanguageFile;
-
+		// TODO:
 			// Get Language File
-		$LanguageFile = $this->getSystemLanguageFile($FilePath);
+		//$LanguageFile = self::getSystemLanguageFile($FilePath);
+		$LanguageFile = self::getSystemLanguageFile_New($FilePath);
 
 			// Language File Available?
 		if($LanguageFile) {
@@ -524,11 +520,11 @@ class tx_snowbabel_system_translations {
 			if(is_array($LabelData)) {
 				foreach($LabelData as $LabelName => $LabelDefault) {
 
-					array_push($Labels, array(
+					$Labels[] = array(
 						'FileId'		=> $FileId,
 						'LabelName' 	=> $LabelName,
 						'LabelDefault'	=> $LabelDefault
-					));
+					);
 
 				}
 
@@ -545,37 +541,35 @@ class tx_snowbabel_system_translations {
 	 * @param  $LabelId
 	 * @return array
 	 */
-	private function getSystemTranslations($LabelName, $FilePath, $LabelId) {
+	private static function getSystemTranslations($LabelName, $FilePath, $LabelId) {
 
 		$Translations = array();
 
-		if($FilePath != $this->CacheFilePath || !$this->CacheLanguageFile) {
-			$this->CacheFilePath = $FilePath;
-			$this->CacheLanguageFile = $this->getSystemLanguageFile($FilePath);
+		if($FilePath != self::$CacheFilePath || !self::$CacheLanguageFile) {
+			self::$CacheFilePath = $FilePath;
+			self::$CacheLanguageFile = self::getSystemLanguageFile_New($FilePath);
 		}
 
-		if($this->CacheLanguageFile){
-
-				// Reset Translation Var
-	        $this->Translations  = array();
+		if(self::$CacheLanguageFile){
 
 				// Checks Translations To Show
-			if(is_array($this->AvailableLanguages) && count($this->AvailableLanguages) > 0) {
+			if(is_array(self::$AvailableLanguages) && count(self::$AvailableLanguages) > 0) {
 
 					// Loop Languages
-				foreach($this->AvailableLanguages as $Language) {
+				foreach(self::$AvailableLanguages as $Language) {
 
-					$Translation = $this->getSystemTranslation($FilePath, $Language['LanguageKey'], $LabelName);
+					$Translation = self::getSystemTranslation($FilePath, $Language['LanguageKey'], $LabelName);
 
-					array_push($Translations, array(
+					$Translations[] = array(
 						'LabelId'		=> $LabelId,
 						'TranslationLanguage'	=> $Language['LanguageKey'],
 						'TranslationValue'		=> $Translation,
 						'TranslationEmpty'		=> $Translation ? 0 : 1
-					));
+					);
 
 				}
 			}
+
 		}
 
 		return $Translations;
@@ -588,24 +582,26 @@ class tx_snowbabel_system_translations {
 	 * @param  $LabelName
 	 * @return bool
 	 */
-    private function getSystemTranslation($FilePath, $LanguageKey, $LabelName) {
+    private static function getSystemTranslation($FilePath, $LanguageKey, $LabelName) {
 
 	        // While First Loop Get Translation From l10n (And Create File If Not Done Yet)
-	    if(empty($this->Translations[$LanguageKey])) {
+	    if($FilePath != self::$CacheTranslationsPath || empty(self::$CachedTranslations[$LanguageKey])) {
 
 				// Get l10n Location
 			$TranslationFileName = t3lib_div::llXmlAutoFileName($FilePath, $LanguageKey);
 			$TranslationFilePath = t3lib_div::getFileAbsFileName($TranslationFileName);
 
 		        // Check If L10n File Available Otherwise Create One
-			$this->isSystemTranslationAvailable($LanguageKey, $TranslationFilePath);
+			self::isSystemTranslationAvailable($LanguageKey, $TranslationFilePath);
 
 		        // Get Data From L10n File
-		    $this->Translations[$LanguageKey] = $this->getSystemLanguageFile($TranslationFilePath);
+		    self::$CachedTranslations[$LanguageKey] = self::getSystemLanguageFile_New($TranslationFilePath);
+
+				// Set New Cached Path
+			self::$CacheTranslationsPath = $FilePath;
 
 				// Sync Data From L10n With Extension XML
-			$this->Translations[$LanguageKey] = $this->syncSystemTranslation(
-				$this->Translations[$LanguageKey],
+			self::syncSystemTranslation(
 				$LanguageKey,
 				$TranslationFilePath
 			);
@@ -613,8 +609,8 @@ class tx_snowbabel_system_translations {
 	    }
 
 	        // Return Translation If Available
-		if($this->Translations[$LanguageKey]['data'][$LanguageKey][$LabelName]) {
-			return $this->Translations[$LanguageKey]['data'][$LanguageKey][$LabelName];
+		if(self::$CachedTranslations[$LanguageKey]['data'][$LanguageKey][$LabelName]) {
+			return self::$CachedTranslations[$LanguageKey]['data'][$LanguageKey][$LabelName];
 		}
 
 			 // We Always Need A Translation In DB
@@ -626,28 +622,28 @@ class tx_snowbabel_system_translations {
 	 * @param  $TranslationFilePath
 	 * @return void
 	 */
-	private function isSystemTranslationAvailable($LanguageKey, $TranslationFilePath) {
+	private static function isSystemTranslationAvailable($LanguageKey, $TranslationFilePath) {
 
 			// Create L10n File
 		if ($TranslationFilePath && !@is_file($TranslationFilePath))	{
 
 				// Copy XML Data From Extension To L10n
-			if($LanguageKey == 'en' && $this->CopyDefaultLanguage) {
+			if($LanguageKey == 'en' && self::$CopyDefaultLanguage) {
 					// Copy Default Labels To English
-				$File['data'][$LanguageKey] = $this->CacheLanguageFile['data']['default'];
+				$File['data'][$LanguageKey] = self::$CacheLanguageFile['data']['default'];
 			}
 			else {
-				$File['data'][$LanguageKey] = $this->CacheLanguageFile['data'][$LanguageKey];
+				$File['data'][$LanguageKey] = self::$CacheLanguageFile['data'][$LanguageKey];
 			}
 
 				// Set Directory
-			$DeepDir = dirname(substr($TranslationFilePath,strlen($this->SitePath))).'/';
+			$DeepDir = dirname(substr($TranslationFilePath,strlen(self::$SitePath))).'/';
 
 				// Create XML & Directory
-			if (t3lib_div::isFirstPartOfStr($DeepDir, $this->L10nPath . $LanguageKey . '/'))	{
+			if (t3lib_div::isFirstPartOfStr($DeepDir, self::$L10nPath . $LanguageKey . '/'))	{
 
-				t3lib_div::mkdir_deep($this->SitePath, $DeepDir);
-				$this->writeTranslation($File, $TranslationFilePath);
+				t3lib_div::mkdir_deep(self::$SitePath, $DeepDir);
+				self::writeTranslation($File, $TranslationFilePath);
 
 			}
 
@@ -655,34 +651,35 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
-	 * @param  $TranslationFile
-	 * @param  $LanguageKey
-	 * @param  $Path
+	 * @static
+	 * @param $FilePath
+	 * @param $LanguageKey
+	 * @param $TranslationFilePath
 	 * @return
 	 */
-	private function syncSystemTranslation($TranslationFile, $LanguageKey, $Path) {
+	private static function syncSystemTranslation($LanguageKey, $TranslationFilePath) {
 
 		$Changes		= 0;
-		$LabelsDefault	= $this->CacheLanguageFile['data']['default'];
+		$LabelsDefault	= self::$CacheLanguageFile['data']['default'];
 
 		if(is_array($LabelsDefault)) {
 			foreach($LabelsDefault as $LabelName => $LabelDefault) {
 
 					// Label From L10n
-				$LabelL10n = $TranslationFile['data'][$LanguageKey][$LabelName];
+				$LabelL10n = self::$CachedTranslations[$LanguageKey]['data'][$LanguageKey][$LabelName];
 
 
 					// Sync EN With Default If Activated
-				if($LanguageKey == 'en' && $this->CopyDefaultLanguage) {
-					$LabelDefault = $LabelDefault;
+				if($LanguageKey == 'en' && self::$CopyDefaultLanguage) {
+					// Do Nothing
 				}
 				else {
-					$LabelDefault = $this->CacheLanguageFile['data'][$LanguageKey][$LabelName];
+					$LabelDefault = self::$CacheLanguageFile['data'][$LanguageKey][$LabelName];
 				}
 
 					// Compare Default Label With Label From L10n
 				if(!empty($LabelDefault) && empty($LabelL10n)) {
-					$TranslationFile['data'][$LanguageKey][$LabelName] = $LabelDefault;
+					self::$CachedTranslations[$LanguageKey]['data'][$LanguageKey][$LabelName] = $LabelDefault;
 					++$Changes;
 				}
 
@@ -690,12 +687,10 @@ class tx_snowbabel_system_translations {
 
 				// If There Are Changes Write It To XML File
 			if($Changes > 0) {
-				$this->writeTranslation($TranslationFile, $Path);
+				self::writeTranslation(self::$CachedTranslations[$LanguageKey], $TranslationFilePath);
 			}
 
 		}
-
-		return $TranslationFile;
 
 	}
 
@@ -705,7 +700,7 @@ class tx_snowbabel_system_translations {
 	 * @param bool $SaveToOriginal
 	 * @return bool
 	 */
-	private function writeTranslation($File, $Path, $SaveToOriginal=false) {
+	private static function writeTranslation($File, $Path, $SaveToOriginal=false) {
 
 		$XmlOptions = array(
 			'parentTagMap'=>array(
@@ -728,7 +723,7 @@ class tx_snowbabel_system_translations {
 	 * @param  $ExtensionId
 	 * @return array
 	 */
-	private function getSystemFiles($ExtensionPath, $ExtensionId) {
+	private static function getSystemFiles($ExtensionPath, $ExtensionId) {
 
 		$Files = array();
 
@@ -747,16 +742,19 @@ class tx_snowbabel_system_translations {
 			$ExtensionPath
 		);
 
+			// free memory
+		unset($TempFiles1);
+
 			// Adds New Keys
 		if(is_array($TempFiles2)) {
 			foreach($TempFiles2 as $Key => $File) {
 
 					// Check Name Convention 'locallang'
 				if(strstr($TempFiles2[$Key], 'locallang') !== false) {
-					array_push($Files, array(
+					$Files[] = array(
 						'ExtensionId'	=> $ExtensionId,
 						'FileKey'   	=> $TempFiles2[$Key]
-					));
+					);
 				}
 
 			}
@@ -766,32 +764,126 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
+	 * @static
 	 * @param  $File
-	 * @return bool|mixed
+	 * @return array|bool|SimpleXMLElement$
 	 */
-    private function getSystemLanguageFile($File) {
+	private static function getSystemLanguageFile_New($File) {
 
-        if($File) {
+		if(is_file($File)) {
 
-                // Gets XML String
-            $XmlString = file_get_contents($File);
+				// Load Xml Object
+			$xml = simplexml_load_file($File);
 
-                // Converts XML String To Array
-            $LanguageFile = t3lib_div::xml2array($XmlString);
+				// Format Xml Object
+			$xml = self::formatSimpleXmlObject($xml);
 
-                // Return If A Filled Array
-            if(is_array($LanguageFile)) return $LanguageFile;
+			return $xml;
 
-        }
+		}
 
-        return false;
-    }
+		return false;
+	}
+
+	/**
+	 * @static
+	 * @param $simpleXmlObject
+	 * @return array|bool
+	 */
+	private static function formatSimpleXmlObject($simpleXmlObject) {
+
+		if($simpleXmlObject) {
+
+			$xmlArray = array();
+
+				// Meta Array
+			if(is_array($simpleXmlObject->meta) || is_object($simpleXmlObject->meta)) {
+
+				$xmlArray['meta'] = array();
+
+				foreach($simpleXmlObject->meta as $meta) {
+					foreach($meta as $metaData) {
+
+						$metaKey = $metaData->getName();
+						$metaValue = trim($metaData[0]);
+
+						if(!empty($metaKey) && is_string($metaKey)) $xmlArray['meta'][$metaKey] = (string) $metaValue;
+
+					}
+				}
+
+					// Unset If Not Used
+				if(empty($xmlArray['meta'])) unset($xmlArray['meta']);
+
+			}
+
+
+				// Data Array
+			if(is_array($simpleXmlObject->data->languageKey) || is_object($simpleXmlObject->data->languageKey)) {
+
+				$xmlArray['data'] = array();
+
+				foreach($simpleXmlObject->data->languageKey as $language) {
+
+						// LanguageKey
+					$languageKey = self::getSimpleXmlObjectAttributesIndex($language->attributes());
+
+					if(!empty($languageKey) && is_string($languageKey)) {
+						if(is_array($language->label) || is_object($language->label)) {
+							foreach($language->label as $label) {
+
+									// LabelName
+								$labelName = self::getSimpleXmlObjectAttributesIndex($label->attributes());
+
+									// LabelValue
+								if(!empty($labelName) && is_string($labelName)) $xmlArray['data'][$languageKey][$labelName] = (string) trim($label[0]);
+
+							}
+						}
+					}
+				}
+
+					// Unset If Not Used
+				if(empty($xmlArray['data'])) unset($xmlArray['data']);
+
+			}
+
+			return $xmlArray;
+
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * @static
+	 * @param $attributesObject
+	 * @return string
+	 */
+	private static function getSimpleXmlObjectAttributesIndex($attributesObject) {
+
+			// Get Attributes
+		if(is_array($attributesObject) || is_object($attributesObject)) {
+
+			$attributes = array();
+
+			foreach($attributesObject as $name => $value){
+				$attributes[$name] = trim($value);
+			}
+
+				// Return Index
+			if(!empty($attributes['index'])) return (string) $attributes['index'];
+		}
+
+		return '';
+	}
 
 	/**
 	 * @param  $String
 	 * @return string
 	 */
-    private function getCleanedString($String) {
+    private static function getCleanedString($String) {
 
         if($String) {
 
@@ -808,7 +900,7 @@ class tx_snowbabel_system_translations {
 	 * @param  $ExtensionKey
 	 * @return string
 	 */
-	private function getExtensionIcon($ExtensionPath, $ExtensionKey) {
+	private static function getExtensionIcon($ExtensionPath, $ExtensionKey) {
 
 		if($ExtensionPath && $ExtensionKey) {
 
@@ -819,19 +911,19 @@ class tx_snowbabel_system_translations {
 
 					case 'Local':
 
-						$ExtensionPath = $this->LocalExtensionPath;
+						$ExtensionPath = self::$LocalExtensionPath;
 
 						break;
 
 					case 'Global':
 
-						$ExtensionPath = $this->GlobalExtensionPath;
+						$ExtensionPath = self::$GlobalExtensionPath;
 
 						break;
 
 					case 'System':
 
-						$ExtensionPath = $this->SystemExtensionPath;
+						$ExtensionPath = self::$SystemExtensionPath;
 
 						break;
 				}
@@ -850,16 +942,18 @@ class tx_snowbabel_system_translations {
 
 		}
 
+		return '';
+
 	}
 
 	/**
 	 * @param  $ExtensionKey
 	 * @return bool
 	 */
-	private function isExtensionLoaded($ExtensionKey) {
+	private static function isExtensionLoaded($ExtensionKey) {
 
 		if(isset($ExtensionKey)) {
-			$InstalledExtensions = $this->LoadedExtensions;
+			$InstalledExtensions = self::$LoadedExtensions;
 
 			$Check = array_key_exists($ExtensionKey, $InstalledExtensions);
 
@@ -871,6 +965,8 @@ class tx_snowbabel_system_translations {
 			}
 		}
 
+		return false;
+
 	}
 
 	/**
@@ -878,15 +974,15 @@ class tx_snowbabel_system_translations {
 	 * @param  $Language
 	 * @return void
 	 */
-	private function deleteSystemCache($FilePath, $Language) {
+	private static function deleteSystemCache($FilePath, $Language) {
 
 				// Delete Cached Language File
-			$cacheFileName = $this->getCacheFileName($FilePath, $Language);
+			$cacheFileName = self::getCacheFileName($FilePath, $Language);
 			t3lib_div::unlink_tempfile($cacheFileName);
 
 				// Delete 'default'
 			if($Language != 'default') {
-				$cacheFileNameDefault = $this->getCacheFileName($FilePath);
+				$cacheFileNameDefault = self::getCacheFileName($FilePath);
 				t3lib_div::unlink_tempfile($cacheFileNameDefault);
 			}
 	}
@@ -896,7 +992,7 @@ class tx_snowbabel_system_translations {
 	 * @param string $Language
 	 * @return string
 	 */
-	private function getCacheFileName($FilePath, $Language='default') {
+	private static function getCacheFileName($FilePath, $Language='default') {
 
 			$hashSource = substr($FilePath, strlen(PATH_site)) . '|' . date('d-m-Y H:i:s', filemtime($FilePath)) . '|version=2.3';
 			$hash = '_' . t3lib_div::shortMD5($hashSource);
@@ -905,6 +1001,76 @@ class tx_snowbabel_system_translations {
 
 			return $tempPath . $fileExtension . $hash . '.' . $Language . '.' . 'utf-8' . '.cache';
 	}
+
+		/**
+		 * @var int
+		 */
+		private static $performanceFirstTime = 0;
+
+		/**
+		 * @var int
+		 */
+		private static $performanceLastTime = 0;
+
+		/**
+		 * @var int
+		 */
+		private static $performanceLastMemory = 0;
+
+		/**
+		 * @return void
+		 */
+		private function startPerformance() {
+
+				// Time
+			self::$performanceLastTime = microtime(true);
+			self::$performanceFirstTime = self::$performanceLastTime;
+
+				// Memory
+			self::$performanceLastMemory = memory_get_usage();
+
+		}
+
+		/**
+		 * @static
+		 * @param string $Key
+		 * @return void
+		 */
+		private static function logPerformance($Key) {
+
+			// TIME
+
+			$unit = ' micros';
+			$current = microtime(true);
+
+			$Time = array(
+				'currentTime' => $current . $unit,
+				'lastTime' => self::$performanceLastTime . $unit,
+				'diffTime' => $current - self::$performanceLastTime . $unit,
+				'sinceStart' => $current - self::$performanceFirstTime . $unit
+			);
+
+			$unit = ' byte';
+			self::$performanceLastTime = $current;
+
+			// MEMORY
+
+			$current = memory_get_usage();
+
+			$Memory = array(
+				'currentMemory' => $current . $unit,
+				'lastMemory' => self::$performanceLastMemory . $unit,
+				'diffMemory' => $current - self::$performanceLastMemory . $unit
+			);
+
+			self::$performanceLastMemory = $current;
+
+
+			t3lib_div::debug(array(
+				'Time' => $Time,
+				'Memory' => $Memory
+			), $Key);
+		}
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/snowbabel/Classes/System/class.tx_snowbabel_system_translations.php'])	{

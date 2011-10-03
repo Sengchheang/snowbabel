@@ -386,7 +386,8 @@ class tx_snowbabel_Labels {
 	 */
 	private function initSystemTranslations() {
 		if (!is_object($this->SystemTranslation) && !($this->SystemTranslation instanceof tx_snowbabel_system_translations)) {
-			$this->SystemTranslation = t3lib_div::makeInstance('tx_snowbabel_system_translations', $this->confObj);
+			$this->SystemTranslation = t3lib_div::makeInstance('tx_snowbabel_system_translations');
+			$this->SystemTranslation->init($this->confObj);
 		}
 	}
 }

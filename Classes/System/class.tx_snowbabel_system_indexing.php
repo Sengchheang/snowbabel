@@ -34,42 +34,42 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 	/**
 	 * @var tx_snowbabel_Configuration
 	 */
-	private $confObj;
+	private static $confObj;
 
 	/**
 	 * @var tx_snowbabel_system_translations
 	 */
-	private $SystemTranslation;
+	private static $SystemTranslation;
 
 	/**
-	 * @var
+	 * @var tx_snowbabel_system_statistics
 	 */
-	private $SystemStatistic;
+	private static $SystemStatistic;
 
 	/**
 	 * @var tx_snowbabel_Db
 	 */
-	private $Db;
+	private static $Db;
 
 	/**
 	 * @var
 	 */
-	private $CurrentTableId;
+	private static $CurrentTableId;
 
 	/**
 	 * @return void
 	 */
-	public function init() {
+	private static function init() {
 
 			// Init Configuration
-		$this->initConfiguration();
+		self::initConfiguration();
 
 			// Init System Translations
-		$this->initSystemTranslations();
+		self::initSystemTranslations();
 
 			// Init System Statistics
 			// TODO: not yet implemented
-		$this->initSystemStatistics();
+		self::initSystemStatistics();
 
 	}
 
@@ -78,28 +78,28 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 	 */
 	public function execute() {
 
-		$this->init();
+		self::init();
 
 			// Get Current TableId & Negate
-		$this->CurrentTableId = $this->Db->getCurrentTableId() ? 0 : 1;
+		self::$CurrentTableId = self::$Db->getCurrentTableId() ? 0 : 1;
 
 			// Indexing Extensions
-		$this->indexingExtensions();
+		self::indexingExtensions();
 
 			// Indexing Files
-		$this->indexingFiles();
+		self::indexingFiles();
 
 			// Indexing Labels
-		$this->indexingLabels();
+		self::indexingLabels();
 
 			// Indexing Translations
-		$this->indexingTranslations();
+		self::indexingTranslations();
 
 			// Switch CurrentTableId
-		$this->Db->setCurrentTableId($this->CurrentTableId);
+		self::$Db->setCurrentTableId(self::$CurrentTableId);
 
 			// Add Scheduler Check To Localconf
-		$this->confObj->setSchedulerCheck();
+		self::$confObj->setSchedulerCheck();
 
 		return true;
 	}
@@ -107,45 +107,45 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 	/**
 	 * @return void
 	 */
-	private function indexingExtensions() {
+	private static function indexingExtensions() {
 
 			// Get Extensions From Typo3
-		$Extensions = $this->SystemTranslation->getExtensions();
+		$Extensions = self::$SystemTranslation->getExtensions();
 
 			// Write Extensions To Database
-		$this->Db->setExtensions($Extensions, $this->CurrentTableId);
+		self::$Db->setExtensions($Extensions, self::$CurrentTableId);
 
 	}
 
 	/**
 	 * @return void
 	 */
-	private function indexingFiles() {
+	private static function indexingFiles() {
 
 			// Get Extensions From Database
-		$Extensions = $this->Db->getExtensions($this->CurrentTableId);
+		$Extensions = self::$Db->getExtensions(self::$CurrentTableId);
 
 			// Get Files From Typo3
-		$Files = $this->SystemTranslation->getFiles($Extensions);
+		$Files = self::$SystemTranslation->getFiles($Extensions);
 
 			// Write Extensions To Database
-		$this->Db->setFiles($Files, $this->CurrentTableId);
+		self::$Db->setFiles($Files, self::$CurrentTableId);
 
 	}
 
 	/**
 	 * @return void
 	 */
-	private function indexingLabels() {
+	private static function indexingLabels() {
 
 			// Get Files From Database
-		$Files = $this->Db->getFiles($this->CurrentTableId);
+		$Files = self::$Db->getFiles(self::$CurrentTableId);
 
 			// Get Labels From Typo
-		$Labels = $this->SystemTranslation->getLabels($Files);
+		$Labels = self::$SystemTranslation->getLabels($Files);
 
 			// Write Labels To Database
-		$this->Db->setLabels($Labels, $this->CurrentTableId);
+		self::$Db->setLabels($Labels, self::$CurrentTableId);
 
 	}
 
@@ -154,26 +154,29 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 	 */
 	private function indexingTranslations() {
 
+			// Important! Needed For Caching in getLabels
+		$Conf['OrderBy'] = 'FileId';
+
 			// Get Labels From Database
-		$Labels = $this->Db->getLabels($this->CurrentTableId);
+		$Labels = self::$Db->getLabels(self::$CurrentTableId, $Conf);
 
 			// Get Translations From Typo
-		$Translations = $this->SystemTranslation->getTranslations($Labels);
+		$Translations = self::$SystemTranslation->getTranslations($Labels);
 
 			// Write Translations To Database
-		$this->Db->setTranslations($Translations, $this->CurrentTableId);
+		self::$Db->setTranslations($Translations, self::$CurrentTableId);
 
 	}
 
 	/**
 	 * @return void
 	 */
-	private function initConfiguration() {
+	private static function initConfiguration() {
 
-		if (!is_object($this->confObj) && !($this->confObj instanceof tx_snowbabel_Configuration)) {
-			$this->confObj = t3lib_div::makeInstance('tx_snowbabel_Configuration', array());
+		if (!is_object(self::$confObj) && !(self::$confObj instanceof tx_snowbabel_Configuration)) {
+			self::$confObj = t3lib_div::makeInstance('tx_snowbabel_Configuration', array());
 
-			$this->Db = $this->confObj->getDb();
+			self::$Db = self::$confObj->getDb();
 		}
 
 	}
@@ -181,19 +184,92 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 	/**
 	 * @return void
 	 */
-	private function initSystemTranslations() {
-		if (!is_object($this->SystemTranslation) && !($this->SystemTranslation instanceof tx_snowbabel_system_translations)) {
-			$this->SystemTranslation = t3lib_div::makeInstance('tx_snowbabel_system_translations', $this->confObj);
+	private static function initSystemTranslations() {
+		if (!is_object(self::$SystemTranslation) && !(self::$SystemTranslation instanceof tx_snowbabel_system_translations)) {
+			self::$SystemTranslation = t3lib_div::makeInstance('tx_snowbabel_system_translations');
+			self::$SystemTranslation->init(self::$confObj);
 		}
 	}
 
 	/**
 	 * @return void
 	 */
-	private function initSystemStatistics() {
-		if (!is_object($this->SystemStatistic) && !($this->SystemStatistic instanceof tx_snowbabel_system_statistics)) {
-			$this->SystemStatistic = t3lib_div::makeInstance('tx_snowbabel_system_statistics', $this->confObj);
+	private static function initSystemStatistics() {
+		if (!is_object(self::$SystemStatistic) && !(self::$SystemStatistic instanceof tx_snowbabel_system_statistics)) {
+			self::$SystemStatistic = t3lib_div::makeInstance('tx_snowbabel_system_statistics');
+			self::$SystemStatistic->init(self::$confObj);
 		}
+	}
+
+
+	/**
+	 * @var int
+	 */
+	private $performanceFirstTime = 0;
+
+	/**
+	 * @var int
+	 */
+	private $performanceLastTime = 0;
+
+	/**
+	 * @var int
+	 */
+	private $performanceLastMemory = 0;
+
+	/**
+	 * @return void
+	 */
+	private function startPerformance() {
+
+			// Time
+		$this->performanceLastTime = microtime(true);
+		$this->performanceFirstTime = $this->performanceLastTime;
+
+			// Memory
+		$this->performanceLastMemory = memory_get_usage();
+
+	}
+
+	/**
+	 * @static
+	 * @param string $Key
+	 * @return void
+	 */
+	private function logPerformance($Key) {
+
+		// TIME
+
+		$unit = ' micros';
+		$current = microtime(true);
+
+		$Time = array(
+			'currentTime' => $current . $unit,
+			'lastTime' => $this->performanceLastTime . $unit,
+			'diffTime' => $current - $this->performanceLastTime . $unit,
+			'sinceStart' => $current - $this->performanceFirstTime . $unit
+		);
+
+		$unit = ' byte';
+		$this->performanceLastTime = $current;
+
+		// MEMORY
+
+		$current = memory_get_usage();
+
+		$Memory = array(
+			'currentMemory' => $current . $unit,
+			'lastMemory' => $this->performanceLastMemory . $unit,
+			'diffMemory' => $current - $this->performanceLastMemory . $unit
+		);
+
+		$this->performanceLastMemory = $current;
+
+
+		t3lib_div::debug(array(
+			'Time' => $Time,
+			'Memory' => $Memory
+		), $Key);
 	}
 
 }
