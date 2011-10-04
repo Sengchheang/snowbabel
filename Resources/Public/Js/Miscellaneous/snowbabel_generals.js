@@ -31,24 +31,26 @@
 Ext.ns('TYPO3.Snowbabel', 'TYPO3.Snowbabel.Generals', 'TYPO3.Snowbabel.ExtDirect');
 
 	// Standard Values For Baseparams
-TYPO3.Snowbabel.Generals.ExtensionId		= '';
+TYPO3.Snowbabel.Generals.ExtensionId			= '';
 
-TYPO3.Snowbabel.Generals.ActionKey			= '';
+TYPO3.Snowbabel.Generals.ActionKey				= '';
 
-TYPO3.Snowbabel.Generals.LanguageId			= '';
-TYPO3.Snowbabel.Generals.ColumnId			= '';
+TYPO3.Snowbabel.Generals.LanguageId				= '';
+TYPO3.Snowbabel.Generals.ColumnId				= '';
 
-TYPO3.Snowbabel.Generals.LabelValue			= '';
-TYPO3.Snowbabel.Generals.LabelName			= '';
-TYPO3.Snowbabel.Generals.LabelPath			= '';
-TYPO3.Snowbabel.Generals.LabelLanguage		= '';
+TYPO3.Snowbabel.Generals.LabelValue				= '';
+TYPO3.Snowbabel.Generals.LabelName				= '';
+TYPO3.Snowbabel.Generals.LabelPath				= '';
+TYPO3.Snowbabel.Generals.LabelLanguage			= '';
 
-TYPO3.Snowbabel.Generals.LoadListView		= false;
-TYPO3.Snowbabel.Generals.ListViewStart		= 0;
-TYPO3.Snowbabel.Generals.ListViewLimit		= 50;
+TYPO3.Snowbabel.Generals.LoadListView			= false;
+TYPO3.Snowbabel.Generals.ListViewStart			= 0;
+TYPO3.Snowbabel.Generals.ListViewLimit			= 50;
 
-TYPO3.Snowbabel.Generals.SearchGlobal		= true;
-TYPO3.Snowbabel.Generals.SearchString		= '';
+TYPO3.Snowbabel.Generals.SearchGlobal			= true;
+TYPO3.Snowbabel.Generals.SearchString			= '';
+
+TYPO3.Snowbabel.Generals.MessageBoxDisplayed	= false;
 
 	// Array With Standard Values From Above
 TYPO3.Snowbabel.Generals.ListViewBaseParams = {
@@ -136,6 +138,13 @@ TYPO3.Snowbabel.Generals.ActionController = function(ActionParams) {
 
 				if(!success) {
 					TYPO3.Snowbabel.Generals.ShowMessageBox(TYPO3.lang.translation_msg_SchedulerTitle, TYPO3.lang.translation_msg_SchedulerMessage, true);
+				}
+
+			}
+			else if(ActionParams['ActionKey'] == 'ConfigurationChanged') {
+
+				if(!success) {
+					TYPO3.Snowbabel.Generals.ShowMessageBox(TYPO3.lang.translation_msg_ConfigurationTitle, TYPO3.lang.translation_msg_ConfigurationMessage, true, 65);
 				}
 
 			}
@@ -233,32 +242,42 @@ TYPO3.Snowbabel.Generals.ShowMessage = function(severity, title, message, durati
 
 };
 
-TYPO3.Snowbabel.Generals.ShowMessageBox = function(title, message, spotlight) {
+TYPO3.Snowbabel.Generals.ShowMessageBox = function(title, message, spotlight, height) {
 
-	var window = new Ext.Window({
-		title: title,
-		width: 300,
-		height: 50,
-		layout: 'fit',
-		bodyStyle:'padding:5px; background-color: white;',
-		closable: false,
-		draggable: false,
-		resizable: false,
-		html: '<p align="middle">' + message + '</p>'
-	});
+		// Do Not Show MessageBox Twice
+	if(!TYPO3.Snowbabel.Generals.MessageBoxDisplayed) {
+		if(height > 0) {
+			height = height
+		}
+		else {
+			height = 50;
+		}
 
-	window.show();
-
-	if(spotlight) {
-
-		var spot = new Ext.ux.Spotlight({
-			animate: false
+		var window = new Ext.Window({
+			title: title,
+			width: 300,
+			height: height,
+			layout: 'fit',
+			bodyStyle:'padding:5px; background-color: white;',
+			closable: false,
+			draggable: false,
+			resizable: false,
+			html: '<p align="middle">' + message + '</p>'
 		});
 
-		spot.show(window.getId());
+		window.show();
+		TYPO3.Snowbabel.Generals.MessageBoxDisplayed = true;
 
+		if(spotlight) {
+
+			var spot = new Ext.ux.Spotlight({
+				animate: false
+			});
+
+			spot.show(window.getId());
+
+		}
 	}
-
 };
 
 /**

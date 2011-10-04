@@ -29,7 +29,7 @@ CREATE TABLE tx_snowbabel_users (
 	KEY parent (pid)
 );
 
-CREATE TABLE tx_snowbabel_tableid (
+CREATE TABLE tx_snowbabel_temp (
 	TableId int(11) DEFAULT '0' NOT NULL
 );
 

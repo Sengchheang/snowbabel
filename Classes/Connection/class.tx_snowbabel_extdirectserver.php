@@ -183,7 +183,18 @@ class tx_snowbabel_ExtDirectServer {
 		}
 		elseif($extjsParams->ActionKey == 'CheckScheduler') {
 
+				// Did Scheduler Run Once?
 			if($this->confObj->getApplicationConfiguration('SchedulerCheck')) {
+				return true;
+			}
+			else {
+				return null;
+			}
+		}
+		elseif($extjsParams->ActionKey == 'ConfigurationChanged') {
+
+				// Did Configuration Changed?
+			if(!$this->confObj->getApplicationConfiguration('ConfigurationChanged')) {
 				return true;
 			}
 			else {

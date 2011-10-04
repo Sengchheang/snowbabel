@@ -60,6 +60,8 @@
 			<label index="translation_msg_SaveErrorMessage">Please try to save following label again:</label>
 			<label index="translation_msg_SchedulerTitle">Application Error</label>
 			<label index="translation_msg_SchedulerMessage">You need to run scheduler task first!</label>
+			<label index="translation_msg_ConfigurationTitle">Application Error</label>
+			<label index="translation_msg_ConfigurationMessage">Configuration has changed, you need to run scheduler again!</label>
 
 		</languageKey>
 

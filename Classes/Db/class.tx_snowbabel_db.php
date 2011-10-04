@@ -321,7 +321,7 @@ class tx_snowbabel_Db {
 
 		$Select = $this->db->exec_SELECTgetRows(
 			'TableId',
-			'tx_snowbabel_tableid',
+			'tx_snowbabel_temp',
 			'',
 			'',
 			'',
@@ -333,7 +333,7 @@ class tx_snowbabel_Db {
 		}
 
 		$this->db->exec_INSERTquery(
-			'tx_snowbabel_tableid',
+			'tx_snowbabel_temp',
 			array('TableId' => 0)
 		);
 
@@ -349,7 +349,7 @@ class tx_snowbabel_Db {
 
 			// Update Field
 		$this->db->exec_UPDATEquery(
-			'tx_snowbabel_tableid',
+			'tx_snowbabel_temp',
 			'',
 			array(
 				'TableId'		=> $TableId

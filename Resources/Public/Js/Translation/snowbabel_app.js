@@ -72,6 +72,11 @@ TYPO3.Snowbabel.Translation = {
 
 					TYPO3.Snowbabel.Generals.ActionController(ActionParams);
 
+					var ActionParams	= new Array();
+					ActionParams['ActionKey'] = 'ConfigurationChanged';
+
+					TYPO3.Snowbabel.Generals.ActionController(ActionParams);
+
 				}
 			})
 		});

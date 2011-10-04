@@ -36,7 +36,7 @@ class tx_snowbabel_Configuration {
 	private $configuration;
 
 	/**
-	 *
+	 * @var tx_snowbabel_db
 	 */
 	private $db;
 
@@ -79,7 +79,9 @@ class tx_snowbabel_Configuration {
 
 		'AvailableLanguages'		=> '30',
 
-		'SchedulerCheck'			=> 0
+		'SchedulerCheck'			=> 0,
+
+		'ConfigurationChanged'		=> 0
 	);
 
 ///////////////////////////////////////////////////////
@@ -287,13 +289,18 @@ class tx_snowbabel_Configuration {
 			$NewLocalconfValues['AvailableLanguages'] = $Languages;
 		}
 
+			// Mark Configuration Changes As 'CHANGED'
+		$NewLocalconfValues['ConfigurationChanged'] = 1;
+
+			// Write Localconf
 		$this->writeLocalconfArray($NewLocalconfValues);
+
 	}
 
 	/**
 	 * @return void
 	 */
-	public function setSchedulerCheck() {
+	public function setSchedulerCheckAndChangedConfiguration() {
 
 			// Get Localconf Values
 		$LocalconfValues = $this->loadApplicationConfiguration(false);
@@ -301,11 +308,13 @@ class tx_snowbabel_Configuration {
 			// Set Scheduler Check
 		$LocalconfValues['SchedulerCheck'] = 1;
 
+			// Set Scheduler Check
+		$LocalconfValues['ConfigurationChanged'] = 0;
+
 			// Write To Localconf
 		$this->writeLocalconfArray($LocalconfValues);
 
 	}
-
 
 ///////////////////////////////////////////////////////
 // read config - get
@@ -585,6 +594,8 @@ class tx_snowbabel_Configuration {
 		$instObj->writeToLocalconf_control($lines);
 
 		t3lib_extMgm::removeCacheFiles();
+
+		// TODO:
 	}
 
 	/**
@@ -723,6 +734,9 @@ class tx_snowbabel_Configuration {
 
 				// Scheduler Check
 			$this->setApplicationConfiguration($LocalconfValues['SchedulerCheck'], 'SchedulerCheck');
+
+				// Configuration Changed
+			$this->setApplicationConfiguration($LocalconfValues['ConfigurationChanged'], 'ConfigurationChanged');
 		}
 		else {
 			return $LocalconfValues;
