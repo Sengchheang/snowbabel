@@ -124,7 +124,7 @@ class tx_snowbabel_system_translations {
 		self::$CopyDefaultLanguage = self::$confObj->getApplicationConfiguration('CopyDefaultLanguage');
 		self::$AvailableLanguages = self::$confObj->getApplicationConfiguration('AvailableLanguages');
 		self::$BlacklistedExtensions = self::$confObj->getApplicationConfiguration('BlacklistedExtensions');
-		self::$BlacklistedCategories = self::$confObj->getApplicationConfiguration('BlacklistedCategories');
+		self::$BlacklistedCategories = explode(',', self::$confObj->getApplicationConfiguration('BlacklistedCategories'));
 		self::$LocalExtensionPath = self::$confObj->getApplicationConfiguration('LocalExtensionPath');
 		self::$SystemExtensionPath = self::$confObj->getApplicationConfiguration('SystemExtensionPath');
 		self::$GlobalExtensionPath = self::$confObj->getApplicationConfiguration('GlobalExtensionPath');
