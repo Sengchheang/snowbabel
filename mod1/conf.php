@@ -17,7 +17,7 @@ $MCONF['access']='user,group';
 $MCONF['script']='index.php';
 
 $MLANG['default']['tabs_images']['tab'] = 'moduleicon.gif';
-$MLANG['default']['ll_ref']='LLL:EXT:snowbabel/Resources/Private/Language/locallang_mod1.xml';
+$MLANG['default']['ll_ref']='LLL:EXT:snowbabel/Resources/Private/Language/locallang_mod1.xlf';
 
 
 ?>

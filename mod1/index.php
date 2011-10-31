@@ -44,17 +44,17 @@ $BE_USER->modAccess($MCONF, 1);
 class tx_mod1_snowbabel extends t3lib_SCbase {
 
 	/**
-	 *
+	 * @var tx_snowbabel_Application_Translation
 	 */
 	private $translation;
 
 	/**
-	 *
+	 * @var string
 	 */
 	public $content;
 
 	/**
-	 *
+	 * @var bigDoc
 	 */
 	public $doc;
 

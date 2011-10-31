@@ -5,8 +5,6 @@ if (!defined ('TYPO3_MODE')) {
 
 if (TYPO3_MODE === "BE")	{
 
-	$TYPO3_CONF_VARS['SC_OPTIONS']['ExtDirect']['TYPO3.Snowbabel.ExtDirect'] = t3lib_extMgm::extPath($_EXTKEY) . 'Classes/Connection/class.tx_snowbabel_extdirectserver.php:tx_snowbabel_ExtDirectServer';
-
 	t3lib_extMgm::addModule('snowbabel', '', '', t3lib_extMgm::extPath($_EXTKEY) . 'mod1/');
 	t3lib_extMgm::addModule('snowbabel', 'translation', '', t3lib_extMgm::extPath($_EXTKEY) . 'mod1/');
 	t3lib_extMgm::addModule('snowbabel', 'settings', '', t3lib_extMgm::extPath($_EXTKEY) . 'mod2/');
@@ -19,7 +17,7 @@ if (TYPO3_MODE === "BE")	{
 	$tempColumns = array(
 		'tx_snowbabel_extensions' => array(
 			'exclude' => 1,
-			'label' => 'LLL:EXT:snowbabel/locallang_db.xml:label.tx_snowbabel_extensions',
+			'label' => 'LLL:EXT:snowbabel/locallang_db.xlf:label.tx_snowbabel_extensions',
 			'config' => Array (
 				'type' => 'select',
 				'itemsProcFunc' => 'tx_snowbabel_TCA->getExtensions',
@@ -30,7 +28,7 @@ if (TYPO3_MODE === "BE")	{
 		),
 		'tx_snowbabel_languages' => array(
 			'exclude' => 1,
-			'label' => 'LLL:EXT:snowbabel/locallang_db.xml:label.tx_snowbabel_languages',
+			'label' => 'LLL:EXT:snowbabel/locallang_db.xlf:label.tx_snowbabel_languages',
 			'config' => Array (
 				'type' => 'select',
 				'itemsProcFunc' => 'tx_snowbabel_TCA->getLanguages',

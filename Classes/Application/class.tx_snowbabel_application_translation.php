@@ -32,57 +32,52 @@
 class tx_snowbabel_Application_Translation {
 
 	/**
-	 *
+	 * @var \tx_mod1_snowbabel
 	 */
 	private $parentObj;
 
 	/**
-	 *
+	 * @var t3lib_PageRenderer
 	 */
 	private $pageRenderer;
 
 	/**
-	 *
-	 */
-	private $extJsCode;
-
-	/**
-	 *
+	 * @var
 	 */
 	private $resPath;
 
 	/**
-	 *
+	 * @var
 	 */
 	private $jsPath;
 
 	/**
-	 *
+	 * @var
 	 */
 	private $jsPathMiscellaneous;
 
 	/**
-	 *
+	 * @var
 	 */
 	private $jsExtensionPath;
 
 	/**
-	 *
+	 * @var
 	 */
 	private $languagePath;
 
 	/**
-	 *
+	 * @var
 	 */
 	private $languageFile;
 
 	/**
-	 *
+	 * @param tx_mod1_snowbabel $parentObj
 	 */
-  public function __construct(tx_mod1_snowbabel $parentObj) {
+	public function __construct(tx_mod1_snowbabel $parentObj) {
 
 			// add parent object
-  	$this->parentObj = $parentObj;
+		$this->parentObj = $parentObj;
 
 			// generate pageRender
 		$this->pageRenderer = $this->parentObj->doc->getPageRenderer();
@@ -90,7 +85,7 @@ class tx_snowbabel_Application_Translation {
 	}
 
 	/**
-	 *
+	 * @return void
 	 */
 	public function init() {
 			// load extjs
@@ -121,17 +116,17 @@ class tx_snowbabel_Application_Translation {
 
 			// add localization file path
 		$this->languagePath = 'Resources/Private/Language/';
-		$this->languageFile = 'locallang_translation.xml';
+		$this->languageFile = 'locallang_translation.xlf';
 
 	}
 
 	/**
-	 *
+	 * @return void
 	 */
 	public function render() {
 
 			// extjs inline translation
-		$this->pageRenderer->addInlineLanguageLabelArray($this->getLLArray());
+		$this->pageRenderer->addInlineLanguageLabelFile(t3lib_extMgm::extPath('snowbabel') .$this->languagePath . $this->languageFile);
 
 		$this->pageRenderer->addCssFile($this->resPath . 'Public/Css/Translation.css');
 
@@ -160,6 +155,8 @@ class tx_snowbabel_Application_Translation {
 
 	/**
 	 * Code from pagerenderer lib in typo3 4.5 !!!
+	 *
+	 * @return void
 	 */
 	private function addExtDirectCode() {
 			// Note: we need to iterate thru the object, because the addProvider method
@@ -171,29 +168,6 @@ class tx_snowbabel_Application_Translation {
 			',
 			TRUE
 		);
-	}
-
-	/**
-	 *
-	 */
-	private function getLLArray() {
-
-			// include xml to module
-		$GLOBALS['LANG']->includeLLFile('EXT:snowbabel/' . $this->languagePath . $this->languageFile);
-
-			// include xml to param
-		$fileContent = t3lib_div::getURL(t3lib_extMgm::extPath('snowbabel') .$this->languagePath . $this->languageFile);
-		$llArray = t3lib_div::xml2array($fileContent);
-
-			// translate labels
-		$keys	= array_keys($llArray['data']['default']);
-		$llData	= array();
-
-		foreach($keys as $key) {
-			$llData[$key] = $GLOBALS['LANG']->getLL($key);
-		}
-
-		return $llData;
 	}
 }
 
