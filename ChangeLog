@@ -1,3 +1,13 @@
+2011-11-11 Daniel Alder <dalder@snowflake.ch>
+
+	* Add backward compatibility for llxml
+	* Remove unused performance-debug-functions
+
+2011-10-31 Daniel Alder <dalder@snowflake.ch>
+
+	* Add XLIFF files to snowbabel
+	* Add new extdirect confs
+
 2011-07-16 Daniel Alder <dalder@snowflake.ch>
 
 	* Added some small bug fixes

@@ -98,8 +98,8 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 			// Switch CurrentTableId
 		self::$Db->setCurrentTableId(self::$CurrentTableId);
 
-			// Add Scheduler Check To Localconf & Mark Configuration Changes As 'OK'
-		self::$confObj->setSchedulerCheckAndChangedConfiguration();
+			// Add Scheduler Check To Localconf
+		self::$confObj->setSchedulerCheck();
 
 		return true;
 	}
@@ -199,77 +199,6 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 			self::$SystemStatistic = t3lib_div::makeInstance('tx_snowbabel_system_statistics');
 			self::$SystemStatistic->init(self::$confObj);
 		}
-	}
-
-
-	/**
-	 * @var int
-	 */
-	private $performanceFirstTime = 0;
-
-	/**
-	 * @var int
-	 */
-	private $performanceLastTime = 0;
-
-	/**
-	 * @var int
-	 */
-	private $performanceLastMemory = 0;
-
-	/**
-	 * @return void
-	 */
-	private function startPerformance() {
-
-			// Time
-		$this->performanceLastTime = microtime(true);
-		$this->performanceFirstTime = $this->performanceLastTime;
-
-			// Memory
-		$this->performanceLastMemory = memory_get_usage();
-
-	}
-
-	/**
-	 * @static
-	 * @param string $Key
-	 * @return void
-	 */
-	private function logPerformance($Key) {
-
-		// TIME
-
-		$unit = ' micros';
-		$current = microtime(true);
-
-		$Time = array(
-			'currentTime' => $current . $unit,
-			'lastTime' => $this->performanceLastTime . $unit,
-			'diffTime' => $current - $this->performanceLastTime . $unit,
-			'sinceStart' => $current - $this->performanceFirstTime . $unit
-		);
-
-		$unit = ' byte';
-		$this->performanceLastTime = $current;
-
-		// MEMORY
-
-		$current = memory_get_usage();
-
-		$Memory = array(
-			'currentMemory' => $current . $unit,
-			'lastMemory' => $this->performanceLastMemory . $unit,
-			'diffMemory' => $current - $this->performanceLastMemory . $unit
-		);
-
-		$this->performanceLastMemory = $current;
-
-
-		t3lib_div::debug(array(
-			'Time' => $Time,
-			'Memory' => $Memory
-		), $Key);
 	}
 
 }
