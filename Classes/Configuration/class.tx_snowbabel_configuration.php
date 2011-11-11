@@ -109,7 +109,7 @@ class tx_snowbabel_Configuration {
 			// Get Typo3 Version
 		$this->version = class_exists('t3lib_utility_VersionNumber') ? t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version) : t3lib_div::int_from_ver(TYPO3_version);
 
-		// TODO: Fix Language File For All Applications!!!
+		// TODO: Same Language File For All Applications!!!
 
 			// Typo3 4.6 & Above
 		if ($this->version >= 4006000) {
@@ -341,7 +341,7 @@ class tx_snowbabel_Configuration {
 ///////////////////////////////////////////////////////
 
 	/**
-	 * @return
+	 * @return tx_snowbabel_db
 	 */
 	public function getDb() {
 		return $this->db;
