@@ -72,9 +72,17 @@ class tx_snowbabel_Application_Translation {
 	private $languageFile;
 
 	/**
+	 * @var
+	 */
+	private $version;
+
+	/**
 	 * @param tx_mod1_snowbabel $parentObj
 	 */
 	public function __construct(tx_mod1_snowbabel $parentObj) {
+
+			// Get Typo3 Version
+		$this->version = class_exists('t3lib_utility_VersionNumber') ? t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version) : t3lib_div::int_from_ver(TYPO3_version);
 
 			// add parent object
 		$this->parentObj = $parentObj;
@@ -92,7 +100,7 @@ class tx_snowbabel_Application_Translation {
 		$this->pageRenderer->loadExtJS();
 
 			// add direct code
-		if(version_compare(TYPO3_version, '4.5.0', '<')) {
+		if ($this->version < 4005000) {
 				// there is no such function available in older typo3 version
 			$this->addExtDirectCode();
 		}
@@ -116,7 +124,15 @@ class tx_snowbabel_Application_Translation {
 
 			// add localization file path
 		$this->languagePath = 'Resources/Private/Language/';
-		$this->languageFile = 'locallang_translation.xlf';
+
+			// Typo3 4.6 & Above
+		if ($this->version >= 4006000) {
+			$this->languageFile = 'locallang_translation.xlf';
+		}
+			// Lower Then Typo3 4.6
+		else {
+			$this->languageFile = 'locallang_translation.xml';
+		}
 
 	}
 

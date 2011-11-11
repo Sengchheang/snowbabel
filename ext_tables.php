@@ -13,31 +13,68 @@ if (TYPO3_MODE === "BE")	{
 	include_once(t3lib_extMgm::extPath('snowbabel').'Classes/TCA/class.tx_snowbabel_tca.php');
 
 
-		// extend beusers for translation access control
-	$tempColumns = array(
-		'tx_snowbabel_extensions' => array(
-			'exclude' => 1,
-			'label' => 'LLL:EXT:snowbabel/locallang_db.xlf:label.tx_snowbabel_extensions',
-			'config' => Array (
-				'type' => 'select',
-				'itemsProcFunc' => 'tx_snowbabel_TCA->getExtensions',
-				'size' => 10,
-				'maxitems' => 9999,
-				'default' => ''
-			)
-		),
-		'tx_snowbabel_languages' => array(
-			'exclude' => 1,
-			'label' => 'LLL:EXT:snowbabel/locallang_db.xlf:label.tx_snowbabel_languages',
-			'config' => Array (
-				'type' => 'select',
-				'itemsProcFunc' => 'tx_snowbabel_TCA->getLanguages',
-				'size' => 10,
-				'maxitems' => 9999,
-				'default' => ''
-			)
-		),
-	);
+		// Get Typo3 Version
+	$version = class_exists('t3lib_utility_VersionNumber') ? t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version) : t3lib_div::int_from_ver(TYPO3_version);
+
+		// Extend Beusers For Translation Access Control
+		// Typo3 4.6 & Above
+	if ($version >= 4006000) {
+
+		$tempColumns = array(
+			'tx_snowbabel_extensions' => array(
+				'exclude' => 1,
+				'label' => 'LLL:EXT:snowbabel/locallang_db.xlf:label.tx_snowbabel_extensions',
+				'config' => Array (
+					'type' => 'select',
+					'itemsProcFunc' => 'tx_snowbabel_TCA->getExtensions',
+					'size' => 10,
+					'maxitems' => 9999,
+					'default' => ''
+				)
+			),
+			'tx_snowbabel_languages' => array(
+				'exclude' => 1,
+				'label' => 'LLL:EXT:snowbabel/locallang_db.xlf:label.tx_snowbabel_languages',
+				'config' => Array (
+					'type' => 'select',
+					'itemsProcFunc' => 'tx_snowbabel_TCA->getLanguages',
+					'size' => 10,
+					'maxitems' => 9999,
+					'default' => ''
+				)
+			),
+		);
+
+	}
+		// Lower Then Typo3 4.6
+	else {
+
+		$tempColumns = array(
+			'tx_snowbabel_extensions' => array(
+				'exclude' => 1,
+				'label' => 'LLL:EXT:snowbabel/locallang_db.xml:label.tx_snowbabel_extensions',
+				'config' => Array (
+					'type' => 'select',
+					'itemsProcFunc' => 'tx_snowbabel_TCA->getExtensions',
+					'size' => 10,
+					'maxitems' => 9999,
+					'default' => ''
+				)
+			),
+			'tx_snowbabel_languages' => array(
+				'exclude' => 1,
+				'label' => 'LLL:EXT:snowbabel/locallang_db.xml:label.tx_snowbabel_languages',
+				'config' => Array (
+					'type' => 'select',
+					'itemsProcFunc' => 'tx_snowbabel_TCA->getLanguages',
+					'size' => 10,
+					'maxitems' => 9999,
+					'default' => ''
+				)
+			),
+		);
+
+	}
 
 	t3lib_div::loadTCA('be_groups');
 	t3lib_extMgm::addTCAcolumns('be_groups',$tempColumns,1);

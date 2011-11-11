@@ -32,27 +32,27 @@
 class tx_snowbabel_Columns {
 
 	/**
-	 *
+	 * @var
 	 */
 	private $confObj;
 
 	/**
-	 *
+	 * @var
 	 */
 	private $debug;
 
 	/**
-	 *
+	 * @var
 	 */
 	private $ColumnsConfiguration;
 
 	/**
-	 *
+	 * @var array
 	 */
 	private $Columns = array();
 
 	/**
-	 *
+	 * @param $confObj
 	 */
   	public function __construct($confObj) {
 
@@ -71,7 +71,7 @@ class tx_snowbabel_Columns {
 	}
 
 	/**
-	 *
+	 * @return array
 	 */
 	public function getColumns() {
 			// get columns
@@ -79,7 +79,7 @@ class tx_snowbabel_Columns {
 	}
 
 	/**
-	 *
+	 * @return void
 	 */
 	private function initColumns() {
 
@@ -100,7 +100,8 @@ class tx_snowbabel_Columns {
 	}
 
 	/**
-	 *
+	 * @param $Id
+	 * @return string
 	 */
 	private function getColumnLabel($Id) {
 

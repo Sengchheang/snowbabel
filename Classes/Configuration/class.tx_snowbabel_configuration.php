@@ -30,31 +30,35 @@
  * @subpackage	tx_snowbabel
  */
 class tx_snowbabel_Configuration {
+
 	/**
-	 *
+	 * @var
 	 */
 	private $configuration;
 
 	/**
-	 *
+	 * @var tx_snowbabel_db
 	 */
 	private $db;
 
 	/**
-	 *
+	 * @var string
 	 */
-	private $xmlPath = 'snowbabel/Resources/Private/Language/locallang_translation.xlf';
+	private $xmlPath = '';
 
 	/**
-	 *
+	 * @var
 	 */
 	public $debug;
 
 	/**
-	 *
+	 * @var bool
 	 */
 	private $extjsParams;
 
+	/**
+	 * @var array
+	 */
 	private $StandartValues = array(
 		'LocalExtensionPath'		=> 'typo3conf/ext/',
 		'SystemExtensionPath'		=> 'typo3/sysext/',
@@ -79,8 +83,15 @@ class tx_snowbabel_Configuration {
 
 		'AvailableLanguages'		=> '30',
 
-		'SchedulerCheck'			=> 0
+		'SchedulerCheck'			=> 0,
+
+		'ConfigurationChanged'		=> 0
 	);
+
+	/**
+	 * @var
+	 */
+	private $version;
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
@@ -95,8 +106,19 @@ class tx_snowbabel_Configuration {
 	 */
 	public function __construct($extjsParams=false) {
 
-			// Only for dev
-		//$this->initFirephp();
+			// Get Typo3 Version
+		$this->version = class_exists('t3lib_utility_VersionNumber') ? t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version) : t3lib_div::int_from_ver(TYPO3_version);
+
+		// TODO: Fix Language File For All Applications!!!
+
+			// Typo3 4.6 & Above
+		if ($this->version >= 4006000) {
+			$this->xmlPath = 'snowbabel/Resources/Private/Language/locallang_translation.xlf';
+		}
+			// Lower Then Typo3 4.6
+		else {
+			$this->xmlPath = 'snowbabel/Resources/Private/Language/locallang_translation.xml';
+		}
 
 		$this->extjsParams = $extjsParams;
 
@@ -287,13 +309,18 @@ class tx_snowbabel_Configuration {
 			$NewLocalconfValues['AvailableLanguages'] = $Languages;
 		}
 
+			// Mark Configuration Changes As 'CHANGED'
+		$NewLocalconfValues['ConfigurationChanged'] = 1;
+
+			// Write Localconf
 		$this->writeLocalconfArray($NewLocalconfValues);
+
 	}
 
 	/**
 	 * @return void
 	 */
-	public function setSchedulerCheck() {
+	public function setSchedulerCheckAndChangedConfiguration() {
 
 			// Get Localconf Values
 		$LocalconfValues = $this->loadApplicationConfiguration(false);
@@ -301,11 +328,13 @@ class tx_snowbabel_Configuration {
 			// Set Scheduler Check
 		$LocalconfValues['SchedulerCheck'] = 1;
 
+			// Set Scheduler Check
+		$LocalconfValues['ConfigurationChanged'] = 0;
+
 			// Write To Localconf
 		$this->writeLocalconfArray($LocalconfValues);
 
 	}
-
 
 ///////////////////////////////////////////////////////
 // read config - get
@@ -585,6 +614,8 @@ class tx_snowbabel_Configuration {
 		$instObj->writeToLocalconf_control($lines);
 
 		t3lib_extMgm::removeCacheFiles();
+
+		// TODO:
 	}
 
 	/**
@@ -723,6 +754,9 @@ class tx_snowbabel_Configuration {
 
 				// Scheduler Check
 			$this->setApplicationConfiguration($LocalconfValues['SchedulerCheck'], 'SchedulerCheck');
+
+				// Configuration Changed
+			$this->setApplicationConfiguration($LocalconfValues['ConfigurationChanged'], 'ConfigurationChanged');
 		}
 		else {
 			return $LocalconfValues;
@@ -894,20 +928,6 @@ class tx_snowbabel_Configuration {
 		$AllowedLanguages = array_unique(array_merge($AllowedLanguages1, $AllowedLanguages2));
 
 		return implode($AllowedLanguages, ',');
-	}
-
-	/**
-	 * @return void
-	 */
-	private function initFirephp() {
-
-			// firephp - for debugging only
-		require_once (t3lib_extMgm::extPath('snowbabel') . 'Resources/Private/Firephp/FirePHP.class.php');
-
-			// init firephp
-		if (!is_object($this->debug) && !($this->debug instanceof FirePHP)) {
-			$this->debug = FirePHP::getInstance(true);
-		}
 	}
 
 	/**

@@ -17,7 +17,14 @@ $MCONF['access']='user,group';
 $MCONF['script']='index.php';
 
 $MLANG['default']['tabs_images']['tab'] = 'moduleicon.gif';
-$MLANG['default']['ll_ref']='LLL:EXT:snowbabel/Resources/Private/Language/locallang_mod2.xlf';
 
+	// Typo3 4.6 & Above
+if(version_compare(TYPO3_version, '4.6.0', '>=')) {
+	$MLANG['default']['ll_ref']='LLL:EXT:snowbabel/Resources/Private/Language/locallang_mod2.xlf';
+}
+	// Lower Then Typo3 4.6
+else {
+	$MLANG['default']['ll_ref']='LLL:EXT:snowbabel/Resources/Private/Language/locallang_mod2.xml';
+}
 
 ?>
