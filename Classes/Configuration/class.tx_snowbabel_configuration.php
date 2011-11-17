@@ -106,13 +106,14 @@ class tx_snowbabel_Configuration {
 	 */
 	public function __construct($extjsParams=false) {
 
-			// Get Typo3 Version
-		$this->version = class_exists('t3lib_utility_VersionNumber') ? t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version) : t3lib_div::int_from_ver(TYPO3_version);
+		$this->setTypo3Version(
+			class_exists('t3lib_utility_VersionNumber') ? t3lib_utility_VersionNumber::convertVersionNumberToInteger(TYPO3_version) : t3lib_div::int_from_ver(TYPO3_version)
+		);
 
 		// TODO: Same Language File For All Applications!!!
 
 			// Typo3 4.6 & Above
-		if ($this->version >= 4006000) {
+		if ($this->getTypo3Version() >= 4006000) {
 			$this->xmlPath = 'snowbabel/Resources/Private/Language/locallang_translation.xlf';
 		}
 			// Lower Then Typo3 4.6
@@ -340,6 +341,10 @@ class tx_snowbabel_Configuration {
 // read config - get
 ///////////////////////////////////////////////////////
 
+	public function getTypo3Version() {
+		return $this->version;
+	}
+
 	/**
 	 * @return tx_snowbabel_db
 	 */
@@ -503,7 +508,7 @@ class tx_snowbabel_Configuration {
 	}
 
 	/**
-	 * @return
+	 * @return array
 	 */
 	public function getExtjsConfigurationFormSettings() {
 
@@ -596,6 +601,14 @@ class tx_snowbabel_Configuration {
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
+
+	/**
+	 * @param int $typo3Version
+	 * @return void
+	 */
+	private function setTypo3Version($typo3Version) {
+		$this->version = $typo3Version;
+	}
 
 	/**
 	 * @param array $LocalconfValues

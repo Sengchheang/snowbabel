@@ -2,6 +2,7 @@
 
 	* Add backward compatibility for llxml
 	* Remove unused performance-debug-functions
+	* Add XLIFF support in indexing
 
 2011-10-31 Daniel Alder <dalder@snowflake.ch>
 

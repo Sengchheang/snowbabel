@@ -98,8 +98,8 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 			// Switch CurrentTableId
 		self::$Db->setCurrentTableId(self::$CurrentTableId);
 
-			// Add Scheduler Check To Localconf
-		self::$confObj->setSchedulerCheck();
+			// Add Scheduler Check To Localconf & Mark Configuration Changes As 'OK'
+		self::$confObj->setSchedulerCheckAndChangedConfiguration();
 
 		return true;
 	}
@@ -125,8 +125,11 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 			// Get Extensions From Database
 		$Extensions = self::$Db->getExtensions(self::$CurrentTableId);
 
+			// Get Typo3 Version
+		$Typo3Version = self::$confObj->getTypo3Version();
+
 			// Get Files From Typo3
-		$Files = self::$SystemTranslation->getFiles($Extensions);
+		$Files = self::$SystemTranslation->getFiles($Extensions, $Typo3Version);
 
 			// Write Extensions To Database
 		self::$Db->setFiles($Files, self::$CurrentTableId);
@@ -141,8 +144,11 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 			// Get Files From Database
 		$Files = self::$Db->getFiles(self::$CurrentTableId);
 
+			// Get Typo3 Version
+		$Typo3Version = self::$confObj->getTypo3Version();
+
 			// Get Labels From Typo
-		$Labels = self::$SystemTranslation->getLabels($Files);
+		$Labels = self::$SystemTranslation->getLabels($Files, $Typo3Version);
 
 			// Write Labels To Database
 		self::$Db->setLabels($Labels, self::$CurrentTableId);
@@ -160,8 +166,11 @@ class tx_snowbabel_system_indexing extends tx_scheduler_Task {
 			// Get Labels From Database
 		$Labels = self::$Db->getLabels(self::$CurrentTableId, $Conf);
 
+			// Get Typo3 Version
+		$Typo3Version = self::$confObj->getTypo3Version();
+
 			// Get Translations From Typo
-		$Translations = self::$SystemTranslation->getTranslations($Labels);
+		$Translations = self::$SystemTranslation->getTranslations($Labels, $Typo3Version);
 
 			// Write Translations To Database
 		self::$Db->setTranslations($Translations, self::$CurrentTableId);

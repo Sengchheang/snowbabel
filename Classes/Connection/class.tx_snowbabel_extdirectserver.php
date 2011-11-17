@@ -32,38 +32,33 @@
 class tx_snowbabel_ExtDirectServer {
 
 	/**
-	 *
+	 * @var tx_snowbabel_configuration
 	 */
 	private $confObj;
 
 	/**
-	 *
+	 * @var tx_snowbabel_extensions
 	 */
 	private $extObj;
 
 	/**
-	 *
+	 * @var tx_snowbabel_labels
 	 */
 	private $labelsObj;
 
 	/**
-	 *
+	 * @var tx_snowbabel_languages
 	 */
 	private $langObj;
 
 	/**
-	 *
+	 * @var tx_snowbabel_columns
 	 */
 	private $colObj;
 
 	/**
-	 *
-	 */
-	private $debug;
-
-	/**
-	 * @param  $extjsParams
-	 * @return
+	 * @param $extjsParams
+	 * @return null
 	 */
 	public function getExtensionMenu($extjsParams) {
 
@@ -80,8 +75,8 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 * @param  $extjsParams
-	 * @return
+	 * @param $extjsParams
+	 * @return array
 	 */
 	public function getLanguageSelection($extjsParams) {
 
@@ -98,8 +93,8 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 * @param  $extjsParams
-	 * @return
+	 * @param $extjsParams
+	 * @return array
 	 */
 	public function getColumnSelection($extjsParams) {
 
@@ -116,7 +111,7 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 * @param  $extjsParams
+	 * @param $extjsParams
 	 * @return null
 	 */
 	public function getListView($extjsParams) {
@@ -207,7 +202,7 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 * @return
+	 * @return array
 	 */
 	public function getGeneralSettings() {
 
@@ -247,6 +242,8 @@ class tx_snowbabel_ExtDirectServer {
 
 	/**
 	 * @formHandler
+	 * @param $extjsParams
+	 * @return array
 	 */
 	public function submitGeneralSettings($extjsParams) {
 
@@ -261,8 +258,8 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 * @param  $extjsParams
-	 * @return
+	 * @param $extjsParams
+	 * @return array
 	 */
 	public function getGeneralSettingsLanguages($extjsParams) {
 
@@ -279,8 +276,8 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
-	 * @param  $extjsParams
-	 * @return
+	 * @param $extjsParams
+	 * @return null
 	 */
 	public function getGeneralSettingsLanguagesAdded($extjsParams) {
 
@@ -304,8 +301,6 @@ class tx_snowbabel_ExtDirectServer {
 
 		if (!is_object($this->confObj) && !($this->confObj instanceof tx_snowbabel_Configuration)) {
 			$this->confObj = t3lib_div::makeInstance('tx_snowbabel_Configuration', $extjsParams);
-
-			$this->debug = $this->confObj->debug;
 		}
 
 	}

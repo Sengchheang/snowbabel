@@ -39,11 +39,6 @@ class tx_snowbabel_system_translations {
 	/**
 	 * @var
 	 */
-	private static $debug;
-
-	/**
-	 * @var
-	 */
 	private static $CopyDefaultLanguage;
 
 	/**
@@ -92,14 +87,24 @@ class tx_snowbabel_system_translations {
 	private static $LoadedExtensions;
 
 	/**
-	 * @var
+	 * @var string
 	 */
 	private static $CacheTranslationsPath = '';
+
+	/**
+	 * @var string
+	 */
+	private static $CacheTranslationLanguage = '';
 
 	/**
 	 * @var
 	 */
 	private static $CachedTranslations;
+
+	/**
+	 * @var
+	 */
+	private static $CachedOriginalTranslations;
 
 	/**
 	 * @var
@@ -118,7 +123,6 @@ class tx_snowbabel_system_translations {
 	public static function init($confObj) {
 
 		self::$confObj = $confObj;
-		self::$debug = $confObj->debug;
 
 			// get Application params
 		self::$CopyDefaultLanguage = self::$confObj->getApplicationConfiguration('CopyDefaultLanguage');
@@ -151,10 +155,12 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
-	 * @param array $Extensions
+	 * @static
+	 * @param $Extensions
+	 * @param $Typo3Version
 	 * @return array
 	 */
-	public static function getFiles($Extensions) {
+	public static function getFiles($Extensions, $Typo3Version) {
 
 		$Files = array();
 
@@ -162,7 +168,7 @@ class tx_snowbabel_system_translations {
 			foreach($Extensions as $Extension) {
 
 					// Get Extension Files
-				$Files[$Extension['uid']] = self::getSystemFiles($Extension['ExtensionPath'], $Extension['uid']);
+				$Files[$Extension['uid']] = self::getSystemFiles($Extension['ExtensionPath'], $Extension['uid'], $Typo3Version);
 
 			}
 	    }
@@ -172,10 +178,12 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
-	 * @param array $Files
+	 * @static
+	 * @param $Files
+	 * @param $Typo3Version
 	 * @return array
 	 */
-	public static function getLabels($Files) {
+	public static function getLabels($Files, $Typo3Version) {
 
 		$Labels = array();
 
@@ -183,7 +191,18 @@ class tx_snowbabel_system_translations {
 
 			foreach($Files as $File) {
 
-				$Labels[$File['FileId']] = self::getSystemLabels($File['ExtensionPath'] . $File['FileKey'], $File['FileId']);
+					// Get Fileinfos
+				$FileInfo = self::getFileInfos($File['ExtensionPath'] . $File['FileKey']);
+
+					// XLIFF (Typo3 4.6 & Above)
+				if ($Typo3Version >= 4006000 && $FileInfo['Extension'] == 'xlf') {
+					$Labels[$File['FileId']] = self::getSystemLabelsXliff($File['ExtensionPath'] . $File['FileKey'], $File['FileId']);
+				}
+					// XML
+				else {
+					$Labels[$File['FileId']] = self::getSystemLabelsXml($File['ExtensionPath'] . $File['FileKey'], $File['FileId']);
+
+				}
 
 			}
 
@@ -194,10 +213,12 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
-	 * @param  $Labels
+	 * @static
+	 * @param $Labels
+	 * @param $Typo3Version
 	 * @return array
 	 */
-	public static function getTranslations($Labels) {
+	public static function getTranslations($Labels, $Typo3Version) {
 
 		$Translations = array();
 
@@ -205,7 +226,13 @@ class tx_snowbabel_system_translations {
 
 			foreach($Labels as $Label) {
 
-				$Translations[$Label['LabelId']] = self::getSystemTranslations($Label['LabelName'], $Label['ExtensionPath'] . $Label['FileKey'], $Label['LabelId']);
+				$Translations[$Label['LabelId']] = self::getSystemTranslations($Label['LabelName'], $Label['ExtensionPath'] . $Label['FileKey'], $Label['LabelId'], $Label['ExtensionKey'], $Typo3Version);
+
+//				// TODO: remove after dev
+//				if($Label['LabelId'] == 431) {
+//					t3lib_div::debug($Translations[$Label['LabelId']], 'Translations');
+//					t3lib_div::debug(self::$CacheLanguageFile, 'CachedLanguageFile');
+//				}
 
 			}
 
@@ -216,50 +243,107 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
-	 * @param  $Translation
+	 * @static
+	 * @param $Translation
 	 * @return void
 	 */
 	public static function updateTranslation($Translation) {
 
 		$FilePath			= $Translation['ExtensionPath'] . $Translation['FileKey'];
-		$Language			= $Translation['TranslationLanguage'];
+		$LanguageKey		= $Translation['TranslationLanguage'];
+		$ExtensionKey		= $Translation['ExtensionKey'];
 		$LabelName			= $Translation['LabelName'];
 		$TranslationValue	= $Translation['TranslationValue'];
 
+		$FileInfo = self::getFileInfos($FilePath);
+		$Typo3Version = self::$confObj->getTypo3Version();
+
 			// Get l10n Location
-		$TranslationFileName = t3lib_div::llXmlAutoFileName($FilePath, $Language);
+		$TranslationFileName = t3lib_div::llXmlAutoFileName($FilePath, $LanguageKey);
 		$TranslationFilePath = t3lib_div::getFileAbsFileName($TranslationFileName);
 
-			// Get Data From L10n File
-		$Translation = self::getSystemLanguageFile_New($TranslationFilePath);
-
-			// Get Original Label
-		$Extension = self::getSystemLanguageFile_New($FilePath);
-
-		if($Extension) {
-				// Get Hash From Original Label
-			$OriginalHash = t3lib_div::md5int($Extension['data']['default'][$LabelName]);
-				// Set Hash To Translation File
-			$Translation['orig_hash'][$Language][$LabelName] = $OriginalHash;
+			// XLIFF (Typo3 4.6 & Above)
+		if ($Typo3Version >= 4006000 && $FileInfo['Extension'] == 'xlf') {
+			self::updateTranslationXlf($TranslationValue, $LabelName, $LanguageKey, $TranslationFilePath, $ExtensionKey);
 		}
+		else {
+			self::updateTranslationXml($TranslationValue, $LabelName, $LanguageKey, $FilePath, $TranslationFilePath);
+		}
+
+			// Delete Temp Files In typo3temp-Folder
+		self::deleteSystemCache($FilePath, $LanguageKey);
+
+	}
+
+	/**
+	 * @static
+	 * @param $TranslationValue
+	 * @param $LabelName
+	 * @param $LanguageKey
+	 * @param $TranslationFilePath
+	 * @param $ExtensionKey
+	 * @return void
+	 */
+	private static function updateTranslationXlf($TranslationValue, $LabelName, $LanguageKey, $TranslationFilePath, $ExtensionKey) {
+
+			// Get Data From L10n File
+		$Translation[$LanguageKey] = self::getSystemLanguageFileXliff($TranslationFilePath, $LanguageKey);
 
 			// Change Value If Not Empty
 		if(strlen($TranslationValue)) {
-			$Translation['data'][$Language][$LabelName] = $TranslationValue;
+			$Translation[$LanguageKey][$LabelName][0]['target'] = $TranslationValue;
 		}
 			// Otherwise Unset Value
 		else {
-			if($Translation['data'][$Language][$LabelName]){
-				unset($Translation['data'][$Language][$LabelName]);
+			if($Translation[$LanguageKey][$LabelName]){
+				unset($Translation[$LanguageKey][$LabelName]);
 			}
 
 		}
 
 			// Write File
-		self::writeTranslation($Translation, $TranslationFilePath);
+		self::writeTranslationXliff($Translation, $TranslationFilePath, $LanguageKey, $ExtensionKey);
 
-			// Delete Temp Files In typo3temp-Folder
-		self::deleteSystemCache($FilePath, $Language);
+	}
+
+	/**
+	 * @static
+	 * @param $TranslationValue
+	 * @param $LabelName
+	 * @param $LanguageKey
+	 * @param $FilePath
+	 * @param $TranslationFilePath
+	 * @return void
+	 */
+	private static function updateTranslationXml($TranslationValue, $LabelName, $LanguageKey, $FilePath, $TranslationFilePath) {
+
+			// Get Data From L10n File
+		$Translation = self::getSystemLanguageFileXml($TranslationFilePath);
+
+			// Get Original Label
+		$Extension = self::getSystemLanguageFileXml($FilePath);
+
+		if($Extension) {
+				// Get Hash From Original Label
+			$OriginalHash = t3lib_div::md5int($Extension['data']['default'][$LabelName]);
+				// Set Hash To Translation File
+			$Translation['orig_hash'][$LanguageKey][$LabelName] = $OriginalHash;
+		}
+
+			// Change Value If Not Empty
+		if(strlen($TranslationValue)) {
+			$Translation['data'][$LanguageKey][$LabelName] = $TranslationValue;
+		}
+			// Otherwise Unset Value
+		else {
+			if($Translation['data'][$LanguageKey][$LabelName]){
+				unset($Translation['data'][$LanguageKey][$LabelName]);
+			}
+
+		}
+
+			// Write File
+		self::writeTranslationXml($Translation, $TranslationFilePath);
 
 	}
 
@@ -498,18 +582,54 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
-	 * @param  $FilePath
-	 * @param  $FileId
+	 * @static
+	 * @param $FilePath
+	 * @param $FileId
 	 * @return array
 	 */
-	private static function getSystemLabels($FilePath, $FileId) {
+	private static function getSystemLabelsXliff($FilePath, $FileId) {
 
 		$Labels = array();
 
-		// TODO:
+			// Get LanguageFile
+		$LanguageFile = t3lib_div::readLLfile($FilePath, 'default');
+
+			// Language File Available?
+		if($LanguageFile) {
+
+				// Set System Labels
+			$LabelData = $LanguageFile['default'];
+
+			if(is_array($LabelData)) {
+				foreach($LabelData as $LabelName => $LabelDefault) {
+
+					$Labels[] = array(
+						'FileId'		=> $FileId,
+						'LabelName' 	=> $LabelName,
+						'LabelDefault'	=> $LabelDefault[0]['source']
+					);
+
+				}
+			}
+
+		}
+
+		return $Labels;
+
+	}
+
+	/**
+	 * @static
+	 * @param $FilePath
+	 * @param $FileId
+	 * @return array
+	 */
+	private static function getSystemLabelsXml($FilePath, $FileId) {
+
+		$Labels = array();
+
 			// Get Language File
-		//$LanguageFile = self::getSystemLanguageFile($FilePath);
-		$LanguageFile = self::getSystemLanguageFile_New($FilePath);
+		$LanguageFile = self::getSystemLanguageFileXml($FilePath);
 
 			// Language File Available?
 		if($LanguageFile) {
@@ -536,18 +656,36 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
-	 * @param  $LabelName
-	 * @param  $FilePath
-	 * @param  $LabelId
+	 * @static
+	 * @param $LabelName
+	 * @param $FilePath
+	 * @param $LabelId
+	 * @param $ExtensionKey
+	 * @param $Typo3Version
 	 * @return array
 	 */
-	private static function getSystemTranslations($LabelName, $FilePath, $LabelId) {
+	private static function getSystemTranslations($LabelName, $FilePath, $LabelId, $ExtensionKey, $Typo3Version) {
 
 		$Translations = array();
 
+			// Get Fileinfos
+		$FileInfo = self::getFileInfos($FilePath);
+
+			// Load Language File If Not Cached
 		if($FilePath != self::$CacheFilePath || !self::$CacheLanguageFile) {
+
+				// Set FilePath In Cache
 			self::$CacheFilePath = $FilePath;
-			self::$CacheLanguageFile = self::getSystemLanguageFile_New($FilePath);
+
+				// XLIFF (Typo3 4.6 & Above)
+			if ($Typo3Version >= 4006000 && $FileInfo['Extension'] == 'xlf') {
+				self::$CacheLanguageFile = self::getSystemLanguageFileXliff($FilePath);
+			}
+				// XML
+			else {
+				self::$CacheLanguageFile = self::getSystemLanguageFileXml($FilePath);
+			}
+
 		}
 
 		if(self::$CacheLanguageFile){
@@ -558,8 +696,16 @@ class tx_snowbabel_system_translations {
 					// Loop Languages
 				foreach(self::$AvailableLanguages as $Language) {
 
-					$Translation = self::getSystemTranslation($FilePath, $Language['LanguageKey'], $LabelName);
+						// XLIFF (Typo3 4.6 & Above)
+					if ($Typo3Version >= 4006000 && $FileInfo['Extension'] == 'xlf') {
+						$Translation = self::getSystemTranslationXliff($FilePath, $Language['LanguageKey'], $LabelName, $ExtensionKey);
+					}
+						// XML
+					else {
+						$Translation = self::getSystemTranslationXml($FilePath, $Language['LanguageKey'], $LabelName);
+					}
 
+						// Add Translation
 					$Translations[] = array(
 						'LabelId'		=> $LabelId,
 						'TranslationLanguage'	=> $Language['LanguageKey'],
@@ -577,12 +723,68 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
-	 * @param  $FilePath
-	 * @param  $LanguageKey
-	 * @param  $LabelName
-	 * @return bool
+	 * @static
+	 * @param $FilePath
+	 * @param $LanguageKey
+	 * @param $LabelName
+	 * @param $ExtensionKey
+	 * @return string
 	 */
-    private static function getSystemTranslation($FilePath, $LanguageKey, $LabelName) {
+	private static function getSystemTranslationXliff($FilePath, $LanguageKey, $LabelName, $ExtensionKey) {
+
+	        // While First Loop Get Translation From l10n (And Create File If Not Done Yet)
+	    if($FilePath != self::$CacheTranslationsPath || $LanguageKey != self::$CacheTranslationLanguage) {
+
+			self::$CachedTranslations = array();
+
+				// Get Fileinfo
+			$FileInfo = self::getFileInfos($FilePath);
+
+				// Path To Translation In Extension
+			$OriginalTranslationPath = $FileInfo['Dirname'] . $LanguageKey . '.' . $FileInfo['Basename'];
+
+				// Get Path To l10n Location
+			$TranslationFileName = t3lib_div::llXmlAutoFileName($FilePath, $LanguageKey);
+			$TranslationFilePath = t3lib_div::getFileAbsFileName($TranslationFileName);
+
+		        // Check If L10n File Available Otherwise Create One
+			self::isSystemTranslationAvailableXliff($LanguageKey, $TranslationFilePath, $ExtensionKey);
+
+		        // Get Data From L10n File
+		    self::$CachedTranslations[$LanguageKey] = self::getSystemLanguageFileXliff($TranslationFilePath, $LanguageKey);
+
+				// Get Data From Original Translation
+			self::$CachedOriginalTranslations[$LanguageKey] = self::getSystemLanguageFileXliff($OriginalTranslationPath, $LanguageKey);
+
+				// Sync Data From L10n With Extension XML
+			self::syncSystemTranslationXliff($LanguageKey, $TranslationFilePath, $ExtensionKey);
+
+				// Set New Cached Path
+			self::$CacheTranslationsPath = $FilePath;
+
+				// Set New Cached Language
+			self::$CacheTranslationLanguage = $LanguageKey;
+
+	    }
+
+	        // Return Translation If Available
+		if(self::$CachedTranslations[$LanguageKey][$LabelName]) {
+			return self::$CachedTranslations[$LanguageKey][$LabelName][0]['target'];
+		}
+
+			 // We Always Need A Translation In DB
+	    return '';
+
+	}
+
+	/**
+	 * @static
+	 * @param $FilePath
+	 * @param $LanguageKey
+	 * @param $LabelName
+	 * @return string
+	 */
+    private static function getSystemTranslationXml($FilePath, $LanguageKey, $LabelName) {
 
 	        // While First Loop Get Translation From l10n (And Create File If Not Done Yet)
 	    if($FilePath != self::$CacheTranslationsPath || empty(self::$CachedTranslations[$LanguageKey])) {
@@ -592,16 +794,16 @@ class tx_snowbabel_system_translations {
 			$TranslationFilePath = t3lib_div::getFileAbsFileName($TranslationFileName);
 
 		        // Check If L10n File Available Otherwise Create One
-			self::isSystemTranslationAvailable($LanguageKey, $TranslationFilePath);
+			self::isSystemTranslationAvailableXml($LanguageKey, $TranslationFilePath);
 
 		        // Get Data From L10n File
-		    self::$CachedTranslations[$LanguageKey] = self::getSystemLanguageFile_New($TranslationFilePath);
+		    self::$CachedTranslations[$LanguageKey] = self::getSystemLanguageFileXml($TranslationFilePath);
 
 				// Set New Cached Path
 			self::$CacheTranslationsPath = $FilePath;
 
 				// Sync Data From L10n With Extension XML
-			self::syncSystemTranslation(
+			self::syncSystemTranslationXml(
 				$LanguageKey,
 				$TranslationFilePath
 			);
@@ -618,11 +820,37 @@ class tx_snowbabel_system_translations {
     }
 
 	/**
+	 * @static
+	 * @param $LanguageKey
+	 * @param $TranslationFilePath
+	 * @param $ExtensionKey
+	 * @return void
+	 */
+	private static function isSystemTranslationAvailableXliff($LanguageKey, $TranslationFilePath, $ExtensionKey) {
+
+			// Create L10n File & Folder
+		if ($TranslationFilePath && !@is_file($TranslationFilePath))	{
+
+				// Set Directory
+			$DeepDir = dirname(substr($TranslationFilePath,strlen(self::$SitePath))).'/';
+
+				// Create XLS & Directory
+			if (t3lib_div::isFirstPartOfStr($DeepDir, self::$L10nPath . $LanguageKey . '/'))	{
+				t3lib_div::mkdir_deep(self::$SitePath, $DeepDir);
+
+				self::writeTranslationXliff(array(), $TranslationFilePath, $LanguageKey, $ExtensionKey);
+			}
+
+		}
+
+	}
+
+	/**
 	 * @param  $LanguageKey
 	 * @param  $TranslationFilePath
 	 * @return void
 	 */
-	private static function isSystemTranslationAvailable($LanguageKey, $TranslationFilePath) {
+	private static function isSystemTranslationAvailableXml($LanguageKey, $TranslationFilePath) {
 
 			// Create L10n File
 		if ($TranslationFilePath && !@is_file($TranslationFilePath))	{
@@ -643,7 +871,7 @@ class tx_snowbabel_system_translations {
 			if (t3lib_div::isFirstPartOfStr($DeepDir, self::$L10nPath . $LanguageKey . '/'))	{
 
 				t3lib_div::mkdir_deep(self::$SitePath, $DeepDir);
-				self::writeTranslation($File, $TranslationFilePath);
+				self::writeTranslationXml($File, $TranslationFilePath);
 
 			}
 
@@ -652,12 +880,69 @@ class tx_snowbabel_system_translations {
 
 	/**
 	 * @static
-	 * @param $FilePath
 	 * @param $LanguageKey
 	 * @param $TranslationFilePath
-	 * @return
+	 * @param $ExtensionKey
+	 * @return void
 	 */
-	private static function syncSystemTranslation($LanguageKey, $TranslationFilePath) {
+	private static function syncSystemTranslationXliff($LanguageKey, $TranslationFilePath, $ExtensionKey) {
+
+		if(is_array(self::$CacheLanguageFile) && count(self::$CacheLanguageFile) > 0) {
+			foreach(self::$CacheLanguageFile as $LabelName => $LabelDefault) {
+
+					// Set Source
+				self::$CachedTranslations[$LanguageKey][$LabelName][0]['source'] = $LabelDefault[0]['source'];
+
+					// Set 'l10n' Label If Available
+				$L10nLabel = self::$CachedTranslations[$LanguageKey][$LabelName][0]['target'];
+
+					// No Sync Needed If 'l10n' Already Defined
+					// Otherwise Check If Labels Are Available Somewhere
+				if(empty($L10nLabel)) {
+
+						// Copy 'default' To 'en' If Activated In Settings
+					if($LanguageKey === 'en' && self::$CopyDefaultLanguage) {
+						self::$CachedTranslations[$LanguageKey][$LabelName][0]['target'] = $LabelDefault[0]['target'];
+					}
+
+
+						// Sync With Translation In Extension Dir
+					if(self::$CachedOriginalTranslations[$LanguageKey]) {
+
+							// Label From Original Translation
+						$OriginalTranslationLabel = self::$CachedOriginalTranslations[$LanguageKey][$LabelName][0]['target'];
+
+							// Set Original Translation If Available
+						if(!empty($OriginalTranslationLabel)) {
+							self::$CachedTranslations[$LanguageKey][$LabelName][0]['target'] = $OriginalTranslationLabel;
+						}
+
+					}
+
+				}
+
+					// Unset If No Data Available
+				if(empty(self::$CachedTranslations[$LanguageKey][$LabelName][0]['target'])) {
+					unset(self::$CachedTranslations[$LanguageKey][$LabelName]);
+				}
+
+			}
+
+
+				// Write 'l10n' File
+			self::writeTranslationXliff(self::$CachedTranslations, $TranslationFilePath, $LanguageKey, $ExtensionKey);
+
+		}
+
+	}
+
+	/**
+	 * @static
+	 * @param $LanguageKey
+	 * @param $TranslationFilePath
+	 * @return void
+	 */
+	private static function syncSystemTranslationXml($LanguageKey, $TranslationFilePath) {
 
 		$Changes		= 0;
 		$LabelsDefault	= self::$CacheLanguageFile['data']['default'];
@@ -687,7 +972,7 @@ class tx_snowbabel_system_translations {
 
 				// If There Are Changes Write It To XML File
 			if($Changes > 0) {
-				self::writeTranslation(self::$CachedTranslations[$LanguageKey], $TranslationFilePath);
+				self::writeTranslationXml(self::$CachedTranslations[$LanguageKey], $TranslationFilePath);
 			}
 
 		}
@@ -695,12 +980,59 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
-	 * @param  $File
-	 * @param  $Path
+	 * @static
+	 * @param $File
+	 * @param $Path
+	 * @param $LanguageKey
+	 * @param $ExtensionKey
+	 * @return void
+	 */
+	private static function writeTranslationXliff($File, $Path, $LanguageKey, $ExtensionKey) {
+
+		$XmlFile = array();
+
+		$XmlFile[] = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?>';
+		$XmlFile[] = '<xliff version="1.0">';
+		$XmlFile[] = '	<file source-language="en"' . ($LanguageKey !== 'default' ? ' target-language="' . $LanguageKey . '"' : '')
+				. ' datatype="plaintext" original="messages" date="' . gmdate('Y-m-d\TH:i:s\Z') . '"'
+				. ' product-name="' . $ExtensionKey . '">';
+		$XmlFile[] = '		<header/>';
+    	$XmlFile[] = '		<body>';
+
+		if(is_array($File[$LanguageKey]) && count($File[$LanguageKey]) > 0) {
+			foreach ($File[$LanguageKey] as $Key => $Data) {
+
+				$Source = $Data[0]['source'];
+				$Target = $Data[0]['target'];
+
+				if ($LanguageKey === 'default') {
+					$XmlFile[] = '			<trans-unit id="' . $Key . '">';
+					$XmlFile[] = '				<source>' . htmlspecialchars($Source) . '</source>';
+					$XmlFile[] = '			</trans-unit>';
+				} else {
+					$XmlFile[] = '			<trans-unit id="' . $Key . '" approved="yes">';
+					$XmlFile[] = '				<source>' . htmlspecialchars($Source) . '</source>';
+					$XmlFile[] = '				<target>' . htmlspecialchars($Target) . '</target>';
+					$XmlFile[] = '			</trans-unit>';
+				}
+			}
+		}
+
+		$XmlFile[] = '		</body>';
+		$XmlFile[] = '	</file>';
+		$XmlFile[] = '</xliff>';
+
+		t3lib_div::writeFile($Path, implode(LF, $XmlFile));
+	}
+
+	/**
+	 * @static
+	 * @param $File
+	 * @param $Path
 	 * @param bool $SaveToOriginal
 	 * @return bool
 	 */
-	private static function writeTranslation($File, $Path, $SaveToOriginal=false) {
+	private static function writeTranslationXml($File, $Path, $SaveToOriginal=false) {
 
 		$XmlOptions = array(
 			'parentTagMap'=>array(
@@ -715,45 +1047,49 @@ class tx_snowbabel_system_translations {
 		$XmlFile =	'<?xml version="1.0" encoding="utf-8" standalone="yes" ?>'.chr(10);
 		$XmlFile .=	t3lib_div::array2xml($File, '', 0, $SaveToOriginal ? 'T3locallang' : 'T3locallangExt', 0, $XmlOptions);
 
-		return t3lib_div::writeFile($Path, $XmlFile);
+		t3lib_div::writeFile($Path, $XmlFile);
 	}
 
 	/**
-	 * @param  $ExtensionPath
-	 * @param  $ExtensionId
+	 * @static
+	 * @param $ExtensionPath
+	 * @param $ExtensionId
+	 * @param $Typo3Version
 	 * @return array
 	 */
-	private static function getSystemFiles($ExtensionPath, $ExtensionId) {
+	private static function getSystemFiles($ExtensionPath, $ExtensionId, $Typo3Version) {
 
 		$Files = array();
 
-			// Get Extension Files
-		$TempFiles1 = t3lib_div::getAllFilesAndFoldersInPath(
-			array(),
-			$ExtensionPath,
-			'xml',
-			0,
-			99,
-			'\.svn'
-		);
+			// Typo3 4.6 & Above
+		if ($Typo3Version >= 4006000) {
 
-		$TempFiles2 = t3lib_div::removePrefixPathFromList(
-			$TempFiles1,
-			$ExtensionPath
-		);
+				// Get 'llxml' Files
+			$XmlFiles = self::getSystemFilesInPath($ExtensionPath, 'xml');
 
-			// free memory
-		unset($TempFiles1);
+				// Get 'xliff' Files
+			$XliffFiles = self::getSystemFilesInPath($ExtensionPath, 'xlf');
+
+				// Compare 'llxml' and 'xliff' Files
+			$TempFiles = self::getComparedSystemFiles($XmlFiles, $XliffFiles);
+
+		}
+		else {
+
+				// Get 'llxml' Files
+			$TempFiles = self::getSystemFilesInPath($ExtensionPath, 'xml');
+
+		}
 
 			// Adds New Keys
-		if(is_array($TempFiles2)) {
-			foreach($TempFiles2 as $Key => $File) {
+		if(is_array($TempFiles)) {
+			foreach($TempFiles as $Key => $File) {
 
 					// Check Name Convention 'locallang'
-				if(strstr($TempFiles2[$Key], 'locallang') !== false) {
+				if(strstr($TempFiles[$Key], 'locallang') !== false) {
 					$Files[] = array(
 						'ExtensionId'	=> $ExtensionId,
-						'FileKey'   	=> $TempFiles2[$Key]
+						'FileKey'   	=> $TempFiles[$Key]
 					);
 				}
 
@@ -765,20 +1101,133 @@ class tx_snowbabel_system_translations {
 
 	/**
 	 * @static
-	 * @param  $File
-	 * @return array|bool|SimpleXMLElement$
+	 * @param $ExtensionPath
+	 * @param string $FileExtension
+	 * @return array
 	 */
-	private static function getSystemLanguageFile_New($File) {
+	private static function getSystemFilesInPath($ExtensionPath, $FileExtension = 'xml') {
+
+			// Get Extension Files
+		$TempFilesXml_1 = t3lib_div::getAllFilesAndFoldersInPath(
+			array(),
+			$ExtensionPath,
+			$FileExtension,
+			0,
+			99,
+			'\.svn'
+		);
+
+		$TempFilesXml_2 = t3lib_div::removePrefixPathFromList(
+			$TempFilesXml_1,
+			$ExtensionPath
+		);
+
+		return $TempFilesXml_2;
+
+	}
+
+	/**
+	 * @static
+	 * @param $xmlFiles
+	 * @param $xliffFiles
+	 * @return array
+	 */
+	private static function getComparedSystemFiles($xmlFiles, $xliffFiles) {
+
+		$Files = array();
+		$ComparedFiles = array();
+
+			// Add All Xml's
+		foreach($xmlFiles as $Key => $xmlFile) {
+
+			$xmlFileInfo = self::getFileInfos($xmlFile);
+
+			$ComparedFiles[$xmlFileInfo['Filename']] = $xmlFileInfo['Extension'];
+
+		}
+
+			// Add All Xliff's
+		foreach($xliffFiles as $Key => $xliffFile) {
+
+			$xliffFileInfo = self::getFileInfos($xliffFile);
+
+			$ComparedFiles[$xliffFileInfo['Filename']] = $xliffFileInfo['Extension'];
+
+		}
+
+			// Prepare Array For Return
+		foreach($ComparedFiles as $Filename => $Extension) {
+			$Files[] = $Filename . '.' . $Extension;
+		}
+
+		return $Files;
+	}
+
+	/**
+	 * @static
+	 * @param $File
+	 * @return array
+	 */
+	private static function getFileInfos($File) {
+
+		$FileInfo = array();
+
+			// Explode Array By Points -> FileExtension Should Be Last
+		$FileArray = explode('.', $File);
+
+			// Reverse Array
+			// -> FileExtension Is Now First Element
+			// -> FileBasename Is Now Second Part
+		$FileArray = array_reverse($FileArray);
+
+		$FileInfo['Extension']	= $FileArray[0];
+		$FileInfo['Filename']	= $FileArray[1];
+
+			// Add Basename
+		$FileInfo['Basename']	= pathinfo($File, PATHINFO_BASENAME);
+
+			// Add Dirname
+		$FileInfo['Dirname']	= pathinfo($File, PATHINFO_DIRNAME) . '/';
+
+		return $FileInfo;
+	}
+
+	/**
+	 * @static
+	 * @param $File
+	 * @param string $LanguageKey
+	 * @return array|bool
+	 */
+	private static function getSystemLanguageFileXliff($File, $LanguageKey = 'default') {
+
+		if(is_file($File)) {
+
+				// Load Xls Object
+			$xml = simplexml_load_file($File, 'SimpleXMLElement', LIBXML_NOWARNING);
+
+				// Format Xls Object
+			return self::formatSimpleXmlObject_XLS($xml, $LanguageKey);
+
+		}
+
+		return false;
+
+	}
+
+	/**
+	 * @static
+	 * @param $File
+	 * @return array|bool
+	 */
+	private static function getSystemLanguageFileXml($File) {
 
 		if(is_file($File)) {
 
 				// Load Xml Object
-			$xml = simplexml_load_file($File);
+			$xml = simplexml_load_file($File, 'SimpleXMLElement', LIBXML_NOWARNING);
 
 				// Format Xml Object
-			$xml = self::formatSimpleXmlObject($xml);
-
-			return $xml;
+			return self::formatSimpleXmlObject_XML($xml);
 
 		}
 
@@ -786,11 +1235,83 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
+	 * Function 'doParsingFromRoot' from Class 't3lib_l10n_parser_Xliff'
+	 *
+	 * @static
+	 * @param $simpleXmlObject
+	 * @param $LanguageKey
+	 * @return array
+	 */
+	private static function formatSimpleXmlObject_XLS($simpleXmlObject, $LanguageKey) {
+
+		$parsedData = array();
+		$bodyOfFileTag = $simpleXmlObject->file->body;
+
+		foreach ($bodyOfFileTag->children() as $translationElement) {
+			if ($translationElement->getName() === 'trans-unit' && !isset($translationElement['restype'])) {
+					// If restype would be set, it could be metadata from Gettext to XLIFF conversion (and we don't need this data)
+
+				if ($LanguageKey === 'default') {
+						// Default language coming from an XLIFF template (no target element)
+					$parsedData[(string)$translationElement['id']][0] = array(
+						'source' => (string)$translationElement->source,
+						'target' => (string)$translationElement->source,
+					);
+				} else {
+						// @todo Support "approved" attribute
+					$parsedData[(string)$translationElement['id']][0] = array(
+						'source' => (string)$translationElement->source,
+						'target' => (string)$translationElement->target,
+					);
+				}
+			} elseif ($translationElement->getName() === 'group' && isset($translationElement['restype']) && (string)$translationElement['restype'] === 'x-gettext-plurals') {
+					// This is a translation with plural forms
+				$parsedTranslationElement = array();
+
+				foreach ($translationElement->children() as $translationPluralForm) {
+					if ($translationPluralForm->getName() === 'trans-unit') {
+							// When using plural forms, ID looks like this: 1[0], 1[1] etc
+						$formIndex = substr((string)$translationPluralForm['id'], strpos((string)$translationPluralForm['id'], '[') + 1, -1);
+
+						if ($LanguageKey === 'default') {
+								// Default language come from XLIFF template (no target element)
+							$parsedTranslationElement[(int)$formIndex] = array(
+								'source' => (string)$translationPluralForm->source,
+								'target' => (string)$translationPluralForm->source,
+							);
+						} else {
+								// @todo Support "approved" attribute
+							$parsedTranslationElement[(int)$formIndex] = array(
+								'source' => (string)$translationPluralForm->source,
+								'target' => (string)$translationPluralForm->target,
+							);
+						}
+					}
+				}
+
+				if (!empty($parsedTranslationElement)) {
+					if (isset($translationElement['id'])) {
+						$id = (string)$translationElement['id'];
+					} else {
+						$id = (string)($translationElement->{'trans-unit'}[0]['id']);
+						$id = substr($id, 0, strpos($id, '['));
+					}
+
+					$parsedData[$id] = $parsedTranslationElement;
+				}
+			}
+		}
+
+		return $parsedData;
+
+	}
+
+	/**
 	 * @static
 	 * @param $simpleXmlObject
 	 * @return array|bool
 	 */
-	private static function formatSimpleXmlObject($simpleXmlObject) {
+	private static function formatSimpleXmlObject_XML($simpleXmlObject) {
 
 		if($simpleXmlObject) {
 
