@@ -2,6 +2,7 @@
 
 	* Add XLIFF support in indexing
 	* Fix bug in xml sync
+	* Switch extension state to stable
 
 2011-11-11 Daniel Alder <dalder@snowflake.ch>
 
