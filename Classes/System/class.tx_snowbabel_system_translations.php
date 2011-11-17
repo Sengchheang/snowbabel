@@ -787,7 +787,7 @@ class tx_snowbabel_system_translations {
     private static function getSystemTranslationXml($FilePath, $LanguageKey, $LabelName) {
 
 	        // While First Loop Get Translation From l10n (And Create File If Not Done Yet)
-	    if($FilePath != self::$CacheTranslationsPath || empty(self::$CachedTranslations[$LanguageKey])) {
+		if($FilePath != self::$CacheTranslationsPath || $LanguageKey != self::$CacheTranslationLanguage) {
 
 				// Get l10n Location
 			$TranslationFileName = t3lib_div::llXmlAutoFileName($FilePath, $LanguageKey);
@@ -801,6 +801,9 @@ class tx_snowbabel_system_translations {
 
 				// Set New Cached Path
 			self::$CacheTranslationsPath = $FilePath;
+
+				// Set New Cached Language
+			self::$CacheTranslationLanguage = $LanguageKey;
 
 				// Sync Data From L10n With Extension XML
 			self::syncSystemTranslationXml(
