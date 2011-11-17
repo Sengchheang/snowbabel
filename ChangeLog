@@ -6,6 +6,7 @@
 	* Add requirement for typo3 4.5 and above
 	* Add new manual
 	* Small manual update
+	* Update dependency to correct version 4.5.4
 
 2011-11-11 Daniel Alder <dalder@snowflake.ch>
 
