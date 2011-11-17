@@ -77,34 +77,27 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 						fieldLabel: TYPO3.lang.settings_formlabel_LocalExtensionPath,
 						name: 'LocalExtensionPath',
 						anchor: '80%',
-						allowBlank:false,
-						listeners: ({
-							'change': function() {
-								TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
+						allowBlank:false
 					},{
 						fieldLabel: TYPO3.lang.settings_formlabel_SystemExtensionPath,
 						name: 'SystemExtensionPath',
 						anchor: '80%',
-						allowBlank:false,
-						listeners: ({
-							'change': function() {
-								TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
+						allowBlank:false
 					},{
 						fieldLabel: TYPO3.lang.settings_formlabel_GlobalExtensionPath,
 						name: 'GlobalExtensionPath',
 						anchor: '80%',
-						allowBlank:false,
-						listeners: ({
-							'change': function() {
-								TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
+						allowBlank:false
+					}],
+					buttonAlign: 'left',
+					buttons: [{
+						iconCls: 'silk-disk',
+						text: TYPO3.lang.settings_formbutton_Save,
+						tooltip: TYPO3.lang.settings_formtooltip_Save,
+						handler: function(){
+							TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
+						}
 					}]
-
 				},{
 					title: TYPO3.lang.settings_formtab_Blacklists,
 					layout: 'form',
@@ -113,22 +106,21 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 						xtype: 'textfield',
 						anchor: '80%',
 						fieldLabel: TYPO3.lang.settings_formlabel_BlacklistedExtensions,
-						name: 'BlacklistedExtensions',
-						listeners: ({
-							'change': function() {
-								TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
+						name: 'BlacklistedExtensions'
 					},{
 						xtype: 'textfield',
 						anchor: '80%',
 						fieldLabel: TYPO3.lang.settings_formlabel_BlacklistedCategories,
-						name: 'BlacklistedCategories',
-						listeners: ({
-							'change': function() {
-								TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
+						name: 'BlacklistedCategories'
+					}],
+					buttonAlign: 'left',
+					buttons: [{
+						iconCls: 'silk-disk',
+						text: TYPO3.lang.settings_formbutton_Save,
+						tooltip: TYPO3.lang.settings_formtooltip_Save,
+						handler: function(){
+							TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
+						}
 					}]
 				},{
 					title: TYPO3.lang.settings_formtab_DisplayOptions,
@@ -137,48 +129,32 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 					items: [{
 						xtype: 'checkbox',
 						fieldLabel: TYPO3.lang.settings_formlabel_ShowOnlyLoadedExtensions,
-						name: 'ShowOnlyLoadedExtensions',
-						listeners: ({
-							'check': function() {
-		//						TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
+						name: 'ShowOnlyLoadedExtensions'
 					},{
 						xtype: 'checkbox',
 						fieldLabel: TYPO3.lang.settings_formlabel_ShowTranslatedLanguages,
-						name: 'ShowTranslatedLanguages',
-						listeners: ({
-							'check': function() {
-		//						TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
+						name: 'ShowTranslatedLanguages'
 					},{
 						xtype: 'checkbox',
 						fieldLabel: TYPO3.lang.settings_formlabel_ShowLocalExtensions,
-						name: 'ShowLocalExtensions',
-						listeners: ({
-							'check': function() {
-		//						TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
+						name: 'ShowLocalExtensions'
 					},{
 						xtype: 'checkbox',
 						fieldLabel: TYPO3.lang.settings_formlabel_ShowSystemExtensions,
-						name: 'ShowSystemExtensions',
-						listeners: ({
-							'check': function() {
-		//						TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
+						name: 'ShowSystemExtensions'
 					},{
 						xtype: 'checkbox',
 						fieldLabel: TYPO3.lang.settings_formlabel_ShowGlobalExtensions,
-						name: 'ShowGlobalExtensions',
-						listeners: ({
-							'check': function() {
-		//						TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
+						name: 'ShowGlobalExtensions'
+					}],
+					buttonAlign: 'left',
+					buttons: [{
+						iconCls: 'silk-disk',
+						text: TYPO3.lang.settings_formbutton_Save,
+						tooltip: TYPO3.lang.settings_formtooltip_Save,
+						handler: function(){
+							TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
+						}
 					}]
 				},{
 					title: TYPO3.lang.settings_formtab_Editing,
@@ -187,12 +163,16 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 					items: [{
 						xtype: 'checkbox',
 						fieldLabel: TYPO3.lang.settings_formlabel_CopyDefaultLanguage,
-						name: 'CopyDefaultLanguage',
-						listeners: ({
-							'check': function() {
-		//						TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-							}
-						})
+						name: 'CopyDefaultLanguage'
+					}],
+					buttonAlign: 'left',
+					buttons: [{
+						iconCls: 'silk-disk',
+						text: TYPO3.lang.settings_formbutton_Save,
+						tooltip: TYPO3.lang.settings_formtooltip_Save,
+						handler: function(){
+							TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
+						}
 					}]
 				},{
 					title: TYPO3.lang.settings_formtab_Languages,
@@ -231,17 +211,18 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 							displayField: 'LanguageName',
 							valueField: 'LanguageId'
 						}]
+					}],
+					buttonAlign: 'left',
+					buttons: [{
+						iconCls: 'silk-disk',
+						text: TYPO3.lang.settings_formbutton_Save,
+						tooltip: TYPO3.lang.settings_formtooltip_Save,
+						handler: function(){
+							TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
+						}
 					}]
 				}]
 			},
-			buttons: [{
-				iconCls: 'silk-disk',
-				text: TYPO3.lang.settings_formbutton_Save,
-				tooltip: TYPO3.lang.settings_formtooltip_Save,
-				handler: function(){
-					TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
-				}
-			}],
 			api: {
 				load: TYPO3.Snowbabel.ExtDirect.getGeneralSettings,
 				submit: TYPO3.Snowbabel.ExtDirect.submitGeneralSettings
