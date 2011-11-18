@@ -1,3 +1,8 @@
+2011-11-18 Daniel Alder <dalder@snowflake.ch>
+
+	* Prepare for 'groups'
+	* Add 'Whitelisted Extension' to settings
+
 2011-11-17 Daniel Alder <dalder@snowflake.ch>
 
 	* Add XLIFF support in indexing

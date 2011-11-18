@@ -74,6 +74,9 @@ class tx_snowbabel_Configuration {
 		'BlacklistedExtensions'		=> 't3quixplorer,indexed_search,rtehtmlarea,t3editor,sv,sys_action,t3skin,belog,ics_awstats,ics_web_awstats,phpmyadmin,terminal,api_macmade,css_styled_content',
 		'BlacklistedCategories'		=> 'module,services,misc,be',
 
+		'WhitelistedActivated'		=> 0,
+		'WhitelistedExtensions'		=> '',
+
 		'XmlFilter'					=> 1,
 
 		'AutoBackupEditing'			=> 1,
@@ -305,10 +308,11 @@ class tx_snowbabel_Configuration {
 
 			// Set Languages If Added
 		$Languages = $this->getExtjsConfiguration('AddedLanguages');
+		if($Languages) $NewLocalconfValues['AvailableLanguages'] = $Languages;
 
-		if($Languages) {
-			$NewLocalconfValues['AvailableLanguages'] = $Languages;
-		}
+			// Set Whitelisted Extensions If Added
+		$WhitelistedExtensions = $this->getExtjsConfiguration('WhitelistedExtensions');
+		if($WhitelistedExtensions) $NewLocalconfValues['WhitelistedExtensions'] = $WhitelistedExtensions;
 
 			// Mark Configuration Changes As 'CHANGED'
 		$NewLocalconfValues['ConfigurationChanged'] = 1;
@@ -526,6 +530,8 @@ class tx_snowbabel_Configuration {
 		$ExtjsParams['BlacklistedExtensions']		= $this->configuration['Extjs']['BlacklistedExtensions'];
 		$ExtjsParams['BlacklistedCategories']		= $this->configuration['Extjs']['BlacklistedCategories'];
 
+		$ExtjsParams['WhitelistedActivated']		= $this->configuration['Extjs']['WhitelistedActivated'];
+
 		$ExtjsParams['XmlFilter']					= $this->configuration['Extjs']['XmlFilter'];
 
 		$ExtjsParams['AutoBackupEditing']			= $this->configuration['Extjs']['AutoBackupEditing'];
@@ -741,6 +747,11 @@ class tx_snowbabel_Configuration {
 				// blacklist categories
 			$this->setApplicationConfiguration($LocalconfValues['BlacklistedCategories'], 'BlacklistedCategories');
 
+				// whitelist activated
+			$this->setApplicationConfiguration($LocalconfValues['WhitelistedActivated'], 'WhitelistedActivated');
+
+				// whitelisted extensions
+			$this->setApplicationConfiguration(explode(",", $LocalconfValues['WhitelistedExtensions']), 'WhitelistedExtensions');
 
 				// xml filter
 			$this->setApplicationConfiguration($LocalconfValues['XmlFilter'], 'XmlFilter');

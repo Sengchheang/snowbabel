@@ -9,6 +9,9 @@
 			<trans-unit id="settings_formtab_Blacklists">
 				<source>Blacklists</source>
 			</trans-unit>
+			<trans-unit id="settings_formtab_Whitelists">
+				<source>Whitelists</source>
+			</trans-unit>
 			<trans-unit id="settings_formtab_DisplayOptions">
 				<source>Display Options</source>
 			</trans-unit>
@@ -38,6 +41,9 @@
 			</trans-unit>
 			<trans-unit id="settings_formlabel_BlacklistedCategories">
 				<source>Categories</source>
+			</trans-unit>
+			<trans-unit id="settings_formlabel_WhitelistedActivated">
+				<source>Use Whitelist</source>
 			</trans-unit>
 			<trans-unit id="settings_formlabel_ShowOnlyLoadedExtensions">
 				<source>Show Only Loaded Extensions</source>
@@ -72,26 +78,29 @@
 			<trans-unit id="settings_formlabel_AddedLanguages_Added">
 				<source>Added</source>
 			</trans-unit>
+			<trans-unit id="settings_formlabel_AddedExtensions">
+				<source>Whitelisted Extensions</source>
+			</trans-unit>
+			<trans-unit id="settings_formlabel_AddedExtensions_Available">
+				<source>Available</source>
+			</trans-unit>
+			<trans-unit id="settings_formlabel_AddedExtensions_Added">
+				<source>Added</source>
+			</trans-unit>
 			<trans-unit id="settings_formlabel_CacheActivated">
 				<source>Cache</source>
 			</trans-unit>
 			<trans-unit id="settings_formlabel_GroupsNew">
-				<source>Group name</source>
-			</trans-unit>
-			<trans-unit id="settings_formtitle_GroupsNew">
 				<source>Create New Group</source>
-			</trans-unit>
-			<trans-unit id="settings_formtitle_GroupsList">
-				<source>Available Groups</source>
 			</trans-unit>
 			<trans-unit id="settings_formbutton_GroupsNew">
 				<source>Create</source>
 			</trans-unit>
-			<trans-unit id="settings_formbutton_Save">
-				<source>Save</source>
-			</trans-unit>
 			<trans-unit id="settings_formtooltip_GroupsNew">
 				<source>Create New Group</source>
+			</trans-unit>
+			<trans-unit id="settings_formbutton_Save">
+				<source>Save</source>
 			</trans-unit>
 			<trans-unit id="settings_formtooltip_Save">
 				<source>Save Settings Below</source>

@@ -61,6 +61,30 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 			fields: ['LanguageId', 'LanguageName', 'LanguageKey']
 		});
 
+			// All Available Extensions
+		var WhitelistedExtensionsStore = new Ext.data.DirectStore( {
+			directFn: TYPO3.Snowbabel.ExtDirect.getGeneralSettingsWhitelistedExtensions,
+			paramsAsHash: true,
+			root: '',
+			sortInfo: {
+				field: 'ExtensionKey',
+				direction: 'ASC'
+			},
+			fields: ['ExtensionKey']
+		});
+
+			// Added Extensions
+		var WhitelistedExtensionsAddedStore = new Ext.data.DirectStore( {
+			directFn: TYPO3.Snowbabel.ExtDirect.getGeneralSettingsWhitelistedExtensionsAdded,
+			paramsAsHash: true,
+			root: '',
+			sortInfo: {
+				field: 'ExtensionKey',
+				direction: 'ASC'
+			},
+			fields: ['ExtensionKey']
+		});
+
 			//config
 		var config = {
 			labelWidth: 150,
@@ -112,6 +136,58 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 						anchor: '80%',
 						fieldLabel: TYPO3.lang.settings_formlabel_BlacklistedCategories,
 						name: 'BlacklistedCategories'
+					}],
+					buttonAlign: 'left',
+					buttons: [{
+						iconCls: 'silk-disk',
+						text: TYPO3.lang.settings_formbutton_Save,
+						tooltip: TYPO3.lang.settings_formtooltip_Save,
+						handler: function(){
+							TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
+						}
+					}]
+				},{
+					title: TYPO3.lang.settings_formtab_Whitelists,
+					layout: 'form',
+					defaultType: 'textfield',
+					items: [{
+						xtype: 'checkbox',
+						fieldLabel: TYPO3.lang.settings_formlabel_WhitelistedActivated,
+						name: 'WhitelistedActivated'
+					},{
+						xtype: 'itemselector',
+						fieldLabel: TYPO3.lang.settings_formlabel_AddedExtensions,
+						name: 'WhitelistedExtensions',
+						imagePath: '../Resources/Public/Images/Silk/',
+						drawUpIcon: false,
+						drawDownIcon: false,
+						drawTopIcon: false,
+						drawBotIcon: false,
+						iconUp: 'arrow_up.png',
+						iconDown: 'arrow_down.png',
+						iconLeft: 'arrow_left.png',
+						iconRight: 'arrow_right.png',
+						iconTop: 'arrow_up.png',
+						iconBottom: 'arrow_down.png',
+						ddReorder: true,
+						width: 550,
+						multiselects: [{
+							legend: TYPO3.lang.settings_formlabel_AddedExtensions_Available,
+							style: 'background-color:white',
+							width: 250,
+							height: 200,
+							store: WhitelistedExtensionsStore,
+							displayField: 'ExtensionKey',
+							valueField: 'ExtensionKey'
+						},{
+							legend: TYPO3.lang.settings_formlabel_AddedExtensions_Added,
+							style: 'background-color:white',
+							width: 250,
+							height: 200,
+							store: WhitelistedExtensionsAddedStore,
+							displayField: 'ExtensionKey',
+							valueField: 'ExtensionKey'
+						}]
 					}],
 					buttonAlign: 'left',
 					buttons: [{
@@ -276,6 +352,8 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 					this.getForm().load();
 					LanguagesStore.load();
 					LanguagesAddedStore.load();
+					WhitelistedExtensionsStore.load();
+					WhitelistedExtensionsAddedStore.load();
 				}
 			})
 		};

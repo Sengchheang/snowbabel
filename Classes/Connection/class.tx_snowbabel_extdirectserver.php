@@ -57,6 +57,11 @@ class tx_snowbabel_ExtDirectServer {
 	private $colObj;
 
 	/**
+	 * @var tx_snowbabel_system_translations
+	 */
+	private $systemTranslationObj;
+
+	/**
 	 * @param $extjsParams
 	 * @return null
 	 */
@@ -229,6 +234,8 @@ class tx_snowbabel_ExtDirectServer {
 		$FormData['data']['BlacklistedExtensions']		= $this->confObj->getApplicationConfiguration('BlacklistedExtensions');
 		$FormData['data']['BlacklistedCategories']		= $this->confObj->getApplicationConfiguration('BlacklistedCategories');
 
+		$FormData['data']['WhitelistedActivated']		= $this->confObj->getApplicationConfiguration('WhitelistedActivated') ? 1 : 0;
+
 		$FormData['data']['XmlFilter']					= $this->confObj->getApplicationConfiguration('XmlFilter') ? 1 : 0;
 
 		$FormData['data']['AutoBackupEditing']			= $this->confObj->getApplicationConfiguration('AutoBackupEditing') ? 1 : 0;
@@ -294,6 +301,72 @@ class tx_snowbabel_ExtDirectServer {
 	}
 
 	/**
+	 * @param $extjsParams
+	 * @return array
+	 */
+	public function getGeneralSettingsWhitelistedExtensions($extjsParams) {
+
+		$extjsParams	= array();
+		$ExtensionArray = array();
+
+			// Get Configuration Object
+		$this->getConfigurationObject($extjsParams);
+
+			// Get System Translation Object
+		$this->getSystemTranslationObject();
+
+			// Init System Translation Object
+		$this->systemTranslationObj->init($this->confObj);
+
+			// Get All Available Extensions
+		$Extensions = $this->systemTranslationObj->getDirectories();
+
+			// Get Whitelisted Extensions
+		$WhitelistedExtensions = $this->confObj->getApplicationConfiguration('WhitelistedExtensions');
+
+			// Prepare For Output
+		if(is_array($Extensions) && count($Extensions) > 0) {
+			foreach($Extensions as $Extension) {
+
+					// Do Not Add Extension If Already Whitelisted
+				if(!in_array($Extension, $WhitelistedExtensions)) {
+					array_push($ExtensionArray, array('ExtensionKey' => $Extension));
+				}
+
+			}
+		}
+
+		return $ExtensionArray;
+
+	}
+
+	/**
+	 * @param $extjsParams
+	 * @return null
+	 */
+	public function getGeneralSettingsWhitelistedExtensionsAdded($extjsParams) {
+
+		$extjsParams	= array();
+		$WhitelistedExtensionsArray = array();
+
+			// Get Configuration Object
+		$this->getConfigurationObject($extjsParams);
+
+			// Set Values
+		$WhitelistedExtensions = $this->confObj->getApplicationConfiguration('WhitelistedExtensions');
+
+			// Prepare For Output
+		if(is_array($WhitelistedExtensions) && count($WhitelistedExtensions) > 0) {
+			foreach($WhitelistedExtensions as $WhitelistedExtension) {
+				array_push($WhitelistedExtensionsArray, array('ExtensionKey' => $WhitelistedExtension));
+			}
+		}
+
+		return $WhitelistedExtensionsArray;
+
+	}
+
+	/**
 	 * @param  $extjsParams
 	 * @return void
 	 */
@@ -338,6 +411,15 @@ class tx_snowbabel_ExtDirectServer {
 	private function getColumnObject() {
 		if (!is_object($this->colObj) && !($this->colObj instanceof tx_snowbabel_columns)) {
 			$this->colObj = t3lib_div::makeInstance('tx_snowbabel_columns', $this->confObj);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	private function getSystemTranslationObject() {
+		if (!is_object($this->systemTranslationObj) && !($this->systemTranslationObj instanceof tx_snowbabel_system_translations)) {
+			$this->systemTranslationObj = t3lib_div::makeInstance('tx_snowbabel_system_translations');
 		}
 	}
 

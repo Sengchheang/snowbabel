@@ -154,6 +154,43 @@ class tx_snowbabel_system_translations {
 
 	}
 
+
+	/**
+	 * @return array
+	 */
+	public static function getDirectories() {
+
+		$Directories	= array();
+		$RawDirectories = array();
+
+		// get local extension dirs
+		$RawDirectories['Local'] = self::getSystemDirectories(self::$SitePath.self::$LocalExtensionPath);
+
+		// get system extension dirs
+		$RawDirectories['System'] = self::getSystemDirectories(self::$SitePath.self::$SystemExtensionPath);
+
+		// get global extension dirs
+		$RawDirectories['Global'] = self::getSystemDirectories(self::$SitePath.self::$GlobalExtensionPath);
+
+
+		if(is_array($RawDirectories['System']) && count($RawDirectories['System']) > 0) {
+			$Directories = array_merge($Directories, $RawDirectories['System']);
+		}
+
+		if(is_array($RawDirectories['Global']) && count($RawDirectories['Global']) > 0) {
+			$Directories = array_merge($Directories, $RawDirectories['Global']);
+		}
+
+		if(is_array($RawDirectories['Local']) && count($RawDirectories['Local']) > 0) {
+			$Directories = array_merge($Directories, $RawDirectories['Local']);
+		}
+
+			// Removes Double Entries
+		$Directories = array_unique($Directories);
+
+		return $Directories;
+	}
+
 	/**
 	 * @static
 	 * @param $Extensions
@@ -345,42 +382,6 @@ class tx_snowbabel_system_translations {
 			// Write File
 		self::writeTranslationXml($Translation, $TranslationFilePath);
 
-	}
-
-	/**
-	 * @return array
-	 */
-	private static function getDirectories() {
-
-		$Directories	= array();
-		$RawDirectories = array();
-
-		// get local extension dirs
-		$RawDirectories['Local'] = self::getSystemDirectories(self::$SitePath.self::$LocalExtensionPath);
-
-		// get system extension dirs
-		$RawDirectories['System'] = self::getSystemDirectories(self::$SitePath.self::$SystemExtensionPath);
-
-		// get global extension dirs
-		$RawDirectories['Global'] = self::getSystemDirectories(self::$SitePath.self::$GlobalExtensionPath);
-
-
-		if(is_array($RawDirectories['System']) && count($RawDirectories['System']) > 0) {
-			$Directories = array_merge($Directories, $RawDirectories['System']);
-		}
-
-		if(is_array($RawDirectories['Global']) && count($RawDirectories['Global']) > 0) {
-			$Directories = array_merge($Directories, $RawDirectories['Global']);
-		}
-
-		if(is_array($RawDirectories['Local']) && count($RawDirectories['Local']) > 0) {
-			$Directories = array_merge($Directories, $RawDirectories['Local']);
-		}
-
-			// Removes Double Entries
-		$Directories = array_unique($Directories);
-
-		return $Directories;
 	}
 
 	/**
