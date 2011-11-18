@@ -18,6 +18,9 @@
 			<trans-unit id="settings_formtab_Languages">
 				<source>Languages</source>
 			</trans-unit>
+			<trans-unit id="settings_formtab_Groups">
+				<source>Groups</source>
+			</trans-unit>
 			<trans-unit id="settings_formtab_Experimental">
 				<source>Experimental</source>
 			</trans-unit>
@@ -72,8 +75,23 @@
 			<trans-unit id="settings_formlabel_CacheActivated">
 				<source>Cache</source>
 			</trans-unit>
+			<trans-unit id="settings_formlabel_GroupsNew">
+				<source>Group name</source>
+			</trans-unit>
+			<trans-unit id="settings_formtitle_GroupsNew">
+				<source>Create New Group</source>
+			</trans-unit>
+			<trans-unit id="settings_formtitle_GroupsList">
+				<source>Available Groups</source>
+			</trans-unit>
+			<trans-unit id="settings_formbutton_GroupsNew">
+				<source>Create</source>
+			</trans-unit>
 			<trans-unit id="settings_formbutton_Save">
 				<source>Save</source>
+			</trans-unit>
+			<trans-unit id="settings_formtooltip_GroupsNew">
+				<source>Create New Group</source>
 			</trans-unit>
 			<trans-unit id="settings_formtooltip_Save">
 				<source>Save Settings Below</source>

@@ -222,6 +222,44 @@ TYPO3.Snowbabel.GeneralSettings = Ext.extend(Ext.form.FormPanel , {
 						}
 					}]
 				}]
+//				},{
+//					title: TYPO3.lang.settings_formtab_Groups,
+//					items: [{
+//						layout: 'form',
+//						items: [{
+//							xtype: 'textfield',
+//							anchor: '80%',
+//							fieldLabel: TYPO3.lang.settings_formlabel_GroupsNew,
+//							name: 'GroupsNew'
+//						}],
+//						buttonAlign: 'left',
+//						buttons: [{
+//							iconCls: 'silk-add',
+//							text: TYPO3.lang.settings_formbutton_GroupsNew,
+//							tooltip: TYPO3.lang.settings_formtooltip_GroupsNew,
+//							handler: function(){
+//								//TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
+//							}
+//						}]
+//					},{
+//						layout: 'form',
+////						items: [{
+////							xtype: 'textfield',
+////							anchor: '80%',
+////							fieldLabel: TYPO3.lang.settings_formlabel_GroupsNew,
+////							name: 'GroupsNew'
+////						}],
+//						buttonAlign: 'left',
+//						buttons: [{
+//							iconCls: 'silk-disk',
+//							text: TYPO3.lang.settings_formbutton_GroupsNew,
+//							tooltip: TYPO3.lang.settings_formtooltip_GroupsNew,
+//							handler: function(){
+//								//TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit();
+//							}
+//						}]
+//					}]
+//				}]
 			},
 			api: {
 				load: TYPO3.Snowbabel.ExtDirect.getGeneralSettings,

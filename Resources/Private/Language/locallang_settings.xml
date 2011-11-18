@@ -11,6 +11,7 @@
 			<label index="settings_formtab_DisplayOptions">Display Options</label>
 			<label index="settings_formtab_Editing">Editing</label>
 			<label index="settings_formtab_Languages">Languages</label>
+			<label index="settings_formtab_Groups">Groups</label>
 			<label index="settings_formtab_Experimental">Experimental</label>
 			<label index="settings_formlabel_LocalExtensionPath">Local Extensions</label>
 			<label index="settings_formlabel_SystemExtensionPath">System Extensions</label>
@@ -29,7 +30,12 @@
 			<label index="settings_formlabel_AddedLanguages_Available">Available</label>
 			<label index="settings_formlabel_AddedLanguages_Added">Added</label>
 			<label index="settings_formlabel_CacheActivated">Cache</label>
+			<label index="settings_formlabel_GroupsNew">Group name</label>
+			<label index="settings_formtitle_GroupsNew">Create New Group</label>
+			<label index="settings_formtitle_GroupsList">Available Groups</label>
+			<label index="settings_formbutton_GroupsNew">Create</label>
 			<label index="settings_formbutton_Save">Save</label>
+			<label index="settings_formtooltip_GroupsNew">Create New Group</label>
 			<label index="settings_formtooltip_Save">Save Settings Below</label>
 			<label index="settings_msg_SubmitOkTitle">Saved</label>
 			<label index="settings_msg_SubmitOkMessage">Configuration correctly saved</label>

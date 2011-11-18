@@ -208,6 +208,9 @@ TYPO3.Snowbabel.Generals.SetSearchField = function(Store, LoadParams) {
 
 TYPO3.Snowbabel.Generals.Typo3Header = '<div id="typo3-docheader"><div id="typo3-docheader-row1"><div class="buttonsleft"></div><div class="buttonsright no-border"></div></div><div id="typo3-docheader-row2"></div></div></div>';
 
+/**
+ *
+ */
 TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit = function() {
 
 	var Form = Ext.getCmp('GeneralSettingsForm').getForm();
@@ -225,6 +228,16 @@ TYPO3.Snowbabel.Generals.GeneralSettingsFormSubmit = function() {
 	});
 
 };
+
+TYPO3.Snowbabel.Generals.GeneralSettingsGroupsCreate = function() {
+
+	Textfield = Ext.getCmp('textfieldGroupsNew');
+
+	var GroupName = Textfield.getValue();
+
+	Textfield.setRawValue('');
+
+}
 
 /**
  * Shows popup
