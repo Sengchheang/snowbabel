@@ -59,6 +59,16 @@ class tx_snowbabel_system_translations {
 	/**
 	 * @var
 	 */
+	private static $WhitelistedActivated;
+
+	/**
+	 * @var
+	 */
+	private static $WhitelistedExtensions;
+
+	/**
+	 * @var
+	 */
 	private static $LocalExtensionPath;
 
 	/**
@@ -129,6 +139,8 @@ class tx_snowbabel_system_translations {
 		self::$AvailableLanguages = self::$confObj->getApplicationConfiguration('AvailableLanguages');
 		self::$BlacklistedExtensions = self::$confObj->getApplicationConfiguration('BlacklistedExtensions');
 		self::$BlacklistedCategories = explode(',', self::$confObj->getApplicationConfiguration('BlacklistedCategories'));
+		self::$WhitelistedActivated = self::$confObj->getApplicationConfiguration('WhitelistedActivated');
+		self::$WhitelistedExtensions = self::$confObj->getApplicationConfiguration('WhitelistedExtensions');
 		self::$LocalExtensionPath = self::$confObj->getApplicationConfiguration('LocalExtensionPath');
 		self::$SystemExtensionPath = self::$confObj->getApplicationConfiguration('SystemExtensionPath');
 		self::$GlobalExtensionPath = self::$confObj->getApplicationConfiguration('GlobalExtensionPath');
@@ -147,6 +159,8 @@ class tx_snowbabel_system_translations {
 		$Extensions = self::getDirectories();
 
 		$Extensions = self::removeBlacklistedExtensions($Extensions);
+
+		$Extensions = self::checkWhitelistedExtensions($Extensions);
 
 		$Extensions = self::getExtensionData($Extensions);
 
@@ -385,7 +399,8 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
-	 * @param  $RawExtensions
+	 * @static
+	 * @param $RawExtensions
 	 * @return array
 	 */
 	private static function removeBlacklistedExtensions($RawExtensions) {
@@ -414,7 +429,40 @@ class tx_snowbabel_system_translations {
 	}
 
 	/**
-	 * @param  $ExtensionList
+	 * @static
+	 * @param $Extensions
+	 * @return array
+	 */
+	private static function checkWhitelistedExtensions($Extensions) {
+
+		if(self::$WhitelistedActivated) {
+
+			if(count($Extensions) > 0) {
+
+				$ExtensionsNew = array();
+
+				foreach($Extensions as $Extension) {
+
+						// Check If Extension Is Available
+					if(in_array($Extension, self::$WhitelistedExtensions)) {
+						array_push($ExtensionsNew, $Extension);
+					}
+
+				}
+
+					// Set New Extensionlist
+				$Extensions = $ExtensionsNew;
+			}
+
+		}
+
+		return $Extensions;
+
+	}
+
+	/**
+	 * @static
+	 * @param $ExtensionList
 	 * @return array
 	 */
 	private static function getExtensionData($ExtensionList) {
