@@ -79,6 +79,16 @@ class tx_snowbabel_Extensions {
 	/**
 	 *
 	 */
+	private $WhitelistedActivated;
+
+	/**
+	 *
+	 */
+	private $WhitelistedExtensions;
+
+	/**
+	 *
+	 */
 	private $ShowOnlyLoadedExtensions;
 
 	/**
@@ -111,6 +121,9 @@ class tx_snowbabel_Extensions {
 		$this->BlacklistedExtensions = $this->confObj->getApplicationConfiguration('BlacklistedExtensions');
 		$this->BlacklistedCategories = $this->confObj->getApplicationConfiguration('BlacklistedCategories');
 
+		$this->WhitelistedActivated = $this->confObj->getApplicationConfiguration('WhitelistedActivated');
+		$this->WhitelistedExtensions = $this->confObj->getApplicationConfiguration('WhitelistedExtensions');
+
 		$this->ShowOnlyLoadedExtensions = $this->confObj->getApplicationConfiguration('ShowOnlyLoadedExtensions');
 
 			// get User params
@@ -130,8 +143,9 @@ class tx_snowbabel_Extensions {
 			'System' => $this->ShowSystemExtensions,
 			'Global' => $this->ShowGlobalExtensions,
 			'OnlyLoaded' => $this->ShowOnlyLoadedExtensions,
-			'BlacklistedExtensions' => $this->BlacklistedExtensions,
-			'BlacklistedCategories' => $this->BlacklistedCategories,
+			'BlacklistedExtensions' => !$this->WhitelistedActivated ? $this->BlacklistedExtensions : '',
+			'BlacklistedCategories' => !$this->WhitelistedActivated ? $this->BlacklistedCategories : '',
+			'WhitelistedExtensions' => $this->WhitelistedActivated ? $this->WhitelistedExtensions : '',
 			'OrderBy' => 'ExtensionTitle',
 			'Debug' => '0',
 		);

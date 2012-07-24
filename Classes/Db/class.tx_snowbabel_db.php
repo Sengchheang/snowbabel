@@ -388,24 +388,31 @@ class tx_snowbabel_Db {
 
 			if($Conf['OnlyLoaded']) array_push($Where['AND'],'ExtensionLoaded=1');
 
-			if($Conf['BlacklistedCategories']) {
+			if(!empty($Conf['BlacklistedCategories'])) {
 
 				$BlacklistedCategories = $this->prepareCommaSeparatedString($Conf['BlacklistedCategories'], $Table);
-				array_push($Where['AND'],'ExtensionCategory NOT IN (' . $BlacklistedCategories . ')');
+				if(!empty($BlacklistedCategories)) array_push($Where['AND'],'ExtensionCategory NOT IN (' . $BlacklistedCategories . ')');
 
 			}
 
-			if($Conf['BlacklistedExtensions']) {
+			if(!empty($Conf['BlacklistedExtensions'])) {
 
 				$BlacklistedExtensions = $this->prepareCommaSeparatedString($Conf['BlacklistedExtensions'], $Table);
-				array_push($Where['AND'],'ExtensionKey NOT IN (' . $BlacklistedExtensions . ')');
+				if(!empty($BlacklistedExtensions)) array_push($Where['AND'],'ExtensionKey NOT IN (' . $BlacklistedExtensions . ')');
 
 			}
 
-			if($Conf['PermittedExtensions']) {
+			if(!empty($Conf['WhitelistedExtensions'])) {
+
+				$WhitelistedExtensions = $this->prepareCommaSeparatedString($Conf['WhitelistedExtensions'], $Table);
+				if(!empty($WhitelistedExtensions)) array_push($Where['AND'],'ExtensionKey IN (' . $WhitelistedExtensions . ')');
+
+			}
+
+			if(!empty($Conf['PermittedExtensions'])) {
 
 				$PermittedExtensions = $this->prepareCommaSeparatedString($Conf['PermittedExtensions'], $Table);
-				array_push($Where['AND'],'ExtensionKey IN (' . $PermittedExtensions . ')');
+				if(!empty($PermittedExtensions)) array_push($Where['AND'],'ExtensionKey IN (' . $PermittedExtensions . ')');
 
 			}
 
@@ -1005,7 +1012,9 @@ class tx_snowbabel_Db {
 	 */
 	private function prepareCommaSeparatedString($CommaSeparatedString, $Table) {
 
-		$CommaSeparatedString = explode(',', $CommaSeparatedString);
+		if(is_string($CommaSeparatedString) && strpos($CommaSeparatedString, ',') !== false) {
+			$CommaSeparatedString = explode(',', $CommaSeparatedString);
+		}
 
 		$CommaSeparatedString = $this->db->fullQuoteArray($CommaSeparatedString, $Table);
 
