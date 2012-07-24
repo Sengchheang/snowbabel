@@ -1,3 +1,8 @@
+2012-07-24 Daniel Alder <dalder@snowflake.ch>
+
+	* Fix: unfinished whitelisting feature (ignore blacklisting if whitelisting is used)
+	* Change: do not write localconf in scheduler if not necessary
+
 2011-11-21 Daniel Alder <dalder@snowflake.ch>
 
 	* Add 'Whitelisted Extension' to indexing

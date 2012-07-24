@@ -330,14 +330,18 @@ class tx_snowbabel_Configuration {
 			// Get Localconf Values
 		$LocalconfValues = $this->loadApplicationConfiguration(false);
 
-			// Set Scheduler Check
-		$LocalconfValues['SchedulerCheck'] = 1;
+		if($LocalconfValues['SchedulerCheck'] !== 1 || $LocalconfValues['ConfigurationChanged'] !== 0) {
 
-			// Set Scheduler Check
-		$LocalconfValues['ConfigurationChanged'] = 0;
+				// Set Scheduler Check
+			$LocalconfValues['SchedulerCheck'] = 1;
 
-			// Write To Localconf
-		$this->writeLocalconfArray($LocalconfValues);
+				// Set Scheduler Check
+			$LocalconfValues['ConfigurationChanged'] = 0;
+
+				// Write To Localconf
+			$this->writeLocalconfArray($LocalconfValues);
+
+		}
 
 	}
 

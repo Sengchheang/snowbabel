@@ -406,21 +406,31 @@ class tx_snowbabel_system_translations {
 	private static function removeBlacklistedExtensions($RawExtensions) {
 
 		$Extensions = array();
-		$BlacklistedExtensions = array();
 
-			// Get Blacklisted Extensions
-		if (self::$BlacklistedExtensions) {
-			 $BlacklistedExtensions = explode(',',self::$BlacklistedExtensions);
+		if(!self::$WhitelistedActivated) {
+			$BlacklistedExtensions = array();
+
+				// Get Blacklisted Extensions
+			if (self::$BlacklistedExtensions) {
+				 $BlacklistedExtensions = explode(',',self::$BlacklistedExtensions);
+			}
+
+				// Just Use Allowed Extensions
+			if(count($RawExtensions)) {
+				foreach($RawExtensions as $Extension) {
+
+					if(!in_array($Extension, $BlacklistedExtensions)) {
+						array_push($Extensions, $Extension);
+					}
+
+				}
+			}
 		}
-
-			// Just Use Allowed Extensions
-		if(count($RawExtensions)) {
-			foreach($RawExtensions as $Extension) {
-
-				if(!in_array($Extension, $BlacklistedExtensions)) {
+		else {
+			if(count($RawExtensions)) {
+				foreach($RawExtensions as $Extension) {
 					array_push($Extensions, $Extension);
 				}
-
 			}
 		}
 
@@ -531,7 +541,7 @@ class tx_snowbabel_system_translations {
 	private static function isCategoryBlacklisted($ExtensionCategory) {
 
 			// Just Use Allowed Categories
-		if($ExtensionCategory && is_array(self::$BlacklistedCategories)) {
+		if($ExtensionCategory && is_array(self::$BlacklistedCategories) && !self::$WhitelistedActivated) {
 
 			if(in_array($ExtensionCategory, self::$BlacklistedCategories)) {
 				return true;
