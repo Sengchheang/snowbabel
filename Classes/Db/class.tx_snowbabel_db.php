@@ -259,7 +259,7 @@ class tx_snowbabel_Db {
 
 					$Languages[$Key]['LanguageNameEn'] = $Language['lg_name_en'];
 					$Languages[$Key]['LanguageNameLocal'] = $Language['lg_name_local'];
-					$Languages[$Key]['LanguageKey'] = $Language['lg_typo3'] ? $Language['lg_typo3'] : strtolower($Language['lg_iso_2']);
+					$Languages[$Key]['LanguageKey'] = strtolower($Language['lg_iso_2']);
 
 				}
 
